@@ -9,7 +9,7 @@ const stats = [
   {
     icon: MapPin,
     label: "Area layanan",
-    value: "Sulawesi & sekitarnya",
+    value: "Yogyakarta & sekitarnya",
   },
   {
     icon: Headset,

@@ -23,11 +23,9 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
   const [activeAddon, setActiveAddon] = useState<string>(ADDON_TABS[0]);
   const [selected, setSelected] = useState<Package | null>(null);
 
-  // Filter paket berdasarkan addon yang sedang aktif
   const filteredBasic = basicPackages.filter((pkg) => pkg.name.includes(activeAddon));
   const filteredBisnis = bisnisPackages.filter((pkg) => pkg.name.includes(activeAddon));
 
-  // Ambil fitur dari salah satu paket untuk ditampilkan di banner bawah
   const addonBenefits = filteredBasic[0]?.benefits ?? [];
 
   return (
@@ -80,14 +78,12 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                 onClick={() => setSelected(pkg)}
                 className="group relative flex flex-row items-center justify-between gap-2 rounded-2xl p-3 sm:p-4 cursor-pointer border border-white/10 bg-[linear-gradient(135deg,#1e3a8a_0%,#1d4ed8_45%,#2563eb_75%,#3b82f6_100%)] shadow-lg shadow-blue-950/40 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/50 hover:brightness-110 overflow-hidden"
               >
-                {/* Efek pita jika populer */}
                 {pkg.badge && (
                   <div className="absolute top-0 right-0 bg-primary px-2.5 py-1 rounded-bl-lg text-[10px] font-black text-primary-foreground uppercase tracking-wide shadow-sm">
                     Terlaris
                   </div>
                 )}
 
-                {/* Glossy highlight, top-left glow like the brochure cards */}
                 <div className="pointer-events-none absolute -top-8 -left-8 h-24 w-24 rounded-full bg-white/20 blur-2xl" />
                 <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/10" />
 
@@ -106,13 +102,13 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                 <div className="relative h-10 w-px bg-white/25 shrink-0" />
 
                 <div className="relative flex flex-col items-end text-right min-w-0">
-                  <div className="flex items-baseline gap-0.5">
-                    <span className="text-[10px] font-bold text-blue-100 self-start mt-1">Rp</span>
-                    <span className="text-lg sm:text-xl font-extrabold text-white leading-none truncate">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs font-bold text-blue-100 leading-none">Rp</span>
+                    <span className="text-lg sm:text-xl font-extrabold text-white leading-none">
                       {formatRupiah(pkg.promoPrice ?? pkg.normalPrice)}
                     </span>
                   </div>
-                  <span className="text-[10px] font-semibold text-blue-100 uppercase tracking-widest mt-0.5">
+                  <span className="text-[10px] font-semibold text-blue-100 uppercase tracking-widest mt-1">
                     /Bulan
                   </span>
                 </div>
@@ -160,13 +156,13 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                 <div className="relative h-10 w-px bg-white/25 shrink-0" />
 
                 <div className="relative flex flex-col items-end text-right min-w-0">
-                  <div className="flex items-baseline gap-0.5">
-                    <span className="text-[10px] font-bold text-blue-100 self-start mt-1">Rp</span>
-                    <span className="text-lg sm:text-xl font-extrabold text-white leading-none truncate">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs font-bold text-blue-100 leading-none">Rp</span>
+                    <span className="text-lg sm:text-xl font-extrabold text-white leading-none">
                       {formatRupiah(pkg.promoPrice ?? pkg.normalPrice)}
                     </span>
                   </div>
-                  <span className="text-[10px] font-semibold text-blue-100 uppercase tracking-widest mt-0.5">
+                  <span className="text-[10px] font-semibold text-blue-100 uppercase tracking-widest mt-1">
                     /Bulan
                   </span>
                 </div>
@@ -176,15 +172,15 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
         </div>
 
         {/* --- BANNER FITUR ADD-ON (Seperti di brosur) --- */}
-        <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-6 rounded-2xl bg-slate-900 px-8 py-6 text-white shadow-xl">
+        <div className="mt-8 flex flex-col gap-5 rounded-2xl bg-slate-900 px-6 py-6 text-white shadow-xl md:flex-row md:items-center md:justify-between md:gap-6 md:px-8">
           <div className="text-xl md:text-2xl font-black tracking-tight text-center md:text-left whitespace-nowrap">
             {activeAddon}
           </div>
-          <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-3">
+          <div className="flex flex-col items-start gap-3 md:flex-row md:flex-wrap md:items-center md:justify-end md:gap-x-6 md:gap-y-3">
             {addonBenefits.map((benefit, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-sky-400 shrink-0" />
-                <span className="text-sm font-medium text-slate-200">{benefit}</span>
+              <div key={i} className="flex items-start gap-2">
+                <CheckCircle2 className="h-5 w-5 text-sky-400 shrink-0 mt-0.5" />
+                <span className="text-sm font-medium text-slate-200 leading-snug">{benefit}</span>
               </div>
             ))}
           </div>
