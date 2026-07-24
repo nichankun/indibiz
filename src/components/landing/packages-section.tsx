@@ -23,8 +23,11 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
   return (
     <section id="paket" className="mx-auto max-w-6xl px-6 py-20">
       <div className="mx-auto max-w-2xl text-center">
-        <span className="text-sm font-semibold uppercase tracking-wider text-accent">Paket &amp; Harga</span>
-        <h2 className="mt-2 font-(family-name:--font-display) text-3xl font-semibold tracking-tight sm:text-4xl">
+        {/* PERBAIKAN: text-accent -> text-primary */}
+        <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          Paket &amp; Harga
+        </span>
+        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           Satu koneksi, dua pilihan kebutuhan
         </h2>
         <p className="mt-3 text-muted-foreground">
@@ -33,13 +36,16 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
         </p>
       </div>
 
-      <div className="mx-auto mt-8 flex w-fit rounded-full border border-border bg-white p-1 shadow-sm">
+      {/* PERBAIKAN: Gaya toggle disesuaikan dengan komponen Tabs Shadcn */}
+      <div className="mx-auto mt-8 flex w-fit rounded-full bg-muted p-1 text-muted-foreground">
         {(["basic", "bisnis"] as const).map((cat) => (
           <button
             key={cat}
             onClick={() => setCategory(cat)}
-            className={`rounded-full px-6 py-2 text-sm font-medium capitalize transition-colors ${
-              category === cat ? "bg-primary text-white" : "text-muted-foreground"
+            className={`rounded-full px-6 py-2 text-sm font-medium capitalize transition-all ${
+              category === cat
+                ? "bg-background text-foreground shadow-sm"
+                : "hover:bg-background/50 hover:text-foreground"
             }`}
           >
             {cat === "basic" ? "Basic" : "Bisnis"}
@@ -57,18 +63,20 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
           return (
             <Card
               key={pkg.id}
+              // PERBAIKAN: border-accent -> border-primary
               className={`relative flex flex-col gap-4 p-6 ${
-                pkg.badge ? "border-2 border-accent" : ""
+                pkg.badge ? "border-2 border-primary shadow-md" : ""
               }`}
             >
               {pkg.badge && (
-                <Badge variant="accent" className="absolute -top-3 left-6">
+                // PERBAIKAN: variant="accent" dihapus (menggunakan default primary)
+                <Badge className="absolute -top-3 left-6">
                   {pkg.badge}
                 </Badge>
               )}
 
               <div className="flex items-baseline gap-2">
-                <span className="font-(family-name:--font-display) text-3xl font-semibold">
+                <span className="text-3xl font-semibold text-foreground">
                   {pkg.speedMbps}
                 </span>
                 <span className="text-sm text-muted-foreground">Mbps</span>
@@ -81,29 +89,36 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                       {formatRupiah(pkg.normalPrice)}
                     </span>
                     {discount > 0 && (
-                      <span className="rounded bg-(--accent)/10 px-1.5 py-0.5 text-xs font-semibold text-accent">
+                      // PERBAIKAN: bg-accent -> bg-primary
+                      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-xs font-semibold text-primary">
                         -{discount}%
                       </span>
                     )}
                   </div>
                 )}
-                <div className="font-(family-name:--font-display) text-2xl font-bold text-primary">
+                <div className="text-2xl font-bold text-primary">
                   {formatRupiah(pkg.promoPrice ?? pkg.normalPrice)}
                   <span className="text-sm font-normal text-muted-foreground"> /bulan</span>
                 </div>
               </div>
 
-              <ul className="flex flex-1 flex-col gap-2 text-sm">
+              <ul className="flex flex-1 flex-col gap-2 text-sm text-muted-foreground">
                 {(pkg.benefits ?? []).map((benefit) => (
                   <li key={benefit} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                    <span>{benefit}</span>
+                    {/* PERBAIKAN: text-emerald-600 -> text-primary untuk konsistensi tema */}
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span className="text-foreground">{benefit}</span>
                   </li>
                 ))}
               </ul>
 
-              <Button variant={pkg.badge ? "accent" : "default"} onClick={() => setSelected(pkg)}>
-                <Zap className="h-4 w-4" />
+              {/* PERBAIKAN: mt-auto agar tombol sejajar di bawah, variant menyesuaikan status unggulan, margin ikon ditambah */}
+              <Button 
+                variant={pkg.badge ? "default" : "outline"} 
+                onClick={() => setSelected(pkg)}
+                className="mt-auto"
+              >
+                <Zap className="mr-2 h-4 w-4" />
                 Daftar Sekarang
               </Button>
             </Card>

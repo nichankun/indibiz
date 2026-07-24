@@ -1,7 +1,7 @@
 import { desc } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { users } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -25,8 +25,8 @@ export default async function UsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">Akun Tim</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">
+          <h1 className="font-display text-2xl font-semibold">Akun Tim</h1>
+          <p className="text-sm text-muted-foreground">
             Kelola akses admin, sales, dan viewer.
             {!isSuperAdmin && " Hanya Super Admin yang dapat mengubah role/status."}
           </p>

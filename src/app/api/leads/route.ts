@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { leads, leadActivities } from "@/db/schema";
+import { leads, leadActivities } from "@/db/database/schema";
 import { generateLeadCode } from "@/lib/utils";
 
 const leadSchema = z.object({

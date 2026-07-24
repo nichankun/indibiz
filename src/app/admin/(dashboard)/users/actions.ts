@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { db } from "@/db";
-import { users, auditLogs } from "@/db/schema";
+import { users, auditLogs } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
 
 function assertSuperAdmin(role: string) {

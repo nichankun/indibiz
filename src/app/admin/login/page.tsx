@@ -79,10 +79,10 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[var(--color-navy-950)] px-6">
+    <main className="flex min-h-screen items-center justify-center bg-(--color-navy-950) px-6">
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
-          <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--primary)]">
+          <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-primary">
             {step === "credentials" ? (
               <Wifi className="h-5 w-5 text-white" />
             ) : (

@@ -16,7 +16,7 @@ export function StickyCta() {
 
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-4 border-t border-border bg-white/95 px-6 py-3 backdrop-blur transition-transform sm:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-4 border-t border-border bg-background/95 px-6 py-3 text-foreground backdrop-blur transition-transform sm:hidden ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
@@ -24,7 +24,8 @@ export function StickyCta() {
         <div className="font-semibold">Mulai dari Rp320rb/bulan</div>
         <div className="text-muted-foreground">Gratis instalasi</div>
       </div>
-      <a href="#paket" className={buttonVariants({ variant: "accent" })}>
+      {/* PERBAIKAN: Menggunakan varian "default" (warna merah primary) */}
+      <a href="#paket" className={buttonVariants({ variant: "default" })}>
         Daftar
       </a>
     </div>

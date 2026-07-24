@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { users, auditLogs } from "@/db/schema";
+import { users, auditLogs } from "@/db/database/schema";
 import { getPendingTwoFactorToken, clearPendingTwoFactorToken, createSession } from "@/lib/session";
 import { verifyTwoFactorCode } from "@/lib/twofactor";
 

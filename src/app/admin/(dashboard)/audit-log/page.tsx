@@ -1,20 +1,24 @@
 import { redirect } from "next/navigation";
+import Link from "next/link"; // PERBAIKAN: Gunakan Next.js Link untuk navigasi yang lebih cepat
 import { desc } from "drizzle-orm";
 import { db } from "@/db";
-import { auditLogs } from "@/db/schema";
+import { auditLogs } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button"; // PERBAIKAN: Impor buttonVariants untuk pagination
 
-const ACTION_BADGE_VARIANT: Record<string, "default" | "accent" | "secondary" | "outline"> = {
+// PERBAIKAN: Menghapus variant "accent" yang tidak standar. 
+// Menggunakan "destructive" untuk deactivate agar lebih logis secara visual.
+const ACTION_BADGE_VARIANT: Record<string, "default" | "destructive" | "secondary" | "outline"> = {
   login: "secondary",
-  create: "accent",
+  create: "default",
   update: "outline",
   status_change: "default",
   assign: "outline",
   activate: "secondary",
-  deactivate: "outline",
+  deactivate: "destructive",
 };
 
 export default async function AuditLogPage({
@@ -41,13 +45,14 @@ export default async function AuditLogPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">Audit Log</h1>
-        <p className="text-sm text-[var(--muted-foreground)]">
+        {/* PERBAIKAN: Tipografi standar Shadcn, menghapus font kustom */}
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Audit Log</h1>
+        <p className="text-sm text-muted-foreground">
           Riwayat aktivitas internal: login, perubahan status lead, perubahan harga paket, dan manajemen akun.
         </p>
       </div>
 
-      <Card className="p-0">
+      <Card className="p-0 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -61,46 +66,53 @@ export default async function AuditLogPage({
           <TableBody>
             {logs.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-[var(--muted-foreground)]">
+                <TableCell colSpan={5} className="text-center text-muted-foreground py-6">
                   Belum ada aktivitas tercatat.
                 </TableCell>
               </TableRow>
             )}
             {logs.map((log) => (
               <TableRow key={log.id}>
-                <TableCell className="whitespace-nowrap text-xs text-[var(--muted-foreground)]">
+                <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
                   {new Date(log.createdAt).toLocaleString("id-ID", {
                     dateStyle: "medium",
                     timeStyle: "short",
                   })}
                 </TableCell>
-                <TableCell className="text-sm font-medium">{log.user?.name ?? "Sistem"}</TableCell>
+                <TableCell className="text-sm font-medium text-foreground">{log.user?.name ?? "Sistem"}</TableCell>
                 <TableCell>
                   <Badge variant={ACTION_BADGE_VARIANT[log.action] ?? "outline"} className="text-[10px] capitalize">
                     {log.action.replace(/_/g, " ")}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-xs capitalize text-[var(--muted-foreground)]">
+                <TableCell className="text-xs capitalize text-muted-foreground">
                   {log.entityType}
                   {log.entityId ? ` #${log.entityId}` : ""}
                 </TableCell>
-                <TableCell className="text-sm">{log.description}</TableCell>
+                <TableCell className="text-sm text-foreground">{log.description}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </Card>
 
-      <div className="flex justify-end gap-2 text-sm">
+      {/* PERBAIKAN: Pagination diubah menggunakan buttonVariants agar terlihat seperti tombol rapi */}
+      <div className="flex justify-end gap-2">
         {page > 1 && (
-          <a href={`/admin/audit-log?page=${page - 1}`} className="text-[var(--accent)] hover:underline">
-            &larr; Halaman sebelumnya
-          </a>
+          <Link 
+            href={`/admin/audit-log?page=${page - 1}`} 
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            &larr; Sebelumnya
+          </Link>
         )}
         {logs.length === pageSize && (
-          <a href={`/admin/audit-log?page=${page + 1}`} className="text-[var(--accent)] hover:underline">
-            Halaman berikutnya &rarr;
-          </a>
+          <Link 
+            href={`/admin/audit-log?page=${page + 1}`} 
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            Berikutnya &rarr;
+          </Link>
         )}
       </div>
     </div>

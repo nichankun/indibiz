@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { users } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChangePasswordForm } from "@/components/admin/change-password-form";
@@ -13,8 +13,8 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">Pengaturan Akun</h1>
-        <p className="text-sm text-[var(--muted-foreground)]">Kelola kata sandi dan keamanan login Anda.</p>
+        <h1 className="font-display text-2xl font-semibold">Pengaturan Akun</h1>
+        <p className="text-sm text-muted-foreground">Kelola kata sandi dan keamanan login Anda.</p>
       </div>
 
       <Card>

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { leads, leadActivities, auditLogs } from "@/db/schema";
+import { leads, leadActivities, auditLogs } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
 import { sendWhatsAppTemplate } from "@/lib/whatsapp";
 

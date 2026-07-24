@@ -45,24 +45,28 @@ export default async function LeadsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-(family-name:--font-display) text-2xl font-semibold">Manajemen Lead</h1>
+          {/* PERBAIKAN: Menghapus hardcode font kustom dan menggunakan standar Shadcn typography */}
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Manajemen Lead</h1>
           <p className="text-sm text-muted-foreground">{leadList.length} lead ditampilkan</p>
         </div>
-        <Button
-          variant="outline"
-          render={<a href={`/api/leads/export${params.status ? `?status=${params.status}` : ""}`} />}
-        >
-          Export CSV
+        
+        {/* PERBAIKAN: Menggunakan prop asChild yang merupakan standar Radix/Shadcn untuk link di dalam button */}
+        <Button variant="outline" asChild>
+          <a href={`/api/leads/export${params.status ? `?status=${params.status}` : ""}`}>
+            Export CSV
+          </a>
         </Button>
       </div>
 
       <Card className="p-4">
         <form className="flex flex-wrap items-center gap-3" method="get">
           <Input name="q" placeholder="Cari nama atau WhatsApp..." defaultValue={params.q} className="max-w-xs" />
+          
+          {/* PERBAIKAN: Menghapus bg-white dan menggantinya dengan semantik Shadcn (border-input, bg-background, dll) */}
           <select
             name="status"
             defaultValue={params.status ?? ""}
-            className="h-10 rounded-lg border border-border bg-white px-3 text-sm"
+            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
             <option value="">Semua Status</option>
             {LEAD_STATUS_ORDER.map((s) => (
@@ -71,12 +75,14 @@ export default async function LeadsPage({
               </option>
             ))}
           </select>
+          
           <Button type="submit" variant="secondary">
             Filter
           </Button>
         </form>
       </Card>
 
+      {/* Komponen Table bawaan Shadcn otomatis sudah mendukung penuh Dark/Light mode */}
       <Table>
         <TableHeader>
           <TableRow>

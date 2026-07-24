@@ -138,35 +138,45 @@ export function LocationPicker({ value, onChange }: Props) {
     });
   }
 
+  /* PERBAIKAN: Sedikit merapikan font-size agar lebih konsisten */
   if (status === "missing-key") {
     return (
-      <div className="rounded-lg border border-dashed border-border bg-secondary p-3 text-xs text-muted-foreground">
-        Peta pin lokasi belum aktif — set <code>NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> di
+      <div className="rounded-lg border border-dashed border-border bg-secondary p-4 text-sm text-muted-foreground">
+        Peta pin lokasi belum aktif — set <code className="rounded bg-muted px-1.5 py-0.5 text-foreground">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> di
         file .env untuk mengaktifkan fitur ini. Alamat teks tetap tersimpan seperti biasa.
       </div>
     );
   }
 
+  /* PERBAIKAN: Menggunakan warna "destructive" standar Shadcn alih-alih hardcode merah */
   if (status === "error") {
     return (
-      <div className="rounded-lg border border-dashed border-red-200 bg-red-50 p-3 text-xs text-red-700">
+      <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
         Gagal memuat peta. Periksa API key Google Maps Anda.
       </div>
     );
   }
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-3">
       <div className="flex items-center justify-between">
-        <span className="flex items-center gap-1.5 text-sm font-medium">
-          <MapPin className="h-4 w-4" /> Pin lokasi pemasangan
+        <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+          {/* PERBAIKAN: Memberi warna aksen merah pada ikon */}
+          <MapPin className="h-4 w-4 text-primary" /> Pin lokasi pemasangan
         </span>
         <Button type="button" size="sm" variant="outline" onClick={handleUseMyLocation}>
-          <LocateFixed className="h-3.5 w-3.5" />
+          {/* PERBAIKAN: Menambahkan margin kanan (mr-2) agar ada jarak antara ikon dan teks */}
+          <LocateFixed className="mr-2 h-4 w-4" />
           Gunakan lokasi saya
         </Button>
       </div>
-      <div ref={mapContainerRef} className="h-56 w-full rounded-lg border border-border" />
+      
+      {/* PERBAIKAN: Menambahkan bg-muted agar tidak melompong putih saat peta sedang di-load */}
+      <div 
+        ref={mapContainerRef} 
+        className="h-56 w-full overflow-hidden rounded-xl border border-border bg-muted" 
+      />
+      
       {value && (
         <p className="text-xs text-muted-foreground">
           Koordinat: {value.lat.toFixed(6)}, {value.lng.toFixed(6)} — geser pin jika kurang tepat.

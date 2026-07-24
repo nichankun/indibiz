@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { leads } from "@/db/schema";
+import { leads } from "@/db/database/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { FunnelChart, type ChannelFunnelRow } from "@/components/admin/funnel-chart";
@@ -57,8 +57,8 @@ export default async function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">Funnel Konversi per Channel</h1>
-        <p className="text-sm text-[var(--muted-foreground)]">
+        <h1 className="font-display text-2xl font-semibold">Funnel Konversi per Channel</h1>
+        <p className="text-sm text-muted-foreground">
           Membandingkan performa tiap sumber lead (UTM source / channel) di sepanjang pipeline.
         </p>
       </div>
@@ -87,7 +87,7 @@ export default async function AnalyticsPage() {
           <TableBody>
             {funnelData.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-[var(--muted-foreground)]">
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
                   Belum ada data lead.
                 </TableCell>
               </TableRow>

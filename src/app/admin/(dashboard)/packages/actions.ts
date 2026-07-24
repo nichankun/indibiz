@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { packages, auditLogs } from "@/db/schema";
+import { packages, auditLogs } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
 
 export async function updatePackagePricing(

@@ -14,23 +14,34 @@ export function HowItWorks() {
     <section className="bg-secondary py-20">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-semibold uppercase tracking-wider text-accent">Alur Pendaftaran</span>
-          <h2 className="mt-2 font-(family-name:--font-display) text-3xl font-semibold tracking-tight sm:text-4xl">
+          {/* Label atas (Eyebrow) */}
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            Alur Pendaftaran
+          </span>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl text-foreground">
             Dari klik sampai internet menyala
           </h2>
         </div>
 
         <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {steps.map((step, i) => (
-            <li key={step.title} className="relative flex gap-4 rounded-2xl border border-border bg-white p-5">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary font-(family-name:--font-display) text-sm font-semibold text-white">
+            /* Card Background */
+            <li 
+              key={step.title} 
+              className="relative flex gap-4 rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-sm"
+            >
+              {/* Nomor Lingkaran */}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
                 {String(i + 1).padStart(2, "0")}
               </div>
+              
               <div>
                 <div className="flex items-center gap-2">
-                  <step.icon className="h-4 w-4 text-accent" />
+                  {/* Ikon */}
+                  <step.icon className="h-4 w-4 text-primary" />
                   <h3 className="font-semibold">{step.title}</h3>
                 </div>
+                {/* Deskripsi */}
                 <p className="mt-1 text-sm text-muted-foreground">{step.desc}</p>
               </div>
             </li>

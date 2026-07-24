@@ -30,7 +30,8 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-(family-name:--font-display) text-2xl font-semibold">{lead.name}</h1>
+          {/* PERBAIKAN: Hapus font-display, gunakan standar tipografi Shadcn */}
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{lead.name}</h1>
           <p className="text-sm text-muted-foreground">{lead.leadCode}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -50,7 +51,8 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                 <Phone className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 <div>
                   <div className="text-xs text-muted-foreground">WhatsApp</div>
-                  {lead.whatsapp}
+                  {/* Pastikan teks menggunakan text-foreground agar kontras di Dark Mode */}
+                  <span className="text-foreground">{lead.whatsapp}</span>
                 </div>
               </div>
               {lead.email && (
@@ -58,7 +60,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                   <Mail className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
                     <div className="text-xs text-muted-foreground">Email</div>
-                    {lead.email}
+                    <span className="text-foreground">{lead.email}</span>
                   </div>
                 </div>
               )}
@@ -66,13 +68,16 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                 <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 <div>
                   <div className="text-xs text-muted-foreground">Alamat</div>
-                  {lead.address}, {lead.district}, {lead.city} {lead.postalCode}
+                  <span className="text-foreground">
+                    {lead.address}, {lead.district}, {lead.city} {lead.postalCode}
+                  </span>
                   {lead.latitude && lead.longitude && (
                     <a
                       href={`https://www.google.com/maps?q=${lead.latitude},${lead.longitude}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ml-2 text-xs text-accent underline"
+                      // PERBAIKAN: Ganti text-accent dengan text-primary agar berwarna merah (Brand)
+                      className="ml-2 text-xs font-medium text-primary hover:underline underline-offset-4"
                     >
                       Lihat pin lokasi
                     </a>
@@ -84,7 +89,9 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                   <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
                     <div className="text-xs text-muted-foreground">Follow-up berikutnya</div>
-                    {new Date(lead.nextFollowUpDate).toLocaleDateString("id-ID")}
+                    <span className="text-foreground">
+                      {new Date(lead.nextFollowUpDate).toLocaleDateString("id-ID")}
+                    </span>
                   </div>
                 </div>
               )}
@@ -113,20 +120,23 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                   <div className="text-xs text-muted-foreground">
                     {new Date(activity.createdAt).toLocaleString("id-ID")} · {activity.user?.name ?? "Sistem"}
                   </div>
-                  {activity.type === "perubahan_status" && activity.newStatus ? (
-                    <p>
-                      Status diubah{" "}
-                      {activity.previousStatus && (
-                        <>
-                          dari <strong>{LEAD_STATUS_LABEL[activity.previousStatus]}</strong>{" "}
-                        </>
-                      )}
-                      menjadi <strong>{LEAD_STATUS_LABEL[activity.newStatus]}</strong>
-                      {activity.content && ` — ${activity.content}`}
-                    </p>
-                  ) : (
-                    <p>{activity.content}</p>
-                  )}
+                  {/* Memastikan teks isi aktivitas kontras di mode gelap */}
+                  <div className="mt-1 text-foreground">
+                    {activity.type === "perubahan_status" && activity.newStatus ? (
+                      <p>
+                        Status diubah{" "}
+                        {activity.previousStatus && (
+                          <>
+                            dari <strong>{LEAD_STATUS_LABEL[activity.previousStatus]}</strong>{" "}
+                          </>
+                        )}
+                        menjadi <strong>{LEAD_STATUS_LABEL[activity.newStatus]}</strong>
+                        {activity.content && ` — ${activity.content}`}
+                      </p>
+                    ) : (
+                      <p>{activity.content}</p>
+                    )}
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -141,7 +151,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             <CardContent className="text-sm">
               {lead.package ? (
                 <>
-                  <div className="font-semibold">{lead.package.name}</div>
+                  <div className="font-semibold text-foreground">{lead.package.name}</div>
                   <div className="text-muted-foreground">
                     {formatRupiah(lead.package.promoPrice ?? lead.package.normalPrice)}/bulan
                   </div>
@@ -159,19 +169,19 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             <CardContent className="space-y-1.5 text-sm">
               <div>
                 <span className="text-muted-foreground">Sumber: </span>
-                {lead.source ?? "-"}
+                <span className="text-foreground">{lead.source ?? "-"}</span>
               </div>
               <div>
                 <span className="text-muted-foreground">UTM Source: </span>
-                {lead.utmSource ?? "-"}
+                <span className="text-foreground">{lead.utmSource ?? "-"}</span>
               </div>
               <div>
                 <span className="text-muted-foreground">UTM Campaign: </span>
-                {lead.utmCampaign ?? "-"}
+                <span className="text-foreground">{lead.utmCampaign ?? "-"}</span>
               </div>
               <div>
                 <span className="text-muted-foreground">Sales: </span>
-                {lead.assignedSales?.name ?? "Belum ditugaskan"}
+                <span className="text-foreground">{lead.assignedSales?.name ?? "Belum ditugaskan"}</span>
               </div>
             </CardContent>
           </Card>

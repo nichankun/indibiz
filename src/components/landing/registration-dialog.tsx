@@ -85,9 +85,9 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Daftar {packageName}</DialogTitle>
+          <DialogTitle className="text-foreground">Daftar {packageName}</DialogTitle>
           <DialogDescription>
             Lengkapi data di bawah ini. Tim sales akan menghubungi Anda untuk
             validasi alamat dan jadwal survey.
@@ -133,32 +133,33 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
 
           <LocationPicker value={location} onChange={setLocation} />
 
-          <div className="grid gap-2 rounded-lg border border-border bg-secondary p-3 text-sm">
-            <label className="flex items-start gap-2">
+          <div className="grid gap-2 rounded-lg border border-border bg-muted/50 p-3 text-sm text-foreground">
+            <label className="flex items-start gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={consentPrivacy}
                 onChange={(e) => setConsentPrivacy(e.target.checked)}
-                className="mt-0.5"
+                className="mt-0.5 h-4 w-4 rounded border-input text-primary accent-primary focus:ring-ring"
               />
               <span>
                 Saya menyetujui kebijakan privasi dan penggunaan data untuk
                 proses pemasangan.
               </span>
             </label>
-            <label className="flex items-start gap-2">
+            <label className="flex items-start gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={consentContact}
                 onChange={(e) => setConsentContact(e.target.checked)}
-                className="mt-0.5"
+                className="mt-0.5 h-4 w-4 rounded border-input text-primary accent-primary focus:ring-ring"
               />
               <span>Saya bersedia dihubungi via WhatsApp/telepon oleh tim Indibiz.</span>
             </label>
           </div>
 
           <DialogFooter>
-            <Button type="submit" variant="accent" disabled={submitting}>
+            {/* PERBAIKAN: Mengubah variant="accent" menjadi variant="default" (Primary/Merah) */}
+            <Button type="submit" variant="default" disabled={submitting}>
               {submitting ? "Mengirim..." : "Kirim Pendaftaran"}
             </Button>
           </DialogFooter>

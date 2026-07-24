@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { leads } from "@/db/schema";
+import { leads } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
 
 function toCsvValue(value: unknown) {

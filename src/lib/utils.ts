@@ -34,16 +34,18 @@ export const LEAD_STATUS_LABEL: Record<string, string> = {
 
 export const LEAD_STATUS_ORDER = Object.keys(LEAD_STATUS_LABEL);
 
+// PERBAIKAN: Menggunakan opacity (warna/10) untuk background dan modifier dark:text 
+// agar warna badge aman dan sangat elegan di Dark Mode maupun Light Mode.
 export const LEAD_STATUS_COLOR: Record<string, string> = {
-  lead_baru: "bg-slate-100 text-slate-700 border-slate-200",
-  sudah_dihubungi: "bg-sky-50 text-sky-700 border-sky-200",
-  menunggu_survey: "bg-amber-50 text-amber-700 border-amber-200",
-  survey_dijadwalkan: "bg-amber-50 text-amber-700 border-amber-200",
-  area_tercover: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  tidak_tercover: "bg-red-50 text-red-700 border-red-200",
-  menunggu_pembayaran: "bg-purple-50 text-purple-700 border-purple-200",
-  pemasangan_dijadwalkan: "bg-indigo-50 text-indigo-700 border-indigo-200",
-  berhasil_dipasang: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  selesai: "bg-teal-50 text-teal-700 border-teal-200",
-  ditolak: "bg-red-50 text-red-700 border-red-200",
+  lead_baru: "bg-slate-500/10 text-slate-700 border-slate-500/20 dark:text-slate-400",
+  sudah_dihubungi: "bg-sky-500/10 text-sky-700 border-sky-500/20 dark:text-sky-400",
+  menunggu_survey: "bg-amber-500/10 text-amber-700 border-amber-500/20 dark:text-amber-400",
+  survey_dijadwalkan: "bg-amber-500/10 text-amber-700 border-amber-500/20 dark:text-amber-400",
+  area_tercover: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:text-emerald-400",
+  tidak_tercover: "bg-red-500/10 text-red-700 border-red-500/20 dark:text-red-400",
+  menunggu_pembayaran: "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:text-purple-400",
+  pemasangan_dijadwalkan: "bg-indigo-500/10 text-indigo-700 border-indigo-500/20 dark:text-indigo-400",
+  berhasil_dipasang: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:text-emerald-400",
+  selesai: "bg-teal-500/10 text-teal-700 border-teal-500/20 dark:text-teal-400",
+  ditolak: "bg-red-500/10 text-red-700 border-red-500/20 dark:text-red-400",
 };

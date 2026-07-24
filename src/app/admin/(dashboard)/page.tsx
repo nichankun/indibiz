@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { leads } from "@/db/schema";
+import { leads } from "@/db/database/schema";
 import { count, gte } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LeadsTrendChart } from "@/components/admin/leads-trend-chart";
@@ -68,33 +68,33 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">Ringkasan</h1>
-        <p className="text-sm text-[var(--muted-foreground)]">Ikhtisar performa lead dan konversi.</p>
+        <h1 className="font-display text-2xl font-semibold">Ringkasan</h1>
+        <p className="text-sm text-muted-foreground">Ikhtisar performa lead dan konversi.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-[var(--muted-foreground)]">Total Lead</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Lead</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="font-[family-name:var(--font-display)] text-3xl font-bold">{stats.total}</div>
+            <div className="font-display text-3xl font-bold">{stats.total}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-[var(--muted-foreground)]">Berhasil Dipasang</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Berhasil Dipasang</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="font-[family-name:var(--font-display)] text-3xl font-bold">{stats.installed}</div>
+            <div className="font-display text-3xl font-bold">{stats.installed}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-[var(--muted-foreground)]">Conversion Rate</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Conversion Rate</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="font-[family-name:var(--font-display)] text-3xl font-bold">{stats.conversionRate}%</div>
+            <div className="font-display text-3xl font-bold">{stats.conversionRate}%</div>
           </CardContent>
         </Card>
       </div>
@@ -115,7 +115,7 @@ export default async function AdminDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             {stats.byStatus.length === 0 && (
-              <p className="text-sm text-[var(--muted-foreground)]">Belum ada data lead.</p>
+              <p className="text-sm text-muted-foreground">Belum ada data lead.</p>
             )}
             {stats.byStatus.map((s) => (
               <div key={s.status} className="flex items-center justify-between text-sm">
@@ -132,7 +132,7 @@ export default async function AdminDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             {stats.bySource.length === 0 && (
-              <p className="text-sm text-[var(--muted-foreground)]">Belum ada data lead.</p>
+              <p className="text-sm text-muted-foreground">Belum ada data lead.</p>
             )}
             {stats.bySource.map((s) => (
               <div key={s.source ?? "unknown"} className="flex items-center justify-between text-sm">

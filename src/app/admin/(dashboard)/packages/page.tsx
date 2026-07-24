@@ -1,6 +1,6 @@
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { packages } from "@/db/schema";
+import { packages } from "@/db/database/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -23,14 +23,16 @@ export default async function PackagesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">Paket &amp; Harga</h1>
-        <p className="text-sm text-[var(--muted-foreground)]">
+        {/* PERBAIKAN: Menghapus font kustom, menggunakan tipografi standar Shadcn */}
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Paket &amp; Harga</h1>
+        <p className="text-sm text-muted-foreground">
           Kelola harga normal, harga promo, dan visibilitas paket di landing page.
         </p>
       </div>
 
       {sections.map((section) => (
-        <Card key={section.label}>
+      
+        <Card key={section.label} className="overflow-hidden">
           <CardHeader>
             <CardTitle>{section.label}</CardTitle>
           </CardHeader>
@@ -49,11 +51,12 @@ export default async function PackagesPage() {
               <TableBody>
                 {section.items.map((pkg) => (
                   <TableRow key={pkg.id}>
-                    <TableCell className="font-medium">{pkg.speedMbps} Mbps</TableCell>
+                    <TableCell className="font-medium text-foreground">{pkg.speedMbps} Mbps</TableCell>
                     <TableCell>{formatRupiah(pkg.normalPrice)}</TableCell>
                     <TableCell>{pkg.promoPrice ? formatRupiah(pkg.promoPrice) : "-"}</TableCell>
                     <TableCell>
-                      {pkg.badge ? <Badge variant="accent">{pkg.badge}</Badge> : "-"}
+                      {/* PERBAIKAN: Varian "accent" diganti ke "default" agar mendapatkan warna Primary (merah) */}
+                      {pkg.badge ? <Badge variant="default">{pkg.badge}</Badge> : "-"}
                     </TableCell>
                     <TableCell>
                       <Badge variant={pkg.isActive ? "secondary" : "outline"}>

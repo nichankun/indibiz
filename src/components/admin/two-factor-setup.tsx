@@ -66,7 +66,8 @@ export function TwoFactorSetup({ initiallyEnabled }: { initiallyEnabled: boolean
   if (enabled) {
     return (
       <div className="max-w-sm space-y-4">
-        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        {/* PERBAIKAN: Menggunakan opacity & dark mode untuk hijau yang aman di semua tema */}
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400">
           <ShieldCheck className="h-4 w-4" />
           2FA aktif di akun Anda
         </div>
@@ -76,7 +77,8 @@ export function TwoFactorSetup({ initiallyEnabled }: { initiallyEnabled: boolean
             <Input id="password" name="password" type="password" required />
           </div>
           <Button type="submit" variant="destructive" disabled={isPending} className="w-fit">
-            <ShieldOff className="h-4 w-4" />
+            {/* PERBAIKAN: Tambah mr-2 agar ikon berjarak dari teks */}
+            <ShieldOff className="mr-2 h-4 w-4" />
             {isPending ? "Memproses..." : "Nonaktifkan 2FA"}
           </Button>
         </form>
@@ -91,9 +93,17 @@ export function TwoFactorSetup({ initiallyEnabled }: { initiallyEnabled: boolean
           Pindai QR ini dengan aplikasi authenticator (Google Authenticator,
           Authy, dll), lalu masukkan kode 6 digit yang muncul.
         </p>
-        <Image src={setupData.qrDataUrl} alt="QR Code 2FA" width={200} height={200} className="rounded-lg border border-border" unoptimized />
-        <p className="break-all rounded-lg bg-secondary p-2 font-mono text-xs">
-          Kode manual: {setupData.secret}
+        <Image 
+          src={setupData.qrDataUrl} 
+          alt="QR Code 2FA" 
+          width={200} 
+          height={200} 
+          // PERBAIKAN: Tambah p-2 dan bg-white agar QR selalu terbaca dengan baik meskipun di Dark Mode
+          className="rounded-lg border border-border bg-white p-2" 
+          unoptimized 
+        />
+        <p className="break-all rounded-lg bg-secondary p-2 font-mono text-xs text-foreground">
+          Kode manual: <span className="font-semibold">{setupData.secret}</span>
         </p>
         <form onSubmit={handleConfirm} className="grid gap-3">
           <div className="grid gap-1.5">
@@ -115,7 +125,8 @@ export function TwoFactorSetup({ initiallyEnabled }: { initiallyEnabled: boolean
         authenticator setiap kali login.
       </p>
       <Button onClick={handleStartSetup} disabled={isPending} className="w-fit">
-        <ShieldCheck className="h-4 w-4" />
+        {/* PERBAIKAN: Tambah mr-2 agar ikon berjarak dari teks */}
+        <ShieldCheck className="mr-2 h-4 w-4" />
         {isPending ? "Memproses..." : "Aktifkan 2FA"}
       </Button>
     </div>

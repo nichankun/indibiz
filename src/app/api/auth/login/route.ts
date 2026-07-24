@@ -3,7 +3,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { users, auditLogs } from "@/db/schema";
+import { users, auditLogs } from "@/db/database/schema";
 import { createSession, createPendingTwoFactorToken } from "@/lib/session";
 
 const loginSchema = z.object({
