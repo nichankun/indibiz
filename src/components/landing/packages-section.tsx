@@ -78,12 +78,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                 onClick={() => setSelected(pkg)}
                 className="group relative flex flex-row items-center justify-between gap-2 rounded-2xl p-3 sm:p-4 cursor-pointer border border-white/10 bg-[linear-gradient(135deg,#1e3a8a_0%,#1d4ed8_45%,#2563eb_75%,#3b82f6_100%)] shadow-lg shadow-blue-950/40 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/50 hover:brightness-110 overflow-hidden"
               >
-                {pkg.badge && (
-                  <div className="absolute top-0 right-0 bg-primary px-2.5 py-1 rounded-bl-lg text-[10px] font-black text-primary-foreground uppercase tracking-wide shadow-sm">
-                    Terlaris
-                  </div>
-                )}
-
+         
                 <div className="pointer-events-none absolute -top-8 -left-8 h-24 w-24 rounded-full bg-white/20 blur-2xl" />
                 <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/10" />
 
@@ -132,11 +127,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                 onClick={() => setSelected(pkg)}
                 className="group relative flex flex-row items-center justify-between gap-2 rounded-2xl p-3 sm:p-4 cursor-pointer border border-white/10 bg-[linear-gradient(135deg,#1e3a8a_0%,#1d4ed8_45%,#2563eb_75%,#3b82f6_100%)] shadow-lg shadow-blue-950/40 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/50 hover:brightness-110 overflow-hidden"
               >
-                {pkg.badge && (
-                  <div className="absolute top-0 right-0 bg-primary px-2.5 py-1 rounded-bl-lg text-[10px] font-black text-primary-foreground uppercase tracking-wide shadow-sm">
-                    Terlaris
-                  </div>
-                )}
+              
 
                 <div className="pointer-events-none absolute -top-8 -left-8 h-24 w-24 rounded-full bg-white/20 blur-2xl" />
                 <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/10" />
