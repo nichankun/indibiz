@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { LocationPicker } from "./location-picker";
 
 type Props = {
@@ -87,80 +89,106 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-foreground">Daftar {packageName}</DialogTitle>
+          <DialogTitle className="text-foreground">Daftar internet bisnis</DialogTitle>
           <DialogDescription>
             Lengkapi data di bawah ini. Tim sales akan menghubungi Anda untuk
             validasi alamat dan jadwal survey.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="grid gap-4">
-          <div className="grid gap-1.5">
-            <Label htmlFor="name">Nama lengkap</Label>
-            <Input id="name" name="name" required placeholder="Nama sesuai KTP" />
-          </div>
+        {/* Chip paket yang dipilih */}
+        <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-sm">
+          <span className="text-muted-foreground">Paket dipilih:</span>
+          <span className="font-medium text-primary">{packageName}</span>
+        </div>
 
-          <div className="grid grid-cols-2 gap-3">
+        <form onSubmit={handleSubmit} className="grid gap-6">
+          {/* Data diri */}
+          <div className="grid gap-4">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Data diri
+            </span>
             <div className="grid gap-1.5">
-              <Label htmlFor="whatsapp">Nomor WhatsApp</Label>
-              <Input id="whatsapp" name="whatsapp" required placeholder="08xxxxxxxxxx" />
+              <Label htmlFor="name">Nama lengkap</Label>
+              <Input id="name" name="name" required placeholder="Nama sesuai KTP" disabled={submitting} />
             </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="email">Email (opsional)</Label>
-              <Input id="email" name="email" type="email" placeholder="nama@email.com" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <div className="grid gap-1.5">
-              <Label htmlFor="city">Kota/Kabupaten</Label>
-              <Input id="city" name="city" required />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="district">Kecamatan</Label>
-              <Input id="district" name="district" required />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="postalCode">Kode Pos</Label>
-              <Input id="postalCode" name="postalCode" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label htmlFor="whatsapp">Nomor WhatsApp</Label>
+                <Input id="whatsapp" name="whatsapp" required placeholder="08xxxxxxxxxx" disabled={submitting} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="email">Email (opsional)</Label>
+                <Input id="email" name="email" type="email" placeholder="nama@email.com" disabled={submitting} />
+              </div>
             </div>
           </div>
 
-          <div className="grid gap-1.5">
-            <Label htmlFor="address">Alamat lengkap</Label>
-            <Textarea id="address" name="address" required placeholder="Jalan, nomor rumah, RT/RW, patokan" />
-          </div>
+          {/* Lokasi pemasangan */}
+          <div className="grid gap-4 border-t border-border pt-6">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Lokasi pemasangan
+            </span>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-1.5">
+                <Label htmlFor="city">Kota/Kabupaten</Label>
+                <Input id="city" name="city" required disabled={submitting} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="district">Kecamatan</Label>
+                <Input id="district" name="district" required disabled={submitting} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="postalCode">Kode pos</Label>
+                <Input id="postalCode" name="postalCode" disabled={submitting} />
+              </div>
+            </div>
 
-          <LocationPicker value={location} onChange={setLocation} />
-
-          <div className="grid gap-2 rounded-lg border border-border bg-muted/50 p-3 text-sm text-foreground">
-            <label className="flex items-start gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={consentPrivacy}
-                onChange={(e) => setConsentPrivacy(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-input text-primary accent-primary focus:ring-ring"
+            <div className="grid gap-1.5">
+              <Label htmlFor="address">Alamat lengkap</Label>
+              <Textarea
+                id="address"
+                name="address"
+                required
+                placeholder="Jalan, nomor rumah, RT/RW, patokan"
+                disabled={submitting}
               />
-              <span>
+            </div>
+
+            <LocationPicker value={location} onChange={setLocation} />
+          </div>
+
+          {/* Persetujuan */}
+          <div className="grid gap-3 rounded-lg border border-border bg-muted/50 p-4">
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="consent-privacy"
+                checked={consentPrivacy}
+                onCheckedChange={(v) => setConsentPrivacy(v === true)}
+                disabled={submitting}
+              />
+              <Label htmlFor="consent-privacy" className="text-sm font-normal leading-snug">
                 Saya menyetujui kebijakan privasi dan penggunaan data untuk
                 proses pemasangan.
-              </span>
-            </label>
-            <label className="flex items-start gap-2 cursor-pointer">
-              <input
-                type="checkbox"
+              </Label>
+            </div>
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="consent-contact"
                 checked={consentContact}
-                onChange={(e) => setConsentContact(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-input text-primary accent-primary focus:ring-ring"
+                onCheckedChange={(v) => setConsentContact(v === true)}
+                disabled={submitting}
               />
-              <span>Saya bersedia dihubungi via WhatsApp/telepon oleh tim Indibiz.</span>
-            </label>
+              <Label htmlFor="consent-contact" className="text-sm font-normal leading-snug">
+                Saya bersedia dihubungi via WhatsApp/telepon oleh tim IndiBiz.
+              </Label>
+            </div>
           </div>
 
           <DialogFooter>
-            {/* PERBAIKAN: Mengubah variant="accent" menjadi variant="default" (Primary/Merah) */}
-            <Button type="submit" variant="default" disabled={submitting}>
-              {submitting ? "Mengirim..." : "Kirim Pendaftaran"}
+            <Button type="submit" disabled={submitting}>
+              {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {submitting ? "Mengirim..." : "Kirim pendaftaran"}
             </Button>
           </DialogFooter>
         </form>

@@ -8,7 +8,7 @@ import { PackagesSection } from "@/components/landing/packages-section";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { CoverageChecker } from "@/components/landing/coverage-checker";
 import { WhatsappFloat } from "@/components/landing/whatsapp-float";
-import { StickyCta } from "@/components/landing/sticky-cta";
+
 
 export const revalidate = 300; // cache 5 menit — harga/promo jarang berubah tiap detik
 
@@ -39,7 +39,7 @@ export default async function HomePage() {
       <HowItWorks />
       <CoverageChecker />
       <WhatsappFloat />
-      <StickyCta />
+
     </main>
   );
 }
