@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users, auditLogs } from "@/db/schema";
-import { createSession } from "@/lib/session";
+import { createSession, createPendingTwoFactorToken } from "@/lib/session";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -31,6 +31,16 @@ export async function POST(request: NextRequest) {
   const validPassword = await bcrypt.compare(password, user.passwordHash);
   if (!validPassword) {
     return NextResponse.json({ error: "Email atau kata sandi salah." }, { status: 401 });
+  }
+
+  if (user.twoFactorEnabled) {
+    await createPendingTwoFactorToken({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    });
+    return NextResponse.json({ ok: true, requiresTwoFactor: true });
   }
 
   await createSession({

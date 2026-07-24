@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { db } from "@/db";
-import { leads } from "@/db/schema";
+import { leads } from "@/db/database/schema";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -45,11 +45,14 @@ export default async function LeadsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">Manajemen Lead</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">{leadList.length} lead ditampilkan</p>
+          <h1 className="font-(family-name:--font-display) text-2xl font-semibold">Manajemen Lead</h1>
+          <p className="text-sm text-muted-foreground">{leadList.length} lead ditampilkan</p>
         </div>
-        <Button variant="outline" asChild>
-          <a href={`/api/leads/export${params.status ? `?status=${params.status}` : ""}`}>Export CSV</a>
+        <Button
+          variant="outline"
+          render={<a href={`/api/leads/export${params.status ? `?status=${params.status}` : ""}`} />}
+        >
+          Export CSV
         </Button>
       </div>
 
@@ -59,7 +62,7 @@ export default async function LeadsPage({
           <select
             name="status"
             defaultValue={params.status ?? ""}
-            className="h-10 rounded-lg border border-[var(--border)] bg-white px-3 text-sm"
+            className="h-10 rounded-lg border border-border bg-white px-3 text-sm"
           >
             <option value="">Semua Status</option>
             {LEAD_STATUS_ORDER.map((s) => (
@@ -88,7 +91,7 @@ export default async function LeadsPage({
         <TableBody>
           {leadList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-[var(--muted-foreground)]">
+              <TableCell colSpan={6} className="text-center text-muted-foreground">
                 Belum ada lead yang cocok dengan filter ini.
               </TableCell>
             </TableRow>
@@ -96,21 +99,21 @@ export default async function LeadsPage({
           {leadList.map((lead) => (
             <TableRow key={lead.id}>
               <TableCell>
-                <Link href={`/admin/leads/${lead.id}`} className="font-medium text-[var(--primary)] hover:underline">
+                <Link href={`/admin/leads/${lead.id}`} className="font-medium text-primary hover:underline">
                   {lead.name}
                 </Link>
-                <div className="text-xs text-[var(--muted-foreground)]">{lead.leadCode}</div>
+                <div className="text-xs text-muted-foreground">{lead.leadCode}</div>
               </TableCell>
               <TableCell className="text-sm">
                 {lead.whatsapp}
-                <div className="text-xs text-[var(--muted-foreground)]">{lead.city}</div>
+                <div className="text-xs text-muted-foreground">{lead.city}</div>
               </TableCell>
               <TableCell className="text-sm">{lead.package?.name ?? "-"}</TableCell>
               <TableCell className="text-sm">{lead.assignedSales?.name ?? "Belum ditugaskan"}</TableCell>
               <TableCell>
                 <LeadStatusSelect leadId={lead.id} status={lead.status} />
               </TableCell>
-              <TableCell className="text-xs capitalize text-[var(--muted-foreground)]">
+              <TableCell className="text-xs capitalize text-muted-foreground">
                 {(lead.source ?? "-").replace(/_/g, " ")}
               </TableCell>
             </TableRow>

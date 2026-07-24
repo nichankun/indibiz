@@ -16,19 +16,21 @@ export function UserRoleSelect({ userId, role, disabled }: { userId: number; rol
   const [current, setCurrent] = useState(role);
   const [isPending, startTransition] = useTransition();
 
-  function handleChange(value: string) {
-    const previous = current;
-    setCurrent(value);
-    startTransition(async () => {
-      try {
-        await changeUserRole(userId, value as never);
-        toast.success("Role diperbarui");
-      } catch (err) {
-        setCurrent(previous);
-        toast.error(err instanceof Error ? err.message : "Gagal memperbarui role");
-      }
-    });
-  }
+  function handleChange(value: string | null) {
+  if (value === null) return;
+
+  const previous = current;
+  setCurrent(value);
+  startTransition(async () => {
+    try {
+      await changeUserRole(userId, value as never);
+      toast.success("Role diperbarui");
+    } catch (err) {
+      setCurrent(previous);
+      toast.error(err instanceof Error ? err.message : "Gagal memperbarui role");
+    }
+  });
+}
 
   return (
     <Select value={current} onValueChange={handleChange} disabled={disabled || isPending}>

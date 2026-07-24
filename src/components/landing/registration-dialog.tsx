@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { LocationPicker } from "./location-picker";
 
 type Props = {
   open: boolean;
@@ -28,6 +29,7 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
   const [submitting, setSubmitting] = useState(false);
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentContact, setConsentContact] = useState(false);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -52,6 +54,8 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
           district: form.get("district"),
           postalCode: form.get("postalCode"),
           address: form.get("address"),
+          latitude: location?.lat,
+          longitude: location?.lng,
           packageId,
           consentPrivacy,
           consentContact,
@@ -71,6 +75,7 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
       e.currentTarget.reset();
       setConsentPrivacy(false);
       setConsentContact(false);
+      setLocation(null);
     } catch {
       toast.error("Terjadi kesalahan. Silakan coba lagi atau hubungi CS via WhatsApp.");
     } finally {
@@ -125,6 +130,8 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
             <Label htmlFor="address">Alamat lengkap</Label>
             <Textarea id="address" name="address" required placeholder="Jalan, nomor rumah, RT/RW, patokan" />
           </div>
+
+          <LocationPicker value={location} onChange={setLocation} />
 
           <div className="grid gap-2 rounded-lg border border-border bg-secondary p-3 text-sm">
             <label className="flex items-start gap-2">

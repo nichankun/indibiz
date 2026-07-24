@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import { eq, desc } from "drizzle-orm";
 import { db } from "@/db";
-import { leads, leadActivities } from "@/db/schema";
+import { leads, leadActivities } from "@/db/database/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LeadStatusSelect } from "@/components/admin/lead-status-select";
 import { FollowUpForm } from "@/components/admin/follow-up-form";
+import { WhatsappTemplateDialog } from "@/components/admin/whatsapp-template-dialog";
 import { formatRupiah, LEAD_STATUS_LABEL } from "@/lib/utils";
 import { MapPin, Phone, Mail, Calendar } from "lucide-react";
 
@@ -29,10 +30,13 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">{lead.name}</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">{lead.leadCode}</p>
+          <h1 className="font-(family-name:--font-display) text-2xl font-semibold">{lead.name}</h1>
+          <p className="text-sm text-muted-foreground">{lead.leadCode}</p>
         </div>
-        <LeadStatusSelect leadId={lead.id} status={lead.status} />
+        <div className="flex items-center gap-2">
+          <WhatsappTemplateDialog leadId={lead.id} leadName={lead.name} />
+          <LeadStatusSelect leadId={lead.id} status={lead.status} />
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -43,33 +47,43 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-start gap-2">
-                <Phone className="mt-0.5 h-4 w-4 text-[var(--muted-foreground)]" />
+                <Phone className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 <div>
-                  <div className="text-xs text-[var(--muted-foreground)]">WhatsApp</div>
+                  <div className="text-xs text-muted-foreground">WhatsApp</div>
                   {lead.whatsapp}
                 </div>
               </div>
               {lead.email && (
                 <div className="flex items-start gap-2">
-                  <Mail className="mt-0.5 h-4 w-4 text-[var(--muted-foreground)]" />
+                  <Mail className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <div className="text-xs text-[var(--muted-foreground)]">Email</div>
+                    <div className="text-xs text-muted-foreground">Email</div>
                     {lead.email}
                   </div>
                 </div>
               )}
               <div className="col-span-2 flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 text-[var(--muted-foreground)]" />
+                <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 <div>
-                  <div className="text-xs text-[var(--muted-foreground)]">Alamat</div>
+                  <div className="text-xs text-muted-foreground">Alamat</div>
                   {lead.address}, {lead.district}, {lead.city} {lead.postalCode}
+                  {lead.latitude && lead.longitude && (
+                    <a
+                      href={`https://www.google.com/maps?q=${lead.latitude},${lead.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-xs text-accent underline"
+                    >
+                      Lihat pin lokasi
+                    </a>
+                  )}
                 </div>
               </div>
               {lead.nextFollowUpDate && (
                 <div className="flex items-start gap-2">
-                  <Calendar className="mt-0.5 h-4 w-4 text-[var(--muted-foreground)]" />
+                  <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <div className="text-xs text-[var(--muted-foreground)]">Follow-up berikutnya</div>
+                    <div className="text-xs text-muted-foreground">Follow-up berikutnya</div>
                     {new Date(lead.nextFollowUpDate).toLocaleDateString("id-ID")}
                   </div>
                 </div>
@@ -92,11 +106,11 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             </CardHeader>
             <CardContent className="space-y-4">
               {activities.length === 0 && (
-                <p className="text-sm text-[var(--muted-foreground)]">Belum ada aktivitas.</p>
+                <p className="text-sm text-muted-foreground">Belum ada aktivitas.</p>
               )}
               {activities.map((activity) => (
-                <div key={activity.id} className="border-l-2 border-[var(--border)] pl-3 text-sm">
-                  <div className="text-xs text-[var(--muted-foreground)]">
+                <div key={activity.id} className="border-l-2 border-border pl-3 text-sm">
+                  <div className="text-xs text-muted-foreground">
                     {new Date(activity.createdAt).toLocaleString("id-ID")} · {activity.user?.name ?? "Sistem"}
                   </div>
                   {activity.type === "perubahan_status" && activity.newStatus ? (
@@ -128,12 +142,12 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
               {lead.package ? (
                 <>
                   <div className="font-semibold">{lead.package.name}</div>
-                  <div className="text-[var(--muted-foreground)]">
+                  <div className="text-muted-foreground">
                     {formatRupiah(lead.package.promoPrice ?? lead.package.normalPrice)}/bulan
                   </div>
                 </>
               ) : (
-                <p className="text-[var(--muted-foreground)]">Belum memilih paket (dari coverage checker)</p>
+                <p className="text-muted-foreground">Belum memilih paket (dari coverage checker)</p>
               )}
             </CardContent>
           </Card>
@@ -144,19 +158,19 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             </CardHeader>
             <CardContent className="space-y-1.5 text-sm">
               <div>
-                <span className="text-[var(--muted-foreground)]">Sumber: </span>
+                <span className="text-muted-foreground">Sumber: </span>
                 {lead.source ?? "-"}
               </div>
               <div>
-                <span className="text-[var(--muted-foreground)]">UTM Source: </span>
+                <span className="text-muted-foreground">UTM Source: </span>
                 {lead.utmSource ?? "-"}
               </div>
               <div>
-                <span className="text-[var(--muted-foreground)]">UTM Campaign: </span>
+                <span className="text-muted-foreground">UTM Campaign: </span>
                 {lead.utmCampaign ?? "-"}
               </div>
               <div>
-                <span className="text-[var(--muted-foreground)]">Sales: </span>
+                <span className="text-muted-foreground">Sales: </span>
                 {lead.assignedSales?.name ?? "Belum ditugaskan"}
               </div>
             </CardContent>

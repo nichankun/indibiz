@@ -1,10 +1,9 @@
 import { Wifi, ShieldCheck, Gauge } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-(--color-navy-950) via-(--color-navy-900) to-(--color-navy-800) text-white">
-      {/* Ambient signal glow — nod to the product itself: a connection signal */}
       <div
         aria-hidden
         className="animate-float-glow pointer-events-none absolute -right-24 top-10 h-72 w-72 rounded-full bg-(--color-signal-600)/30 blur-[100px]"
@@ -32,12 +31,19 @@ export function Hero() {
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button size="lg" variant="accent" asChild>
-            <a href="#paket">Daftar Sekarang</a>
-          </Button>
-          <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10" asChild>
-            <a href="#cek-jangkauan">Cek Jangkauan Area</a>
-          </Button>
+          <a href="#paket" className={buttonVariants({ size: "lg", variant: "accent" })}>
+            Daftar Sekarang
+          </a>
+          <a
+            href="#cek-jangkauan"
+            className={buttonVariants({
+              size: "lg",
+              variant: "outline",
+              className: "border-white/20 text-white hover:bg-white/10",
+            })}
+          >
+            Cek Jangkauan Area
+          </a>
         </div>
 
         <dl className="mt-8 grid w-full max-w-xl grid-cols-3 gap-4 border-t border-white/10 pt-6 text-sm">

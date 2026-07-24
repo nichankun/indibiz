@@ -10,38 +10,40 @@ export function LeadStatusSelect({ leadId, status }: { leadId: number; status: s
   const [current, setCurrent] = useState(status);
   const [isPending, startTransition] = useTransition();
 
-  function handleChange(value: string) {
-    const previous = current;
-    setCurrent(value);
+  function handleChange(value: string | null) {
+  if (value === null) return; // Select ini tidak punya opsi clear, jadi aman diabaikan
 
-    if (value === "ditolak") {
-      const reason = window.prompt("Alasan penolakan lead ini:");
-      if (!reason) {
-        setCurrent(previous);
-        return;
-      }
-      startTransition(async () => {
-        try {
-          await updateLeadStatus(leadId, value, reason);
-          toast.success("Status lead diperbarui");
-        } catch {
-          setCurrent(previous);
-          toast.error("Gagal memperbarui status");
-        }
-      });
+  const previous = current;
+  setCurrent(value);
+
+  if (value === "ditolak") {
+    const reason = window.prompt("Alasan penolakan lead ini:");
+    if (!reason) {
+      setCurrent(previous);
       return;
     }
-
     startTransition(async () => {
       try {
-        await updateLeadStatus(leadId, value);
+        await updateLeadStatus(leadId, value, reason);
         toast.success("Status lead diperbarui");
       } catch {
         setCurrent(previous);
         toast.error("Gagal memperbarui status");
       }
     });
+    return;
   }
+
+  startTransition(async () => {
+    try {
+      await updateLeadStatus(leadId, value);
+      toast.success("Status lead diperbarui");
+    } catch {
+      setCurrent(previous);
+      toast.error("Gagal memperbarui status");
+    }
+  });
+}
 
   return (
     <Select value={current} onValueChange={handleChange} disabled={isPending}>

@@ -2,17 +2,20 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Users2, Package2, LogOut, Wifi, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Users2, Package2, LogOut, Wifi, ShieldCheck, Settings, BarChart3, ScrollText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const baseNavItems = [
   { href: "/admin", label: "Ringkasan", icon: LayoutDashboard },
   { href: "/admin/leads", label: "Manajemen Lead", icon: Users2 },
+  { href: "/admin/analytics", label: "Funnel Konversi", icon: BarChart3 },
   { href: "/admin/packages", label: "Paket & Harga", icon: Package2 },
+  { href: "/admin/settings", label: "Pengaturan Akun", icon: Settings },
 ];
 
 const superAdminNavItems = [
   { href: "/admin/users", label: "Akun Tim", icon: ShieldCheck },
+  { href: "/admin/audit-log", label: "Audit Log", icon: ScrollText },
 ];
 
 export function Sidebar({ name, role }: { name: string; role: string }) {

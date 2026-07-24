@@ -58,6 +58,8 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull().default("sales"),
   isActive: boolean("is_active").notNull().default(true),
+  twoFactorSecret: text("two_factor_secret"),
+  twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -157,6 +159,10 @@ export const leadActivitiesRelations = relations(leadActivities, ({ one }) => ({
 
 export const usersRelations = relations(users, ({ many }) => ({
   assignedLeads: many(leads),
+}));
+
+export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
+  user: one(users, { fields: [auditLogs.userId], references: [users.id] }),
 }));
 
 export type User = typeof users.$inferSelect;
