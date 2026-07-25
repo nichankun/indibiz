@@ -1,53 +1,31 @@
-import { Users, MapPin, Headset } from "lucide-react";
-
-const stats = [
-  {
-    icon: Users,
-    label: "Pelanggan terpasang",
-    value: "10.000+",
-  },
-  {
-    icon: MapPin,
-    label: "Area layanan",
-    value: "Yogyakarta & sekitarnya",
-  },
-  {
-    icon: Headset,
-    label: "Dukungan teknis",
-    value: "24/7",
-  },
-];
+import Image from "next/image";
 
 export function TrustSection() {
   return (
-    <section className="relative border-y border-border bg-background py-14 text-foreground">
-      {/* Aksen garis tipis di tengah, sebagai jangkar visual */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-0 h-px w-24 -translate-x-1/2 bg-linear-to-r from-transparent via-primary to-transparent"
-      />
+    <section className="relative border-y border-border bg-background pb-16 pt-0 sm:pb-20 sm:pt-0 text-foreground overflow-hidden">
+      <div className="mx-auto max-w-2xl px-6 text-center">
+        {/* Ikon peta Indonesia */}
+        <Image
+          src="/peta.png"
+          alt="Peta Indonesia"
+          width={900}
+          height={320}
+          className="relative z-0 -mt-16 mx-auto h-120 w-auto sm:-mt-24 sm:h-150"
+          priority
+        />
 
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="grid divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="group flex items-center gap-4 py-6 transition-colors sm:justify-center sm:px-8 sm:py-2"
-            >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20 transition-colors group-hover:bg-primary/15">
-                <stat.icon className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <div className="text-xl font-semibold tracking-tight">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {stat.label}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* Judul */}
+        <h2 className="relative z-10 -mt-10 text-3xl font-bold leading-tight tracking-tight sm:-mt-30 sm:text-4xl">
+          Jaringan Fiber Optic Terluas
+          <br />
+          Se-Indonesia
+        </h2>
+
+        {/* Subjudul */}
+        <p className="relative z-10 mt-4 text-base text-muted-foreground sm:text-lg">
+          Indibiz menyediakan jaringan internet cepat dan stabil yang
+          menjangkau seluruh wilayah Indonesia
+        </p>
       </div>
     </section>
   );
