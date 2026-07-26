@@ -1,7 +1,7 @@
 import { ListChecks, MessageCircle, PhoneCall, ClipboardList, MapPinCheck, Wrench } from "lucide-react";
 
 const onlineSteps = [
-  { icon: ListChecks, title: "Pilih paket", desc: "Bandingkan Basic dan Bisnis sesuai kebutuhan kecepatan." },
+  { icon: ListChecks, title: "Pilih paket", desc: "Bandingkan Basic dan Bisnis sesuai kebutuhan kecepatan usaha Anda." },
   { icon: MessageCircle, title: "Klik & chat WhatsApp", desc: "Klik paket yang diinginkan, Anda langsung terhubung ke WhatsApp dengan pesan yang sudah siap kirim." },
 ];
 
@@ -23,7 +23,7 @@ function StepGroup({
 }) {
   return (
     <div>
-      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <span className="text-xs font-semibold uppercase tracking-wider text-brand-blue">
         {label}
       </span>
       <ol className="mt-4 space-y-0">
@@ -31,21 +31,19 @@ function StepGroup({
           const isLast = i === steps.length - 1;
           return (
             <li key={step.title} className="relative flex gap-4 pb-8 last:pb-0">
-              {/* Garis penghubung */}
               {!isLast && (
                 <span
                   aria-hidden
                   className="absolute left-5 top-10 h-full w-px bg-border"
                 />
               )}
-              {/* Lingkaran nomor */}
-              <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+              <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-blue text-sm font-semibold text-white shadow-md shadow-brand-blue/30">
                 {String(startIndex + i).padStart(2, "0")}
               </div>
 
               <div className="pt-1.5">
                 <div className="flex items-center gap-2">
-                  <step.icon className="h-4 w-4 text-primary" />
+                  <step.icon className="h-4 w-4 text-brand-blue" />
                   <h3 className="font-semibold text-foreground">{step.title}</h3>
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">{step.desc}</p>
@@ -60,18 +58,22 @@ function StepGroup({
 
 export function HowItWorks() {
   return (
-    <section className="bg-secondary py-20">
+    <section className="bg-brand-ice py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-sm font-semibold uppercase tracking-wider text-brand-blue">
             Alur Pendaftaran
           </span>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-brand-navy sm:text-4xl">
             Dari klik sampai internet menyala
           </h2>
+          <p className="mt-3 text-muted-foreground sm:text-lg">
+            Enam langkah sederhana, tanpa proses berbelit — tim kami yang
+            urus sisanya.
+          </p>
         </div>
 
-        <div className="mx-auto mt-14 grid max-w-4xl gap-10 sm:grid-cols-2">
+        <div className="mx-auto mt-14 grid max-w-4xl gap-10 rounded-3xl border border-border bg-background p-8 shadow-sm sm:grid-cols-2 sm:p-12">
           <StepGroup label="Yang Anda lakukan" steps={onlineSteps} startIndex={1} />
           <StepGroup label="Yang Admin lakukan" steps={fieldSteps} startIndex={3} />
         </div>

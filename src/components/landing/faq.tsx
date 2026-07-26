@@ -1,5 +1,6 @@
 "use client";
 
+import { CircleHelp } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -83,22 +84,30 @@ const FAQ_ITEMS = [
     answer:
       "Indibiz didukung jaringan fiber optic Telkom yang menjangkau berbagai wilayah di Indonesia. Untuk memastikan ketersediaan jaringan di lokasi Anda, gunakan fitur cek cakupan area pada halaman ini.",
   },
-
 ];
 
 export function Faq() {
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-6 py-16 sm:py-20 text-foreground">
-      <h2 className="mb-8 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-        FAQ Wifi Indibiz
-      </h2>
+    <section id="faq" className="mx-auto max-w-3xl px-6 py-16 sm:py-24 text-foreground">
+      <div className="mb-10 text-center">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-ice px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-blue">
+          <CircleHelp className="h-3.5 w-3.5" />
+          Pertanyaan Umum
+        </span>
+        <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+          FAQ WiFi Indibiz
+        </h2>
+        <p className="mt-3 text-muted-foreground">
+          Belum ketemu jawabannya? Chat langsung tim sales kami via WhatsApp.
+        </p>
+      </div>
 
       <Accordion type="single" collapsible className="space-y-2">
         {FAQ_ITEMS.map((item, i) => (
           <AccordionItem
             key={i}
             value={`item-${i}`}
-            className="rounded-lg border-none bg-muted/40 px-4"
+            className="rounded-xl border border-border/60 bg-muted/30 px-4 data-[state=open]:border-brand-blue/30 data-[state=open]:bg-brand-ice/50"
           >
             <AccordionTrigger className="text-left text-sm font-medium hover:no-underline sm:text-base">
               {item.question}

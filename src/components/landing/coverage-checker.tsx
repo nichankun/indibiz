@@ -1,5 +1,7 @@
 "use client";
 
+import { FiberPulse } from "./fiber-pulse";
+
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -16,26 +18,40 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
 export function CoverageChecker() {
   return (
     <section id="cek-jangkauan" className="mx-auto max-w-4xl px-6 py-20">
-      <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-6 py-8 sm:px-10 sm:py-10">
-        {/* Aksen glow hijau khas WhatsApp */}
-        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+      <div className="relative overflow-hidden rounded-3xl bg-brand-navy-deep px-6 py-10 sm:px-12 sm:py-14">
+        {/* Aksen glow — sky-blue di satu sisi, emerald di sisi lain sebagai penanda WA */}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-brand-sky/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-emerald-500/15 blur-3xl" />
 
-        <h2 className="relative text-xl font-bold text-white sm:text-2xl">
-          Konsultasikan Kebutuhan Internet Bisnis Anda dengan Indibiz!
-        </h2>
-        <p className="relative mt-2 text-sm text-slate-300 sm:text-base">
-          Hubungi kami sekarang dan nikmati manfaat eksklusif untuk mengoptimalkan bisnis Anda!
-        </p>
-        <a
-          href="https://wa.me/6285179657878"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition-colors hover:bg-emerald-600"
-        >
-          <WhatsAppIcon className="h-4 w-4" />
-          Hubungi Sales IndiBiz
-        </a>
+        <div className="relative grid gap-6 sm:grid-cols-[1.4fr_1fr] sm:items-center">
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-brand-sky">
+              Cek Jangkauan Area
+            </span>
+            <h2 className="mt-2 font-display text-2xl font-bold text-white sm:text-3xl">
+              Pastikan lokasi Anda tercover jaringan Indibiz
+            </h2>
+            <p className="mt-3 text-sm text-slate-300 sm:text-base">
+              Kirim alamat lengkap via WhatsApp, tim kami cek ketersediaan
+              jaringan di lokasi Anda dalam hitungan menit — gratis, tanpa
+              komitmen.
+            </p>
+          </div>
+
+          <a
+            href="https://wa.me/6285179657878"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition-colors hover:bg-emerald-600 sm:text-base"
+          >
+            <WhatsAppIcon className="h-4 w-4" />
+            Hubungi Sales Indibiz
+          </a>
+        </div>
+
+        <div className="relative mt-8 opacity-60">
+          <FiberPulse className="h-4 w-full" variant="light" />
+        </div>
       </div>
     </section>
   );
