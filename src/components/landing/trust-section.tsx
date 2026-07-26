@@ -128,7 +128,7 @@ export function TrustSection() {
           {WHY_INDIBIZ.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="group flex flex-col items-center px-6 py-8 text-center transition-colors duration-200 first:pt-0 sm:py-10"
+              className="group flex flex-col items-center px-6 py-8 text-center transition-colors duration-200 first:pt-0 sm:py-10 sm:first:pt-10"
             >
               <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:rounded-full group-hover:bg-primary group-hover:text-primary-foreground">
                 <Icon className="h-6 w-6" />
