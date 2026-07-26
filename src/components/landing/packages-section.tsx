@@ -23,23 +23,13 @@ const ADDON_TABS = [
   "OCA Breach Checker",
 ];
 
-const BASIC_HIGHLIGHTS_DEFAULT = [
-  "Internet tanpa batasan FUP",
-  "Rasio Kecepatan 1:2",
-];
-
-const BASIC_HIGHLIGHTS_NETMONK = [
+const BASIC_HIGHLIGHTS = [
   "Internet tanpa batasan FUP",
   "Diskon 70% biaya pasang baru",
   "Rasio Kecepatan 1:2",
 ];
 
-const BISNIS_HIGHLIGHTS_DEFAULT = [
-  "Internet tanpa batasan FUP",
-  "Rasio Kecepatan 1:1",
-];
-
-const BISNIS_HIGHLIGHTS_NETMONK = [
+const BISNIS_HIGHLIGHTS = [
   "Internet tanpa batasan FUP",
   "Diskon 70% biaya pasang baru",
   "Rasio Kecepatan 1:1",
@@ -58,7 +48,6 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
   const [activeAddon, setActiveAddon] = useState<string>(ADDON_TABS[0]);
 
   const isReguler = activeAddon === REGULER_LABEL;
-  const isNetmonk = activeAddon === "Netmonk HI";
   const addonKeywords = ADDON_TABS.filter((addon) => addon !== REGULER_LABEL);
 
   const filteredBasic = isReguler
@@ -71,8 +60,8 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
 
   const addonBenefits = filteredBasic[0]?.benefits ?? [];
 
-  const basicHighlights = isNetmonk ? BASIC_HIGHLIGHTS_NETMONK : BASIC_HIGHLIGHTS_DEFAULT;
-  const bisnisHighlights = isNetmonk ? BISNIS_HIGHLIGHTS_NETMONK : BISNIS_HIGHLIGHTS_DEFAULT;
+  const basicHighlights = BASIC_HIGHLIGHTS;
+  const bisnisHighlights = BISNIS_HIGHLIGHTS;
 
   const handleSelect = (pkg: Package) => {
     window.open(buildWhatsAppLink(pkg), "_blank");
@@ -123,11 +112,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
             </div>
           </div>
 
-          <div
-            className={`mx-auto mb-8 flex w-fit flex-col gap-3 sm:grid sm:w-full sm:gap-3 ${
-              isNetmonk ? "max-w-2xl sm:grid-cols-3" : "max-w-md sm:grid-cols-2"
-            }`}
-          >
+          <div className="mx-auto mb-8 flex w-fit flex-col gap-3 sm:grid sm:w-full sm:max-w-2xl sm:grid-cols-3 sm:gap-3">
             {basicHighlights.map((highlight) => (
               <div key={highlight} className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5 sm:text-center">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-blue text-white shadow-sm shadow-brand-blue/30 sm:h-8 sm:w-8">
@@ -205,11 +190,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
             </div>
           </div>
 
-          <div
-            className={`mx-auto mb-8 flex w-fit flex-col gap-3 sm:grid sm:w-full sm:gap-3 ${
-              isNetmonk ? "max-w-2xl sm:grid-cols-3" : "max-w-md sm:grid-cols-2"
-            }`}
-          >
+          <div className="mx-auto mb-8 flex w-fit flex-col gap-3 sm:grid sm:w-full sm:max-w-2xl sm:grid-cols-3 sm:gap-3">
             {bisnisHighlights.map((highlight) => (
               <div key={highlight} className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5 sm:text-center">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-blue text-white shadow-sm shadow-brand-blue/30 sm:h-8 sm:w-8">
