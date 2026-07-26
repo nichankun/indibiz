@@ -23,13 +23,23 @@ const ADDON_TABS = [
   "OCA Breach Checker",
 ];
 
-const BASIC_HIGHLIGHTS = [
+const BASIC_HIGHLIGHTS_DEFAULT = [
+  "Internet tanpa batasan FUP",
+  "Rasio Kecepatan 1:2",
+];
+
+const BASIC_HIGHLIGHTS_NETMONK = [
   "Internet tanpa batasan FUP",
   "Diskon 70% biaya pasang baru",
   "Rasio Kecepatan 1:2",
 ];
 
-const BISNIS_HIGHLIGHTS = [
+const BISNIS_HIGHLIGHTS_DEFAULT = [
+  "Internet tanpa batasan FUP",
+  "Rasio Kecepatan 1:1",
+];
+
+const BISNIS_HIGHLIGHTS_NETMONK = [
   "Internet tanpa batasan FUP",
   "Diskon 70% biaya pasang baru",
   "Rasio Kecepatan 1:1",
@@ -48,6 +58,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
   const [activeAddon, setActiveAddon] = useState<string>(ADDON_TABS[0]);
 
   const isReguler = activeAddon === REGULER_LABEL;
+  const isNetmonk = activeAddon === "Netmonk HI";
   const addonKeywords = ADDON_TABS.filter((addon) => addon !== REGULER_LABEL);
 
   const filteredBasic = isReguler
@@ -59,6 +70,9 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
     : bisnisPackages.filter((pkg) => pkg.name.includes(activeAddon));
 
   const addonBenefits = filteredBasic[0]?.benefits ?? [];
+
+  const basicHighlights = isNetmonk ? BASIC_HIGHLIGHTS_NETMONK : BASIC_HIGHLIGHTS_DEFAULT;
+  const bisnisHighlights = isNetmonk ? BISNIS_HIGHLIGHTS_NETMONK : BISNIS_HIGHLIGHTS_DEFAULT;
 
   const handleSelect = (pkg: Package) => {
     window.open(buildWhatsAppLink(pkg), "_blank");
@@ -107,20 +121,22 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
             </div>
           </div>
 
-          {activeAddon === "Netmonk HI" && (
-            <div className="mx-auto mb-8 flex w-fit max-w-2xl flex-col gap-3 sm:grid sm:w-full sm:grid-cols-3 sm:gap-3">
-              {BASIC_HIGHLIGHTS.map((highlight) => (
-                <div key={highlight} className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5 sm:text-center">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm shadow-primary/30 sm:h-8 sm:w-8">
-                    <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  </span>
-                  <span className="text-sm font-semibold text-foreground sm:text-[13px]">
-                    {highlight}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+          <div
+            className={`mx-auto mb-8 flex w-fit flex-col gap-3 sm:grid sm:w-full sm:gap-3 ${
+              isNetmonk ? "max-w-2xl sm:grid-cols-3" : "max-w-md sm:grid-cols-2"
+            }`}
+          >
+            {basicHighlights.map((highlight) => (
+              <div key={highlight} className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5 sm:text-center">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm shadow-primary/30 sm:h-8 sm:w-8">
+                  <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </span>
+                <span className="text-sm font-semibold text-foreground sm:text-[13px]">
+                  {highlight}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
             {filteredBasic.map((pkg) => (
@@ -187,20 +203,22 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
             </div>
           </div>
 
-          {activeAddon === "Netmonk HI" && (
-            <div className="mx-auto mb-8 flex w-fit max-w-2xl flex-col gap-3 sm:grid sm:w-full sm:grid-cols-3 sm:gap-3">
-              {BISNIS_HIGHLIGHTS.map((highlight) => (
-                <div key={highlight} className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5 sm:text-center">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm shadow-primary/30 sm:h-8 sm:w-8">
-                    <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  </span>
-                  <span className="text-sm font-semibold text-foreground sm:text-[13px]">
-                    {highlight}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+          <div
+            className={`mx-auto mb-8 flex w-fit flex-col gap-3 sm:grid sm:w-full sm:gap-3 ${
+              isNetmonk ? "max-w-2xl sm:grid-cols-3" : "max-w-md sm:grid-cols-2"
+            }`}
+          >
+            {bisnisHighlights.map((highlight) => (
+              <div key={highlight} className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5 sm:text-center">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm shadow-primary/30 sm:h-8 sm:w-8">
+                  <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </span>
+                <span className="text-sm font-semibold text-foreground sm:text-[13px]">
+                  {highlight}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
             {filteredBisnis.map((pkg) => (

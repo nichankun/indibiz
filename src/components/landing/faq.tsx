@@ -76,18 +76,14 @@ const FAQ_ITEMS = [
   {
     question: "Berapa lama proses instalasi Indibiz?",
     answer:
-      "Proses instalasi umumnya dilakukan dalam beberapa hari kerja setelah pendaftaran dan konfirmasi area tercover, tergantung jadwal teknisi dan kondisi lokasi pemasangan.",
+      "Proses instalasi estimasi 1-3 hari kerja setelah pendaftaran dan konfirmasi area tercover, tergantung jadwal teknisi dan kondisi lokasi pemasangan.",
   },
   {
     question: "Apakah Indibiz tersedia di seluruh Indonesia?",
     answer:
       "Indibiz didukung jaringan fiber optic Telkom yang menjangkau berbagai wilayah di Indonesia. Untuk memastikan ketersediaan jaringan di lokasi Anda, gunakan fitur cek cakupan area pada halaman ini.",
   },
-  {
-    question: "Disclaimer",
-    answer:
-      "Harga, kecepatan, dan promo yang ditampilkan dapat berubah sewaktu-waktu mengikuti kebijakan Telkom Indonesia. Untuk informasi paling akurat dan terbaru, silakan hubungi tim kami melalui WhatsApp sebelum melakukan pendaftaran.",
-  },
+
 ];
 
 export function Faq() {

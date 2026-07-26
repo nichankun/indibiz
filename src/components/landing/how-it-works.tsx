@@ -1,4 +1,4 @@
-import { ListChecks, MessageCircle, PhoneCall, MapPinCheck, Wrench } from "lucide-react";
+import { ListChecks, MessageCircle, PhoneCall, ClipboardList, MapPinCheck, Wrench } from "lucide-react";
 
 const onlineSteps = [
   { icon: ListChecks, title: "Pilih paket", desc: "Bandingkan Basic dan Bisnis sesuai kebutuhan kecepatan." },
@@ -7,6 +7,7 @@ const onlineSteps = [
 
 const fieldSteps = [
   { icon: PhoneCall, title: "Cek ketersediaan", desc: "Tim kami memastikan alamat Anda tercover jaringan Indibiz." },
+  { icon: ClipboardList, title: "Registrasi", desc: "Data pelanggan dicatat dan didaftarkan ke sistem kami." },
   { icon: MapPinCheck, title: "Jadwalkan survey", desc: "Menyepakati jadwal survey lokasi dan pemasangan bersama Anda." },
   { icon: Wrench, title: "Pemasangan", desc: "Instalasi oleh teknisi, internet siap digunakan." },
 ];
@@ -72,7 +73,7 @@ export function HowItWorks() {
 
         <div className="mx-auto mt-14 grid max-w-4xl gap-10 sm:grid-cols-2">
           <StepGroup label="Yang Anda lakukan" steps={onlineSteps} startIndex={1} />
-          <StepGroup label="Yang kami lakukan" steps={fieldSteps} startIndex={3} />
+          <StepGroup label="Yang Admin lakukan" steps={fieldSteps} startIndex={3} />
         </div>
       </div>
     </section>
