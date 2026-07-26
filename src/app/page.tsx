@@ -7,10 +7,10 @@ import { TrustSection } from "@/components/landing/trust-section";
 import { PackagesSection } from "@/components/landing/packages-section";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { CoverageChecker } from "@/components/landing/coverage-checker";
+import { Faq } from "@/components/landing/faq";
 import { WhatsappFloat } from "@/components/landing/whatsapp-float";
 
-
-export const revalidate = 300; // cache 5 menit — harga/promo jarang berubah tiap detik
+export const revalidate = 300;
 
 async function getPackages() {
   const [basicPackages, bisnisPackages] = await Promise.all([
@@ -38,8 +38,8 @@ export default async function HomePage() {
       </Suspense>
       <HowItWorks />
       <CoverageChecker />
+      <Faq />
       <WhatsappFloat />
-
     </main>
   );
 }

@@ -16,18 +16,22 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
 export function CoverageChecker() {
   return (
     <section id="cek-jangkauan" className="mx-auto max-w-4xl px-6 py-20">
-      <div className="rounded-3xl bg-primary px-6 py-8 sm:px-10 sm:py-10">
-        <h2 className="text-xl font-bold text-primary-foreground sm:text-2xl">
+      <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-6 py-8 sm:px-10 sm:py-10">
+        {/* Aksen glow hijau khas WhatsApp */}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+
+        <h2 className="relative text-xl font-bold text-white sm:text-2xl">
           Konsultasikan Kebutuhan Internet Bisnis Anda dengan Indibiz!
         </h2>
-        <p className="mt-2 text-sm text-primary-foreground/80 sm:text-base">
+        <p className="relative mt-2 text-sm text-slate-300 sm:text-base">
           Hubungi kami sekarang dan nikmati manfaat eksklusif untuk mengoptimalkan bisnis Anda!
         </p>
         <a
           href="https://wa.me/6285179657878"
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-primary transition-colors hover:bg-slate-100"
+          className="relative mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition-colors hover:bg-emerald-600"
         >
           <WhatsAppIcon className="h-4 w-4" />
           Hubungi Sales IndiBiz

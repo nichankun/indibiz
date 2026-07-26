@@ -1,14 +1,13 @@
-import { FileSearch, ListChecks, MapPinCheck, Send, PhoneCall, Wrench } from "lucide-react";
+import { ListChecks, MessageCircle, PhoneCall, MapPinCheck, Wrench } from "lucide-react";
 
 const onlineSteps = [
   { icon: ListChecks, title: "Pilih paket", desc: "Bandingkan Basic dan Bisnis sesuai kebutuhan kecepatan." },
-  { icon: FileSearch, title: "Isi data", desc: "Lengkapi data diri dan alamat pemasangan." },
-  { icon: MapPinCheck, title: "Validasi alamat", desc: "Tim kami memastikan lokasi Anda tercover jaringan." },
-  { icon: Send, title: "Submit", desc: "Pendaftaran masuk ke sistem, Anda dapat nomor lead." },
+  { icon: MessageCircle, title: "Klik & chat WhatsApp", desc: "Klik paket yang diinginkan, Anda langsung terhubung ke WhatsApp dengan pesan yang sudah siap kirim." },
 ];
 
 const fieldSteps = [
-  { icon: PhoneCall, title: "Konfirmasi", desc: "Sales menghubungi via WhatsApp untuk jadwal survey." },
+  { icon: PhoneCall, title: "Cek ketersediaan", desc: "Tim kami memastikan alamat Anda tercover jaringan Indibiz." },
+  { icon: MapPinCheck, title: "Jadwalkan survey", desc: "Menyepakati jadwal survey lokasi dan pemasangan bersama Anda." },
   { icon: Wrench, title: "Pemasangan", desc: "Instalasi oleh teknisi, internet siap digunakan." },
 ];
 
@@ -73,7 +72,7 @@ export function HowItWorks() {
 
         <div className="mx-auto mt-14 grid max-w-4xl gap-10 sm:grid-cols-2">
           <StepGroup label="Yang Anda lakukan" steps={onlineSteps} startIndex={1} />
-          <StepGroup label="Yang kami lakukan" steps={fieldSteps} startIndex={5} />
+          <StepGroup label="Yang kami lakukan" steps={fieldSteps} startIndex={3} />
         </div>
       </div>
     </section>

@@ -2,6 +2,7 @@
 
 import { CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatRupiah } from "@/lib/utils";
 import { useState } from "react";
 import type { Package } from "@/db/database/schema";
@@ -36,7 +37,7 @@ const BISNIS_HIGHLIGHTS = [
 
 function buildWhatsAppLink(pkg: Package) {
   const price = pkg.promoPrice ?? pkg.normalPrice;
-  const message = `Halo, saya tertarik dengan paket *${pkg.name}* seharga Rp${formatRupiah(
+  const message = `Halo, saya tertarik dengan paket *${pkg.name}* seharga ${formatRupiah(
     price
   )}/bulan. Mohon info lebih lanjut untuk pendaftaran.`;
 
@@ -79,24 +80,24 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
         </p>
       </div>
 
-      {/* Tab Filter Add-on / Bundling */}
-      <div className="flex flex-wrap justify-center gap-3 mb-12">
-        {ADDON_TABS.map((addon) => (
-          <button
-            key={addon}
-            onClick={() => setActiveAddon(addon)}
-            className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
-              activeAddon === addon
-                ? "border-primary bg-primary text-primary-foreground shadow-md"
-                : "border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            {addon}
-          </button>
-        ))}
+      {/* Tab Filter Add-on / Bundling — shadcn Tabs, scrollable di mobile */}
+      <div className="mb-12 -mx-6 px-6 sm:mx-0 sm:px-0">
+        <Tabs value={activeAddon} onValueChange={setActiveAddon}>
+          <TabsList className="h-auto w-full justify-start gap-2 overflow-x-auto rounded-full bg-muted/50 p-1.5 sm:w-fit sm:justify-center sm:mx-auto [&::-webkit-scrollbar]:hidden">
+            {ADDON_TABS.map((addon) => (
+              <TabsTrigger
+                key={addon}
+                value={addon}
+                className="shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+              >
+                {addon}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </div>
 
-      <div className="space-y-10 rounded-3xl border border-border bg-muted/10 p-4 sm:p-10">
+      <div className="space-y-10">
 
         {/* --- BAGIAN PAKET BASIC --- */}
         <div>
@@ -149,11 +150,10 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                   <div className="flex flex-col items-start min-w-0">
                     {pkg.normalPrice && pkg.promoPrice && pkg.promoPrice < pkg.normalPrice && (
                       <span className="text-[9px] sm:text-[11px] font-semibold text-blue-200/70 line-through leading-none">
-                        Rp{formatRupiah(pkg.normalPrice)}
+                        {formatRupiah(pkg.normalPrice)}
                       </span>
                     )}
                     <div className="flex items-baseline gap-0.5 flex-wrap mt-0.5">
-                      <span className="text-[10px] sm:text-xs font-bold text-blue-100 leading-none">Rp</span>
                       <span className="text-base sm:text-xl font-extrabold text-white leading-none whitespace-nowrap">
                         {formatRupiah(pkg.promoPrice ?? pkg.normalPrice)}
                       </span>
@@ -227,15 +227,14 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
 
                   <div className="h-9 sm:h-10 w-px bg-white/25 shrink-0 self-center" />
 
-                  <div className="flex flex-col items-start min-w-0">
+                  <div className="flex flex-1 flex-col items-start min-w-0">
                     {pkg.normalPrice && pkg.promoPrice && pkg.promoPrice < pkg.normalPrice && (
-                      <span className="text-[9px] sm:text-[11px] font-semibold text-blue-200/70 line-through leading-none">
-                        Rp{formatRupiah(pkg.normalPrice)}
+                      <span className="text-[8px] sm:text-[11px] font-semibold text-blue-200/70 line-through leading-none truncate w-full">
+                        {formatRupiah(pkg.normalPrice)}
                       </span>
                     )}
-                    <div className="flex items-baseline gap-0.5 flex-wrap mt-0.5">
-                      <span className="text-[10px] sm:text-xs font-bold text-blue-100 leading-none">Rp</span>
-                      <span className="text-base sm:text-xl font-extrabold text-white leading-none whitespace-nowrap">
+                    <div className="flex items-baseline gap-0.5 mt-0.5 w-full">
+                      <span className="text-sm sm:text-lg font-extrabold text-white leading-tight break-all">
                         {formatRupiah(pkg.promoPrice ?? pkg.normalPrice)}
                       </span>
                     </div>
