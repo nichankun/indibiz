@@ -2,7 +2,7 @@
 
 import { MessageCircle } from "lucide-react";
 
-const SALES_WHATSAPP = process.env.NEXT_PUBLIC_SALES_WHATSAPP ?? "6285179657878";
+const SALES_WHATSAPP = process.env.NEXT_PUBLIC_SALES_WHATSAPP ?? "6285181680899";
 
 export function WhatsappFloat() {
   const message = encodeURIComponent(

@@ -13,7 +13,7 @@ type Props = {
 };
 
 const REGULER_LABEL = "Internet Only";
-const WHATSAPP_NUMBER = "6285179657878";
+const WHATSAPP_NUMBER = "6285181680899";
 
 const ADDON_TABS = [
   REGULER_LABEL,

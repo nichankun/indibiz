@@ -39,7 +39,7 @@ export function CoverageChecker() {
           </div>
 
           <a
-            href="https://wa.me/6285179657878"
+            href="https://wa.me/6285181680899"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition-colors hover:bg-emerald-600 sm:text-base"

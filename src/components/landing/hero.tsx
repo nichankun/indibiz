@@ -88,7 +88,7 @@ export function Hero() {
   }, [api]);
 
   return (
-    <section className="relative isolate overflow-hidden bg-brand-navy-deep text-white">
+    <section className="relative isolate overflow-hidden bg-slate-950 text-white">
       <Carousel
         setApi={setApi}
         opts={{ loop: true }}
@@ -100,7 +100,7 @@ export function Hero() {
             const BadgeIcon = slide.badgeIcon;
             return (
               <CarouselItem key={i}>
-                <div className="relative flex min-h-[600px] items-center sm:min-h-[680px]">
+                <div className="relative flex min-h-[460px] items-center sm:min-h-[560px]">
                   {/* Foto latar belakang per slide */}
                   <div className="absolute inset-0 -z-20">
                     <Image
@@ -113,24 +113,21 @@ export function Hero() {
                     />
                   </div>
 
-                  {/* Overlay navy korporat */}
-                  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-brand-navy-deep via-brand-navy/85 to-brand-navy/25" />
-                  <div className="absolute inset-0 -z-10 bg-gradient-to-t from-brand-navy-deep/80 via-transparent to-transparent" />
+                  {/* Scrim netral — hanya menggelapkan area teks, tidak mewarnai foto */}
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/60 via-transparent to-black/10" />
 
-                  {/* Glow aksen sky-blue, ambient */}
-                  <div className="pointer-events-none absolute -left-24 top-1/3 -z-10 h-72 w-72 rounded-full bg-brand-sky/20 blur-[100px] animate-float-glow" />
-
-                  <div className="relative mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-6 py-20 sm:py-28">
+                  <div className="relative mx-auto flex w-full max-w-6xl flex-col items-start gap-5 px-6 py-12 sm:py-16">
                     <div className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium text-blue-100 backdrop-blur-sm">
                       <BadgeIcon className="h-3.5 w-3.5 text-brand-sky" />
                       {slide.badgeLabel}
                     </div>
 
-                    <h1 className="max-w-2xl font-display text-4xl font-bold leading-[1.08] tracking-tight text-white drop-shadow-[0_4px_20px_rgba(6,15,40,0.9)] sm:text-6xl">
+                    <h1 className="max-w-2xl font-display text-4xl font-bold leading-[1.08] tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.85)] sm:text-6xl">
                       {slide.title}
                     </h1>
 
-                    <p className="max-w-lg text-base font-medium text-blue-100/90 drop-shadow-[0_2px_10px_rgba(6,15,40,0.9)] sm:text-lg">
+                    <p className="max-w-lg text-base font-medium text-slate-100/95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] sm:text-lg">
                       {slide.description}
                     </p>
 
@@ -172,7 +169,7 @@ export function Hero() {
         <CarouselNext className="right-4 hidden border-white/20 bg-white/10 text-white opacity-0 backdrop-blur-sm hover:bg-white/20 hover:text-white group-hover/hero:opacity-100 sm:flex" />
 
         {/* Dot indicator */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-14 z-10 flex items-center justify-center gap-2 sm:bottom-16">
+        <div className="pointer-events-none absolute inset-x-0 bottom-8 z-10 flex items-center justify-center gap-2 sm:bottom-10">
           {SLIDES.map((_, i) => (
             <button
               key={i}
@@ -188,7 +185,7 @@ export function Hero() {
       </Carousel>
 
       {/* Trust chips — persistent, tidak ikut berganti dengan slide */}
-      <div className="relative z-10 mx-auto -mt-1 flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-6 pb-8 sm:pb-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-6 pb-6 pt-2 sm:pb-8">
         {TRUST_CHIPS.map(({ icon: Icon, label }) => (
           <div key={label} className="flex items-center gap-2 text-sm font-medium text-blue-100/80">
             <Icon className="h-4 w-4 text-brand-sky" />
