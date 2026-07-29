@@ -80,6 +80,18 @@ export function Hero() {
 
   return (
     <section className="relative isolate overflow-hidden bg-slate-950 text-white">
+      {/*
+        H1 tersembunyi secara visual (bukan visual gambar carousel di atas)
+        agar mesin pencari punya judul utama halaman dalam bentuk teks asli
+        yang bisa di-crawl. Tampilan halaman tidak berubah sama sekali —
+        `sr-only` cuma menyembunyikan secara visual, tetap terbaca oleh
+        Google dan screen reader (bukan teknik cloaking/spam karena isinya
+        sesuai konten & metadata halaman yang sebenarnya).
+      */}
+      <h1 className="sr-only">
+        Indibiz — Internet Fiber Bisnis Tanpa Batasan FUP dari Telkom Group
+      </h1>
+
       <Carousel
         setApi={setApi}
         opts={{ loop: true }}

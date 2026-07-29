@@ -91,7 +91,7 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "InternetServiceProvider",
+  "@type": "Organization",
   name: SITE_NAME,
   description: SITE_DESCRIPTION,
   url: SITE_URL,

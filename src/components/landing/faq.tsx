@@ -86,9 +86,30 @@ const FAQ_ITEMS = [
   },
 ];
 
+// Structured data FAQPage — dibangun langsung dari FAQ_ITEMS di atas supaya
+// selalu sinkron: setiap kali pertanyaan diedit/ditambah di sini, JSON-LD
+// otomatis ikut update, tidak perlu diketik ulang manual.
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
+
 export function Faq() {
   return (
     <section id="faq" className="mx-auto max-w-3xl px-6 py-16 sm:py-24 text-foreground">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
       <div className="mb-10 text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-ice px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-blue">
           <CircleHelp className="h-3.5 w-3.5" />
