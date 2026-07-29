@@ -84,8 +84,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   verification: {
-    // isi setelah kamu daftar di Google Search Console
-    // google: "kode-verifikasi-dari-search-console",
+    google: "oTR3dW74tb8A1SaRJr2LmYco2qDV_ofz4bjRbYEyjto",
   },
 };
 
