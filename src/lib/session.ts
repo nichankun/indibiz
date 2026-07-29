@@ -55,10 +55,6 @@ export async function destroySession() {
 }
 
 // ---------- Token sementara untuk alur login 2 langkah (2FA) ----------
-// Dibuat setelah email+password valid tapi sebelum kode TOTP diverifikasi.
-// Berumur pendek (5 menit) dan tidak memberi akses ke rute /admin manapun —
-// hanya dipakai oleh endpoint verifikasi 2FA untuk tahu siapa yang login.
-
 const PENDING_2FA_COOKIE = "indibiz_2fa_pending";
 
 export type PendingTwoFactorPayload = {
@@ -114,4 +110,9 @@ export const ROLE_PERMISSIONS = {
 
 export function canAccessAdmin(role: SessionPayload["role"]) {
   return ["super_admin", "admin", "sales", "viewer"].includes(role);
+}
+
+export function hasPermission(role: SessionPayload["role"], permission: string) {
+  const perms = ROLE_PERMISSIONS[role] as readonly string[];
+  return perms.includes("*") || perms.includes(permission);
 }

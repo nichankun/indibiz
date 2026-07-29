@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { MessageSquareText } from "lucide-react";
 import {
   Dialog,
+  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -27,9 +28,12 @@ export function WhatsappTemplateDialog({ leadId, leadName }: { leadId: number; l
     const param1 = String(form.get("param1") ?? "");
     const param2 = String(form.get("param2") ?? "");
 
+    // Parameter template WhatsApp bersifat positional ({{1}}, {{2}}), jadi
+    // tidak boleh di-filter — string kosong tetap dikirim apa adanya supaya
+    // param2 tidak "naik" menggantikan posisi param1 yang kosong.
     startTransition(async () => {
       try {
-        await sendLeadWhatsAppTemplate(leadId, templateName, [param1, param2].filter(Boolean));
+        await sendLeadWhatsAppTemplate(leadId, templateName, [param1, param2]);
         toast.success("Template WhatsApp terkirim");
         setOpen(false);
       } catch (err) {
@@ -40,10 +44,12 @@ export function WhatsappTemplateDialog({ leadId, leadName }: { leadId: number; l
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-        <MessageSquareText className="h-4 w-4" />
-        Kirim Template WA
-      </Button>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <MessageSquareText className="h-4 w-4" />
+          Kirim Template WA
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Kirim Template WhatsApp ke {leadName}</DialogTitle>

@@ -3,19 +3,37 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { leads } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
+import { LEAD_STATUS_ORDER } from "@/lib/utils";
 
+const EXPORT_ALLOWED_ROLES = ["super_admin", "admin"];
+
+// Netralkan awalan karakter formula (=, +, -, @) supaya tidak dieksekusi
+// sebagai formula saat file dibuka di Excel/Google Sheets (CSV/Formula
+// Injection), lalu escape tanda kutip seperti biasa.
 function toCsvValue(value: unknown) {
-  const str = String(value ?? "");
+  let str = String(value ?? "");
+  if (/^[=+\-@]/.test(str)) {
+    str = `'${str}`;
+  }
   return `"${str.replace(/"/g, '""')}"`;
 }
 
 export async function GET(request: NextRequest) {
   const session = await getSession();
+
   if (!session) {
     return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
   }
 
+  if (!EXPORT_ALLOWED_ROLES.includes(session.role)) {
+    return NextResponse.json({ error: "Anda tidak diizinkan mengekspor data lead" }, { status: 403 });
+  }
+
   const status = request.nextUrl.searchParams.get("status");
+
+  if (status && !LEAD_STATUS_ORDER.includes(status as (typeof LEAD_STATUS_ORDER)[number])) {
+    return NextResponse.json({ error: "Status tidak valid" }, { status: 400 });
+  }
 
   const rows = await db.query.leads.findMany({
     where: status ? eq(leads.status, status as typeof leads.$inferSelect.status) : undefined,

@@ -7,7 +7,11 @@ import { generateLeadCode } from "@/lib/utils";
 
 const leadSchema = z.object({
   name: z.string().min(2).max(120),
-  whatsapp: z.string().min(8).max(20),
+  whatsapp: z
+    .string()
+    .min(8)
+    .max(20)
+    .regex(/^\+?[0-9]{8,20}$/, "Nomor WhatsApp tidak valid"),
   email: z.string().email().optional().or(z.literal("")),
   city: z.string().max(100).optional(),
   district: z.string().max(100).optional(),
@@ -36,12 +40,35 @@ function isRateLimited(ip: string) {
   const now = Date.now();
   const timestamps = (submissions.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
   timestamps.push(now);
-  submissions.set(ip, timestamps);
+
+  if (timestamps.length === 0) {
+    submissions.delete(ip);
+  } else {
+    submissions.set(ip, timestamps);
+  }
+
   return timestamps.length > MAX_PER_WINDOW;
 }
 
+// Bersihkan entry IP yang sudah tidak punya timestamp aktif, dipanggil
+// secara periodik supaya Map tidak tumbuh tanpa batas selama proses hidup.
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, timestamps] of submissions.entries()) {
+    const active = timestamps.filter((t) => now - t < WINDOW_MS);
+    if (active.length === 0) submissions.delete(ip);
+    else submissions.set(ip, active);
+  }
+}, WINDOW_MS).unref?.();
+
+function getClientIp(request: NextRequest) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (!forwarded) return "unknown";
+  return forwarded.split(",")[0].trim();
+}
+
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get("x-forwarded-for") ?? "unknown";
+  const ip = getClientIp(request);
 
   if (isRateLimited(ip)) {
     return NextResponse.json(
@@ -63,40 +90,52 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Persetujuan kebijakan privasi wajib dicentang." }, { status: 400 });
   }
 
-  const [inserted] = await db
-    .insert(leads)
-    .values({
-      name: data.name,
-      whatsapp: data.whatsapp,
-      email: data.email || undefined,
-      city: data.city,
-      district: data.district,
-      postalCode: data.postalCode,
-      address: data.address,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      packageId: data.packageId,
-      consentPrivacy: data.consentPrivacy,
-      consentContact: data.consentContact,
-      source: data.source ?? "landing_page",
-      utmSource: data.utmSource,
-      utmMedium: data.utmMedium,
-      utmCampaign: data.utmCampaign,
-      landingPageSource: data.landingPageSource,
-      referral: data.referral,
-      leadCode: "TEMP", // diisi ulang di bawah setelah id tersedia
-    })
-    .returning();
+  try {
+    const leadCode = await db.transaction(async (tx) => {
+      const [inserted] = await tx
+        .insert(leads)
+        .values({
+          name: data.name,
+          whatsapp: data.whatsapp,
+          email: data.email || undefined,
+          city: data.city,
+          district: data.district,
+          postalCode: data.postalCode,
+          address: data.address,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          packageId: data.packageId,
+          consentPrivacy: data.consentPrivacy,
+          consentContact: data.consentContact,
+          source: data.source ?? "landing_page",
+          utmSource: data.utmSource,
+          utmMedium: data.utmMedium,
+          utmCampaign: data.utmCampaign,
+          landingPageSource: data.landingPageSource,
+          referral: data.referral,
+          leadCode: "TEMP", // diisi ulang di bawah setelah id tersedia
+        })
+        .returning();
 
-  const leadCode = generateLeadCode(inserted.id);
-  await db.update(leads).set({ leadCode }).where(eq(leads.id, inserted.id));
+      const code = generateLeadCode(inserted.id);
+      await tx.update(leads).set({ leadCode: code }).where(eq(leads.id, inserted.id));
 
-  await db.insert(leadActivities).values({
-    leadId: inserted.id,
-    type: "perubahan_status",
-    content: `Lead masuk dari ${data.source ?? "landing_page"}`,
-    newStatus: "lead_baru",
-  });
+      await tx.insert(leadActivities).values({
+        leadId: inserted.id,
+        type: "perubahan_status",
+        content: `Lead masuk dari ${data.source ?? "landing_page"}`,
+        newStatus: "lead_baru",
+      });
 
-  return NextResponse.json({ ok: true, leadCode }, { status: 201 });
+      return code;
+    });
+
+    return NextResponse.json({ ok: true, leadCode }, { status: 201 });
+  } catch (err) {
+    console.error("Gagal menyimpan lead:", err);
+    return NextResponse.json(
+      { error: "Terjadi kesalahan saat menyimpan pendaftaran. Silakan coba lagi." },
+      { status: 500 }
+    );
+  }
 }

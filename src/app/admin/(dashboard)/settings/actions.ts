@@ -7,6 +7,23 @@ import { users, auditLogs } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
 import { generateTwoFactorSecret, generateQrCodeDataUrl, verifyTwoFactorCode } from "@/lib/twofactor";
 
+// Rate limit percobaan kode 2FA per user, in-memory. Untuk produksi
+// multi-instance ganti dengan Upstash Ratelimit atau layanan serupa.
+const confirmAttempts = new Map<number, number[]>();
+const ATTEMPT_WINDOW_MS = 5 * 60_000;
+const MAX_ATTEMPTS = 5;
+
+function isConfirmRateLimited(userId: number) {
+  const now = Date.now();
+  const timestamps = (confirmAttempts.get(userId) ?? []).filter((t) => now - t < ATTEMPT_WINDOW_MS);
+  timestamps.push(now);
+
+  if (timestamps.length === 0) confirmAttempts.delete(userId);
+  else confirmAttempts.set(userId, timestamps);
+
+  return timestamps.length > MAX_ATTEMPTS;
+}
+
 export async function changePassword(currentPassword: string, newPassword: string) {
   const session = await getSession();
   if (!session) throw new Error("Tidak terautentikasi");
@@ -18,6 +35,7 @@ export async function changePassword(currentPassword: string, newPassword: strin
   if (!validCurrent) throw new Error("Kata sandi saat ini salah");
 
   if (newPassword.length < 8) throw new Error("Kata sandi baru minimal 8 karakter");
+  if (newPassword === currentPassword) throw new Error("Kata sandi baru harus berbeda dari yang lama");
 
   const passwordHash = await bcrypt.hash(newPassword, 10);
   await db.update(users).set({ passwordHash, updatedAt: new Date() }).where(eq(users.id, user.id));
@@ -31,14 +49,25 @@ export async function changePassword(currentPassword: string, newPassword: strin
   });
 }
 
-export async function startTwoFactorSetup() {
+export async function startTwoFactorSetup(currentPassword?: string) {
   const session = await getSession();
   if (!session) throw new Error("Tidak terautentikasi");
+
+  const user = await db.query.users.findFirst({ where: eq(users.id, session.userId) });
+  if (!user) throw new Error("Akun tidak ditemukan");
+
+  // Kalau 2FA sudah aktif, wajib verifikasi kata sandi dulu sebelum
+  // secret-nya diganti — mencegah sesi yang dibajak diam-diam mengganti
+  // secret 2FA korban tanpa perlu menonaktifkannya lebih dulu.
+  if (user.twoFactorEnabled) {
+    if (!currentPassword) throw new Error("Masukkan kata sandi untuk mengganti perangkat 2FA");
+    const validPassword = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!validPassword) throw new Error("Kata sandi salah");
+  }
 
   const secret = generateTwoFactorSecret();
   const qrDataUrl = await generateQrCodeDataUrl(session.email, secret);
 
-  // Simpan secret sementara (belum aktif) — diaktifkan setelah kode pertama dikonfirmasi
   await db.update(users).set({ twoFactorSecret: secret, twoFactorEnabled: false }).where(eq(users.id, session.userId));
 
   return { secret, qrDataUrl };
@@ -47,6 +76,10 @@ export async function startTwoFactorSetup() {
 export async function confirmTwoFactorSetup(code: string) {
   const session = await getSession();
   if (!session) throw new Error("Tidak terautentikasi");
+
+  if (isConfirmRateLimited(session.userId)) {
+    throw new Error("Terlalu banyak percobaan. Coba lagi beberapa menit lagi.");
+  }
 
   const user = await db.query.users.findFirst({ where: eq(users.id, session.userId) });
   if (!user?.twoFactorSecret) throw new Error("Silakan mulai proses aktivasi 2FA terlebih dahulu");

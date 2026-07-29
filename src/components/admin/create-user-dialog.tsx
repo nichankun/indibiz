@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
   Dialog,
+  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -44,10 +45,12 @@ export function CreateUserDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button onClick={() => setOpen(true)}>
-        <UserPlus className="h-4 w-4" />
-        Tambah Akun
-      </Button>
+      <DialogTrigger asChild>
+        <Button>
+          <UserPlus className="h-4 w-4" />
+          Tambah Akun
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Tambah Akun Tim</DialogTitle>

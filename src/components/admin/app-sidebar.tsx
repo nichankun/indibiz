@@ -2,16 +2,17 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   LayoutDashboard,
   Users2,
   Package2,
   LogOut,
-  Wifi,
   ShieldCheck,
   Settings,
   BarChart3,
   ScrollText,
+  Wifi,
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,18 +36,24 @@ const baseNavItems = [
   { href: "/admin/settings", label: "Pengaturan Akun", icon: Settings },
 ];
 
-const managementNavItems = [
-  { href: "/admin/users", label: "Akun Tim", icon: ShieldCheck },
-  { href: "/admin/audit-log", label: "Audit Log", icon: ScrollText },
-];
-
 export function AppSidebar({ name, role }: { name: string; role: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const canManage = role === "super_admin" || role === "admin";
+
+  // Akun Tim (create/toggle/ubah role) hanya boleh super_admin — harus
+  // sinkron dengan assertSuperAdmin() di users/actions.ts. Audit Log
+  // dibiarkan bisa dilihat admin juga karena itu murni read-only.
+  const canManageUsers = role === "super_admin";
+  const canViewAuditLog = role === "super_admin" || role === "admin";
 
   async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+      if (!res.ok) throw new Error();
+    } catch {
+      toast.error("Gagal keluar, coba lagi.");
+      return;
+    }
     router.push("/admin/login");
     router.refresh();
   }
@@ -76,7 +83,7 @@ export function AppSidebar({ name, role }: { name: string; role: string }) {
               {baseNavItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.label}>
-                    <Link href={item.href as never}>
+                    <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
                     </Link>
@@ -87,21 +94,32 @@ export function AppSidebar({ name, role }: { name: string; role: string }) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {canManage && (
+        {(canManageUsers || canViewAuditLog) && (
           <SidebarGroup>
             <SidebarGroupLabel>Manajemen</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {managementNavItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.label}>
-                      <Link href={item.href as never}>
-                        <item.icon />
-                        <span>{item.label}</span>
+                {canManageUsers && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={pathname === "/admin/users"} tooltip="Akun Tim">
+                      <Link href="/admin/users">
+                        <ShieldCheck />
+                        <span>Akun Tim</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                ))}
+                )}
+
+                {canViewAuditLog && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={pathname === "/admin/audit-log"} tooltip="Audit Log">
+                      <Link href="/admin/audit-log">
+                        <ScrollText />
+                        <span>Audit Log</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
