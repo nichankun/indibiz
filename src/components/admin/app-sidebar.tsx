@@ -8,8 +8,6 @@ import {
   Users2,
   Package2,
   LogOut,
-  ShieldCheck,
-  Settings,
   BarChart3,
   ScrollText,
   Wifi,
@@ -33,17 +31,14 @@ const baseNavItems = [
   { href: "/admin/leads", label: "Manajemen Lead", icon: Users2 },
   { href: "/admin/analytics", label: "Funnel Konversi", icon: BarChart3 },
   { href: "/admin/packages", label: "Paket & Harga", icon: Package2 },
-  { href: "/admin/settings", label: "Pengaturan Akun", icon: Settings },
+  
 ];
 
 export function AppSidebar({ name, role }: { name: string; role: string }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Akun Tim (create/toggle/ubah role) hanya boleh super_admin — harus
-  // sinkron dengan assertSuperAdmin() di users/actions.ts. Audit Log
-  // dibiarkan bisa dilihat admin juga karena itu murni read-only.
-  const canManageUsers = role === "super_admin";
+  // Audit Log murni read-only, boleh dilihat admin & super_admin.
   const canViewAuditLog = role === "super_admin" || role === "admin";
 
   async function handleLogout() {
@@ -94,32 +89,19 @@ export function AppSidebar({ name, role }: { name: string; role: string }) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {(canManageUsers || canViewAuditLog) && (
+        {canViewAuditLog && (
           <SidebarGroup>
             <SidebarGroupLabel>Manajemen</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {canManageUsers && (
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname === "/admin/users"} tooltip="Akun Tim">
-                      <Link href="/admin/users">
-                        <ShieldCheck />
-                        <span>Akun Tim</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )}
-
-                {canViewAuditLog && (
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname === "/admin/audit-log"} tooltip="Audit Log">
-                      <Link href="/admin/audit-log">
-                        <ScrollText />
-                        <span>Audit Log</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )}
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname === "/admin/audit-log"} tooltip="Audit Log">
+                    <Link href="/admin/audit-log">
+                      <ScrollText />
+                      <span>Audit Log</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

@@ -11,7 +11,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Wifi, ShieldCheck, Headset, ArrowRight, Sparkles, Router } from "lucide-react";
+import { Wifi, ShieldCheck, Headset, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FiberPulse } from "./fiber-pulse";
 
@@ -66,36 +66,30 @@ const SLIDES: Slide[] = [
 export function Hero() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
-  const autoplay = React.useRef(
+  const [autoplay] = React.useState(() =>
     Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
   React.useEffect(() => {
     if (!api) return;
-    setCurrent(api.selectedScrollSnap());
-    api.on("select", () => setCurrent(api.selectedScrollSnap()));
+    const updateCurrentSlide = () => setCurrent(api.selectedScrollSnap());
+    api.on("select", updateCurrentSlide);
+
+    return () => {
+      api.off("select", updateCurrentSlide);
+    };
   }, [api]);
 
   const activeSlide = SLIDES[current];
 
   return (
     <section className="relative isolate overflow-hidden bg-slate-950 text-white">
-      {/*
-        H1 tersembunyi secara visual (bukan visual gambar carousel di atas)
-        agar mesin pencari punya judul utama halaman dalam bentuk teks asli
-        yang bisa di-crawl. Tampilan halaman tidak berubah sama sekali —
-        `sr-only` cuma menyembunyikan secara visual, tetap terbaca oleh
-        Google dan screen reader (bukan teknik cloaking/spam karena isinya
-        sesuai konten & metadata halaman yang sebenarnya).
-      */}
-      <h1 className="sr-only">
-        Indibiz — Internet Fiber Bisnis Tanpa Batasan FUP dari Telkom Group
-      </h1>
+      
 
       <Carousel
         setApi={setApi}
         opts={{ loop: true }}
-        plugins={[autoplay.current]}
+        plugins={[autoplay]}
         className="group/hero"
       >
         <CarouselContent className="ml-0">

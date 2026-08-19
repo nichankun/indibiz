@@ -3,6 +3,8 @@ import { Sora, Inter, Roboto } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { SERVICE_AREAS } from "@/lib/service-areas";
+import { siteConfig } from "@/lib/site";
 
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -18,11 +20,11 @@ const inter = Inter({
   display: "swap",
 });
 
-const SITE_URL = "https://indibizpartner.com"; // ganti dengan domain asli kamu
-const SITE_NAME = "Indibiz";
-const SITE_TITLE = "Indibiz — Internet Fiber Bisnis Tanpa Batasan FUP | Telkom Group";
+const SITE_URL = siteConfig.url;
+const SITE_NAME = siteConfig.name;
+const SITE_TITLE = "Pendaftaran Indibiz Jabodetabek | Internet Fiber untuk Bisnis";
 const SITE_DESCRIPTION =
-  "Pasang Indibiz sekarang. Internet fiber tanpa batasan FUP untuk rumah & bisnis, jaringan nasional Telkom Group. Diskon 70% biaya pasang baru bulan ini.";
+  "Cek ketersediaan dan daftar paket Indibiz untuk bisnis di Jakarta, Bogor, Depok, Tangerang, dan Bekasi. Internet fiber untuk kantor, toko, dan UMKM.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -33,16 +35,17 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   keywords: [
     "indibiz",
+    "indibiz jabodetabek",
+    "pasang indibiz jakarta",
+    "internet bisnis jakarta",
+    "internet bisnis tangerang",
+    "internet bisnis bekasi",
     "internet bisnis",
     "internet fiber bisnis",
-    "wifi bisnis telkom",
     "internet kantor",
-    "internet tanpa FUP",
-    "paket internet basic bisnis",
   ],
-  authors: [{ name: SITE_NAME }],
-  creator: SITE_NAME,
-  publisher: "Telkom Group",
+  authors: [{ name: siteConfig.operatorName }],
+  creator: siteConfig.operatorName,
   robots: {
     index: true,
     follow: true,
@@ -81,7 +84,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    apple: "/apple-touch-icon.png.png",
   },
   verification: {
     google: "oTR3dW74tb8A1SaRJr2LmYco2qDV_ofz4bjRbYEyjto",
@@ -91,21 +94,21 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: SITE_NAME,
+  name: siteConfig.operatorName,
   description: SITE_DESCRIPTION,
   url: SITE_URL,
   logo: `${SITE_URL}/logo.png`,
-  telephone: "+6285181680899",
-  parentOrganization: {
-    "@type": "Organization",
-    name: "Telkom Group",
+  telephone: siteConfig.salesPhone,
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: siteConfig.salesPhone,
+    contactType: "sales",
+    availableLanguage: ["id"],
   },
-  areaServed: "ID",
-  sameAs: [
-    // tambahkan link sosial media resmi kalau ada, misal:
-    // "https://www.instagram.com/indibiz",
-    // "https://www.facebook.com/indibiz",
-  ],
+  areaServed: SERVICE_AREAS.map((area) => ({
+    "@type": "AdministrativeArea",
+    name: area.name,
+  })),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

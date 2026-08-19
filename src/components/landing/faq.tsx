@@ -80,9 +80,9 @@ const FAQ_ITEMS = [
       "Proses instalasi estimasi 1-3 hari kerja setelah pendaftaran dan konfirmasi area tercover, tergantung jadwal teknisi dan kondisi lokasi pemasangan.",
   },
   {
-    question: "Apakah Indibiz tersedia di seluruh Indonesia?",
+    question: "Wilayah mana yang dilayani oleh tim pendaftaran ini?",
     answer:
-      "Indibiz didukung jaringan fiber optic Telkom yang menjangkau berbagai wilayah di Indonesia. Untuk memastikan ketersediaan jaringan di lokasi Anda, gunakan fitur cek cakupan area pada halaman ini.",
+      "Halaman ini berfokus melayani pendaftaran di Jabodetabek: Jakarta, Bogor, Depok, Tangerang, dan Bekasi. Ketersediaan jaringan di setiap alamat tetap perlu dicek terlebih dahulu oleh tim kami.",
   },
 ];
 

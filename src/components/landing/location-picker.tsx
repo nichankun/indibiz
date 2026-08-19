@@ -70,20 +70,21 @@ export function LocationPicker({ value, onChange }: Props) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapsMap | null>(null);
   const markerRef = useRef<MapsMarker | null>(null);
-  const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error" | "missing-key">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   useEffect(() => {
     if (!apiKey) {
-      setStatus("missing-key");
       return;
     }
 
     let cancelled = false;
-    setStatus("loading");
-
-    loadGoogleMapsScript(apiKey)
+    Promise.resolve()
+      .then(() => {
+        if (!cancelled) setStatus("loading");
+        return loadGoogleMapsScript(apiKey);
+      })
       .then(() => {
         if (cancelled || !mapContainerRef.current || !window.google) return;
 
@@ -139,7 +140,7 @@ export function LocationPicker({ value, onChange }: Props) {
   }
 
   /* PERBAIKAN: Sedikit merapikan font-size agar lebih konsisten */
-  if (status === "missing-key") {
+  if (!apiKey) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-secondary p-4 text-sm text-muted-foreground">
         Peta pin lokasi belum aktif — set <code className="rounded bg-muted px-1.5 py-0.5 text-foreground">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> di

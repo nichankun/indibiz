@@ -1,8 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Settings2, Wifi, TrendingUp, Headphones, Building2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FiberPulse } from "./fiber-pulse";
+import { SERVICE_AREAS } from "@/lib/service-areas";
 
 
 const WHY_INDIBIZ = [
@@ -43,29 +45,43 @@ export function TrustSection() {
     <section className="relative border-y border-border bg-background pb-16 pt-14 sm:pb-24 sm:pt-20 text-foreground overflow-hidden">
       <div className="mx-auto max-w-2xl px-6 text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-ice px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-blue">
-          Jangkauan Nasional
+          Fokus Layanan Jabodetabek
         </span>
 
         <Image
           src="/peta.png"
-          alt="Peta jangkauan jaringan Indibiz di Indonesia"
+          alt="Ilustrasi jaringan fiber Indibiz di Indonesia"
           width={700}
           height={320}
           className="relative z-0 mx-auto mt-4 h-72 w-auto sm:h-88"
-          priority
         />
 
         <h2 className="relative z-10 -mt-8 font-display text-3xl font-bold leading-tight tracking-tight sm:-mt-14 sm:text-4xl">
-          Jaringan fiber optic terluas
+          Internet fiber untuk bisnis
           <br />
-          se-Indonesia
+          di Jabodetabek
         </h2>
 
         <p className="relative z-10 mt-4 text-base text-muted-foreground sm:text-lg">
-          Dibangun di atas backbone fiber optic nasional Telkom, menjangkau
-          pelaku usaha dari kota besar hingga daerah berkembang.
+          Pendaftaran difokuskan untuk pelaku usaha di Jakarta, Bogor, Depok,
+          Tangerang, dan Bekasi. Ketersediaan tetap dicek berdasarkan alamat.
         </p>
       </div>
+
+      <nav aria-label="Area layanan Indibiz Jabodetabek" className="relative z-10 mx-auto mt-8 max-w-3xl px-6">
+        <ul className="flex flex-wrap justify-center gap-2">
+          {SERVICE_AREAS.map((area) => (
+            <li key={area.slug}>
+              <Link
+                href={`/indibiz/${area.slug}`}
+                className="inline-flex rounded-full border border-brand-blue/20 bg-brand-ice px-3 py-1.5 text-sm font-medium text-brand-blue transition-colors hover:bg-brand-blue hover:text-white"
+              >
+                Indibiz {area.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       {/* Apa itu & Histori Indibiz */}
       <div className="relative z-10 mx-auto mt-16 max-w-5xl px-6 sm:mt-20">
