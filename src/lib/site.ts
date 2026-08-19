@@ -6,9 +6,9 @@ const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://indibizpa
 
 export const siteConfig = {
   url: configuredSiteUrl.replace(/\/$/, ""),
-  name: "Indibiz Jabodetabek",
+  name: "Indibiz Indonesia",
   operatorName:
-    process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "Mitra Pendaftaran Indibiz Jabodetabek",
+    process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "Mitra Pendaftaran Indibiz Indonesia",
   salesPhone: "+6285181680899",
 };
 

@@ -22,9 +22,9 @@ const inter = Inter({
 
 const SITE_URL = siteConfig.url;
 const SITE_NAME = siteConfig.name;
-const SITE_TITLE = "Pendaftaran Indibiz Jabodetabek | Internet Fiber untuk Bisnis";
+const SITE_TITLE = "Pendaftaran Indibiz Seluruh Indonesia | Internet Fiber untuk Bisnis";
 const SITE_DESCRIPTION =
-  "Cek ketersediaan dan daftar paket Indibiz untuk bisnis di Jakarta, Bogor, Depok, Tangerang, dan Bekasi. Internet fiber untuk kantor, toko, dan UMKM.";
+  "Cek ketersediaan dan daftar paket Indibiz untuk bisnis di seluruh Indonesia — Jakarta, Bandung, Surabaya, Medan, Makassar, Bali, dan puluhan kota lainnya. Internet fiber untuk kantor, toko, dan UMKM.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -35,14 +35,16 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   keywords: [
     "indibiz",
-    "indibiz jabodetabek",
+    "indibiz indonesia",
+    "pasang indibiz",
     "pasang indibiz jakarta",
-    "internet bisnis jakarta",
-    "internet bisnis tangerang",
-    "internet bisnis bekasi",
+    "pasang indibiz surabaya",
+    "pasang indibiz bandung",
     "internet bisnis",
+    "internet bisnis indonesia",
     "internet fiber bisnis",
     "internet kantor",
+    "wifi bisnis umkm",
   ],
   authors: [{ name: siteConfig.operatorName }],
   creator: siteConfig.operatorName,
@@ -105,10 +107,13 @@ const jsonLd = {
     contactType: "sales",
     availableLanguage: ["id"],
   },
-  areaServed: SERVICE_AREAS.map((area) => ({
-    "@type": "AdministrativeArea",
-    name: area.name,
-  })),
+  areaServed: [
+    { "@type": "Country", name: "Indonesia" },
+    ...SERVICE_AREAS.map((area) => ({
+      "@type": "AdministrativeArea",
+      name: area.name,
+    })),
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 
 type LatLng = { lat: number; lng: number };
 
-// Pusat default: Kendari, Sulawesi Tenggara — area layanan utama.
-const DEFAULT_CENTER: LatLng = { lat: -3.9985, lng: 122.5129 };
+// Pusat default: Jakarta — hub bisnis utama. Ini hanya posisi awal peta
+// sebelum pelanggan menggeser pin atau memakai lokasi GPS mereka sendiri,
+// jadi tidak masalah untuk pelanggan di kota lain di Indonesia.
+const DEFAULT_CENTER: LatLng = { lat: -6.2088, lng: 106.8456 };
 
 type Props = {
   value: LatLng | null;

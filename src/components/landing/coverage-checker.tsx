@@ -26,15 +26,15 @@ export function CoverageChecker() {
         <div className="relative grid gap-6 sm:grid-cols-[1.4fr_1fr] sm:items-center">
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider text-brand-sky">
-              Cek Jangkauan Jabodetabek
+              Cek Jangkauan di Seluruh Indonesia
             </span>
             <h2 className="mt-2 font-display text-2xl font-bold text-white sm:text-3xl">
               Pastikan lokasi bisnis Anda tercover jaringan Indibiz
             </h2>
             <p className="mt-3 text-sm text-slate-300 sm:text-base">
-              Kirim alamat lengkap di Jakarta, Bogor, Depok, Tangerang, atau
-              Bekasi via WhatsApp. Tim kami cek ketersediaan jaringan di lokasi
-              Anda secara gratis, tanpa komitmen.
+              Kirim alamat lengkap dari kota mana pun di Indonesia via
+              WhatsApp. Tim kami cek ketersediaan jaringan di lokasi Anda
+              secara gratis, tanpa komitmen.
             </p>
           </div>
 

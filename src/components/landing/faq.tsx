@@ -82,7 +82,7 @@ const FAQ_ITEMS = [
   {
     question: "Wilayah mana yang dilayani oleh tim pendaftaran ini?",
     answer:
-      "Halaman ini berfokus melayani pendaftaran di Jabodetabek: Jakarta, Bogor, Depok, Tangerang, dan Bekasi. Ketersediaan jaringan di setiap alamat tetap perlu dicek terlebih dahulu oleh tim kami.",
+      "Tim kami melayani pendaftaran Indibiz di seluruh Indonesia, mulai dari Jabodetabek, kota-kota besar di Jawa, Sumatra, Kalimantan, Sulawesi, hingga Bali dan Nusa Tenggara. Ketersediaan jaringan di setiap alamat tetap perlu dicek terlebih dahulu oleh tim kami.",
   },
 ];
 

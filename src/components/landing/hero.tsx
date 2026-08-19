@@ -31,10 +31,10 @@ type Slide = {
   secondaryHref?: string;
 };
 
-// Ganti `image` dengan banner iklan/promo kamu sendiri.
-// CATATAN: karena judul & deskripsi tidak lagi dirender sebagai teks HTML di desktop,
-// pastikan gambar sudah memuat pesan utamanya sendiri (seperti diskon.png/pantau.png).
-// `title` & `description` tetap dipakai untuk versi mobile (panel di bawah foto).
+// Ganti `image` dengan banner iklan/promo kamu sendiri. H1 & deskripsi utama
+// untuk SEO sudah dirender sebagai teks nyata di atas carousel (lihat JSX di
+// bawah), jadi gambar-gambar ini murni visual/promosi, bukan pembawa pesan
+// utama halaman.
 const SLIDES: Slide[] = [
   {
     image: "/hero2.png",
@@ -84,7 +84,20 @@ export function Hero() {
 
   return (
     <section className="relative isolate overflow-hidden bg-slate-950 text-white">
-      
+      {/* H1 nyata untuk SEO & aksesibilitas — sebelumnya halaman ini tidak
+          punya H1 sama sekali karena judul dulu hanya "dititip" di gambar
+          banner. Diletakkan statis di luar carousel supaya selalu ada di
+          DOM terlepas dari slide mana yang sedang aktif. */}
+      <div className="relative z-10 mx-auto max-w-6xl px-6 pb-4 pt-8 sm:pb-6 sm:pt-10">
+        <h1 className="max-w-2xl font-display text-2xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+          Internet Fiber Bisnis Indibiz untuk Seluruh Indonesia
+        </h1>
+        <p className="mt-3 max-w-xl text-sm text-blue-100/90 sm:text-base">
+          Cek ketersediaan dan daftar paket internet fiber tanpa batas FUP untuk
+          kantor, toko, dan UMKM Anda — dari Jabodetabek hingga kota-kota besar
+          lain di Indonesia.
+        </p>
+      </div>
 
       <Carousel
         setApi={setApi}

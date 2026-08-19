@@ -45,7 +45,7 @@ export function TrustSection() {
     <section className="relative border-y border-border bg-background pb-16 pt-14 sm:pb-24 sm:pt-20 text-foreground overflow-hidden">
       <div className="mx-auto max-w-2xl px-6 text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-ice px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-blue">
-          Fokus Layanan Jabodetabek
+          Melayani Seluruh Indonesia
         </span>
 
         <Image
@@ -59,16 +59,18 @@ export function TrustSection() {
         <h2 className="relative z-10 -mt-8 font-display text-3xl font-bold leading-tight tracking-tight sm:-mt-14 sm:text-4xl">
           Internet fiber untuk bisnis
           <br />
-          di Jabodetabek
+          di seluruh Indonesia
         </h2>
 
         <p className="relative z-10 mt-4 text-base text-muted-foreground sm:text-lg">
-          Pendaftaran difokuskan untuk pelaku usaha di Jakarta, Bogor, Depok,
-          Tangerang, dan Bekasi. Ketersediaan tetap dicek berdasarkan alamat.
+          Pendaftaran terbuka untuk pelaku usaha di seluruh kota besar
+          Indonesia, dari Jabodetabek, Jawa, Sumatra, Kalimantan, Sulawesi,
+          hingga Bali dan Nusa Tenggara. Ketersediaan tetap dicek berdasarkan
+          alamat pemasangan.
         </p>
       </div>
 
-      <nav aria-label="Area layanan Indibiz Jabodetabek" className="relative z-10 mx-auto mt-8 max-w-3xl px-6">
+      <nav aria-label="Area layanan Indibiz di Indonesia" className="relative z-10 mx-auto mt-8 max-w-3xl px-6">
         <ul className="flex flex-wrap justify-center gap-2">
           {SERVICE_AREAS.map((area) => (
             <li key={area.slug}>

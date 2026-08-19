@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!area) return {};
 
   const title = `Pasang Indibiz ${area.name} | Internet Fiber Bisnis`;
-  const description = `Cek ketersediaan dan daftar paket Indibiz untuk kantor, toko, dan UMKM di ${area.areas}. Konsultasi dengan tim sales Jabodetabek.`;
+  const description = `Cek ketersediaan dan daftar paket Indibiz untuk kantor, toko, dan UMKM di ${area.areas}. Konsultasi langsung dengan tim sales kami.`;
   const url = absoluteUrl(`/indibiz/${area.slug}`);
 
   return {
@@ -71,7 +71,7 @@ export default async function ServiceAreaPage({ params }: PageProps) {
       <section className="bg-brand-navy-deep px-6 py-20 text-white sm:py-28">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wider text-brand-sky">
-            Pendaftaran Indibiz Jabodetabek
+            Pendaftaran Indibiz Indonesia
           </p>
           <h1 className="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">
             {title}
@@ -110,8 +110,8 @@ export default async function ServiceAreaPage({ params }: PageProps) {
           </div>
         </div>
         <p className="mt-10 text-sm text-muted-foreground">
-          Melayani {area.areas}. Untuk area Jabodetabek lain, lihat daftar area
-          layanan di halaman utama atau hubungi tim kami.
+          Melayani {area.areas}. Untuk kota lain di Indonesia, lihat daftar
+          area layanan di halaman utama atau hubungi tim kami.
         </p>
       </section>
     </main>
