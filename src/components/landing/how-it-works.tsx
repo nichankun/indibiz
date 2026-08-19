@@ -61,9 +61,7 @@ export function HowItWorks() {
     <section className="bg-brand-ice py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-semibold uppercase tracking-wider text-brand-blue">
-            Alur Pendaftaran
-          </span>
+        
           <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-brand-navy sm:text-4xl">
             Dari klik sampai internet menyala
           </h2>

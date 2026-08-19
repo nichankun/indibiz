@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Sparkles } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatRupiah } from "@/lib/utils";
@@ -72,10 +72,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
 
       {/* Header Utama */}
       <div className="mx-auto max-w-2xl text-center mb-10">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-ice px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-blue">
-          <Sparkles className="h-3.5 w-3.5" />
-          Paket &amp; Harga Promo
-        </span>
+       
         <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
           Pilih paket sesuai kebutuhan bisnis Anda
         </h2>

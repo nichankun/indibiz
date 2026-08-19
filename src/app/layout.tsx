@@ -6,7 +6,13 @@ import { cn } from "@/lib/utils";
 import { SERVICE_AREAS } from "@/lib/service-areas";
 import { siteConfig } from "@/lib/site";
 
-const roboto = Roboto({ subsets: ["latin"], variable: "--font-sans" });
+// ✅ Tambahkan weight dan display: "swap" untuk Roboto
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 const sora = Sora({
   subsets: ["latin"],
@@ -71,7 +77,7 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: [
       {
-        url: "/og-image.png", // buat gambar khusus 1200x630, jangan pakai hero.png
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: SITE_NAME,
@@ -86,46 +92,64 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png.png",
+    apple: "/apple-touch-icon.png", // ✅ Sudah diperbaiki (tanpa double .png)
   },
   verification: {
     google: "oTR3dW74tb8A1SaRJr2LmYco2qDV_ofz4bjRbYEyjto",
   },
 };
 
+// ✅ Schema Graph terpadu (Organization + WebSite)
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: siteConfig.operatorName,
-  description: SITE_DESCRIPTION,
-  url: SITE_URL,
-  logo: `${SITE_URL}/logo.png`,
-  telephone: siteConfig.salesPhone,
-  contactPoint: {
-    "@type": "ContactPoint",
-    telephone: siteConfig.salesPhone,
-    contactType: "sales",
-    availableLanguage: ["id"],
-  },
-  areaServed: [
-    { "@type": "Country", name: "Indonesia" },
-    ...SERVICE_AREAS.map((area) => ({
-      "@type": "AdministrativeArea",
-      name: area.name,
-    })),
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}#organization`,
+      name: siteConfig.operatorName,
+      description: SITE_DESCRIPTION,
+      url: SITE_URL,
+      logo: `${SITE_URL}/logo.png`,
+      telephone: siteConfig.salesPhone,
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: siteConfig.salesPhone,
+        contactType: "sales",
+        availableLanguage: ["id", "en"],
+      },
+      areaServed: [
+        { "@type": "Country", name: "Indonesia" },
+        ...SERVICE_AREAS.map((area) => ({
+          "@type": "AdministrativeArea",
+          name: area.name,
+        })),
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      publisher: {
+        "@id": `${SITE_URL}#organization`,
+      },
+    },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={cn(sora.variable, inter.variable, "font-sans", roboto.variable)}>
-      <head>
+    <html
+      lang="id"
+      data-scroll-behavior="smooth" // ✅ Mencegah warning scroll-behavior
+      className={cn(sora.variable, inter.variable, roboto.variable, "font-sans")}
+    >
+      <body>
+        {/* ✅ Script JSON-LD ditempatkan aman di awal body */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-      </head>
-      <body>
         {children}
         <Toaster position="top-center" richColors />
       </body>

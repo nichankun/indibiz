@@ -24,22 +24,16 @@ const TRUST_CHIPS = [
 type Slide = {
   image: string;
   imageAlt: string;
-
   ctaLabel: string;
   ctaHref: string;
   secondaryLabel?: string;
   secondaryHref?: string;
 };
 
-// Ganti `image` dengan banner iklan/promo kamu sendiri. H1 & deskripsi utama
-// untuk SEO sudah dirender sebagai teks nyata di atas carousel (lihat JSX di
-// bawah), jadi gambar-gambar ini murni visual/promosi, bukan pembawa pesan
-// utama halaman.
 const SLIDES: Slide[] = [
   {
     image: "/hero2.png",
     imageAlt: "Tim bisnis menggunakan solusi internet Indibiz",
- 
     ctaLabel: "Lihat Paket & Harga",
     ctaHref: "#paket",
     secondaryLabel: "Cek Jangkauan Area",
@@ -48,16 +42,12 @@ const SLIDES: Slide[] = [
   {
     image: "/diskon.png",
     imageAlt: "Promo diskon biaya pasang baru Indibiz",
-   
-   
     ctaLabel: "Klaim Promo Sekarang",
     ctaHref: "#paket",
   },
   {
     image: "/pantau.png",
     imageAlt: "Monitoring jaringan bisnis dengan Netmonk HI",
-   
-  
     ctaLabel: "Lihat Paket Bundling",
     ctaHref: "#paket",
   },
@@ -84,10 +74,7 @@ export function Hero() {
 
   return (
     <section className="relative isolate overflow-hidden bg-slate-950 text-white">
-      {/* H1 nyata untuk SEO & aksesibilitas — sebelumnya halaman ini tidak
-          punya H1 sama sekali karena judul dulu hanya "dititip" di gambar
-          banner. Diletakkan statis di luar carousel supaya selalu ada di
-          DOM terlepas dari slide mana yang sedang aktif. */}
+      {/* Teks H1 Statis untuk SEO */}
       <div className="relative z-10 mx-auto max-w-6xl px-6 pb-4 pt-8 sm:pb-6 sm:pt-10">
         <h1 className="max-w-2xl font-display text-2xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
           Internet Fiber Bisnis Indibiz untuk Seluruh Indonesia
@@ -106,100 +93,80 @@ export function Hero() {
         className="group/hero"
       >
         <CarouselContent className="ml-0">
-  {SLIDES.map((slide, i) => {
+          {SLIDES.map((slide, i) => (
+            <CarouselItem key={i} className="pl-0">
+              <div className="relative w-full bg-slate-950">
+                {/* 1 Container Gambar Responsif (Tinggi h-56 di mobile, min-h-140 di desktop) */}
+                <div className="relative h-56 w-full overflow-hidden sm:min-h-140">
+                  <Image
+                    src={slide.image}
+                    alt={slide.imageAlt}
+                    fill
+                    priority={i === 0}
+                    sizes="100vw"
+                    className="object-cover object-center sm:object-right"
+                  />
+                  {/* Gradien pemanis & animasi kabel fiber */}
+                  <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-slate-950 to-transparent sm:hidden" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 hidden h-40 bg-linear-to-b from-black/55 to-transparent sm:block" />
+                  <FiberPulse
+                    className="absolute inset-x-0 bottom-0 h-1 w-full sm:hidden"
+                    variant="light"
+                  />
+                </div>
 
-    return (
-      <CarouselItem key={i} className="pl-0">
-                {/* ============ MOBILE (< sm): banner foto + panel solid terpisah ============ */}
-                <div className="flex flex-col sm:hidden">
-                  <div className="relative h-56 w-full overflow-hidden">
-                    <Image
-                      src={slide.image}
-                      alt={slide.imageAlt}
-                      fill
-                      priority={i === 0}
-                      sizes="100vw"
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-x-0 bottom-0 h-14 bg-linear-to-t from-slate-950 to-transparent" />
-                    <FiberPulse className="absolute inset-x-0 bottom-0 h-1 w-full" variant="light" />
-                  </div>
+                {/* Panel Tombol CTA Mobile (< sm) */}
+                <div className="flex flex-col items-start gap-4 bg-slate-950 px-5 pb-8 pt-5 sm:hidden">
+                  <div className="flex w-full flex-col gap-2.5 pt-1">
+                    <Button
+                      size="lg"
+                      asChild
+                      className="w-full bg-brand-blue text-white shadow-lg shadow-brand-blue/40 hover:bg-brand-blue-dark"
+                    >
+                      <a href={slide.ctaHref}>
+                        {slide.ctaLabel}
+                        <ArrowRight className="h-4 w-4" />
+                      </a>
+                    </Button>
 
-                  <div className="flex flex-col items-start gap-4 bg-slate-950 px-5 pb-8 pt-5">
-                  
-
-
-                    <div className="flex w-full flex-col gap-2.5 pt-1">
+                    {slide.secondaryLabel && slide.secondaryHref && (
                       <Button
                         size="lg"
+                        variant="outline"
                         asChild
-                        className="w-full bg-brand-blue text-white shadow-lg shadow-brand-blue/40 hover:bg-brand-blue-dark"
+                        className="w-full border-white/20 bg-white/5 text-white hover:bg-white/15 hover:text-white"
                       >
-                        <a href={slide.ctaHref}>
-                          {slide.ctaLabel}
-                          <ArrowRight className="h-4 w-4" />
+                        <a href={slide.secondaryHref}>
+                          <Wifi className="h-4 w-4" />
+                          {slide.secondaryLabel}
                         </a>
                       </Button>
+                    )}
+                  </div>
 
-                      {slide.secondaryLabel && slide.secondaryHref && (
-                        <Button
-                          size="lg"
-                          variant="outline"
-                          asChild
-                          className="w-full border-white/20 bg-white/5 text-white hover:bg-white/15 hover:text-white"
-                        >
-                          <a href={slide.secondaryHref}>
-                            <Wifi className="h-4 w-4" />
-                            {slide.secondaryLabel}
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-1">
-                      {SLIDES.map((_, di) => (
-                        <button
-                          key={di}
-                          type="button"
-                          aria-label={`Ke banner ${di + 1}`}
-                          onClick={() => api?.scrollTo(di)}
-                          className={`h-1.5 rounded-full transition-all duration-300 ${
-                            di === current ? "w-6 bg-brand-sky" : "w-1.5 bg-white/30"
-                          }`}
-                        />
-                      ))}
-                    </div>
+                  <div className="flex items-center gap-2 pt-1">
+                    {SLIDES.map((_, di) => (
+                      <button
+                        key={di}
+                        type="button"
+                        aria-label={`Ke banner ${di + 1}`}
+                        onClick={() => api?.scrollTo(di)}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          di === current ? "w-6 bg-brand-sky" : "w-1.5 bg-white/30"
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
-
-                {/* ============ DESKTOP (sm ke atas): gambar full-bleed, hanya badge di atasnya ============ */}
-                <div className="relative hidden items-center sm:flex sm:min-h-140">
-                  <div className="absolute inset-0 -z-20">
-                    <Image
-                      src={slide.image}
-                      alt={slide.imageAlt}
-                      fill
-                      priority={i === 0}
-                      sizes="100vw"
-                      className="object-cover object-right"
-                    />
-                  </div>
-
-                  {/* Scrim tipis hanya di pojok atas kiri — sekadar bikin badge tetap kebaca, bukan menutupi gambar */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-linear-to-b from-black/55 to-transparent" />
-
-                  <div className="relative mx-auto flex w-full max-w-6xl items-start px-6 py-8">
-                   
-                  </div>
-                </div>
-              </CarouselItem>
-            );
-          })}
+              </div>
+            </CarouselItem>
+          ))}
         </CarouselContent>
 
         <CarouselPrevious className="left-4 hidden border-white/20 bg-white/10 text-white opacity-0 backdrop-blur-sm hover:bg-white/20 hover:text-white group-hover/hero:opacity-100 sm:flex" />
         <CarouselNext className="right-4 hidden border-white/20 bg-white/10 text-white opacity-0 backdrop-blur-sm hover:bg-white/20 hover:text-white group-hover/hero:opacity-100 sm:flex" />
 
+        {/* Indikator Slider Desktop */}
         <div className="pointer-events-none absolute inset-x-0 bottom-8 z-10 hidden items-center justify-center gap-2 sm:flex">
           {SLIDES.map((_, i) => (
             <button
@@ -215,44 +182,47 @@ export function Hero() {
         </div>
       </Carousel>
 
-      {/* Baris bawah: trust chips (kiri) + tombol CTA slide aktif (kanan, desktop saja) */}
-     <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-4 px-6 pb-6 pt-2 sm:pb-8">
-  <div className="hidden items-center gap-3 sm:flex">
-    <Button
-      size="sm"
-      asChild
-      className="bg-brand-blue text-white shadow-lg shadow-brand-blue/40 hover:bg-brand-blue-dark"
-    >
-      <a href={activeSlide.ctaHref}>
-        {activeSlide.ctaLabel}
-        <ArrowRight className="h-4 w-4" />
-      </a>
-    </Button>
+      {/* Baris Bawah: Tombol CTA Desktop + Trust Chips */}
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-4 px-6 pb-6 pt-2 sm:pb-8">
+        <div className="hidden items-center gap-3 sm:flex">
+          <Button
+            size="sm"
+            asChild
+            className="bg-brand-blue text-white shadow-lg shadow-brand-blue/40 hover:bg-brand-blue-dark"
+          >
+            <a href={activeSlide.ctaHref}>
+              {activeSlide.ctaLabel}
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </Button>
 
-    {activeSlide.secondaryLabel && activeSlide.secondaryHref && (
-      <Button
-        size="sm"
-        variant="outline"
-        asChild
-        className="border-white/20 bg-white/5 text-white hover:bg-white/15 hover:text-white"
-      >
-        <a href={activeSlide.secondaryHref}>
-          <Wifi className="h-4 w-4" />
-          {activeSlide.secondaryLabel}
-        </a>
-      </Button>
-    )}
-  </div>
+          {activeSlide.secondaryLabel && activeSlide.secondaryHref && (
+            <Button
+              size="sm"
+              variant="outline"
+              asChild
+              className="border-white/20 bg-white/5 text-white hover:bg-white/15 hover:text-white"
+            >
+              <a href={activeSlide.secondaryHref}>
+                <Wifi className="h-4 w-4" />
+                {activeSlide.secondaryLabel}
+              </a>
+            </Button>
+          )}
+        </div>
 
-  <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-    {TRUST_CHIPS.map(({ icon: Icon, label }) => (
-      <div key={label} className="flex items-center gap-2 text-sm font-medium text-blue-100/80">
-        <Icon className="h-4 w-4 text-brand-sky" />
-        {label}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          {TRUST_CHIPS.map(({ icon: Icon, label }) => (
+            <div
+              key={label}
+              className="flex items-center gap-2 text-sm font-medium text-blue-100/80"
+            >
+              <Icon className="h-4 w-4 text-brand-sky" />
+              {label}
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-</div>
 
       <div className="absolute inset-x-0 bottom-0 z-10 hidden h-6 opacity-80 sm:block">
         <FiberPulse className="h-full w-full" variant="light" />
