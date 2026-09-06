@@ -1,24 +1,42 @@
 import { notFound } from "next/navigation";
 import { eq, desc } from "drizzle-orm";
 import { db } from "@/db";
-import { leads, leadActivities } from "@/db/database/schema";
+import { leads, leadActivities, users } from "@/db/database/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LeadStatusSelect } from "@/components/admin/lead-status-select";
 import { FollowUpForm } from "@/components/admin/follow-up-form";
 import { WhatsappTemplateDialog } from "@/components/admin/whatsapp-template-dialog";
+import { AssignSalesSelect } from "@/components/admin/assign-sales-select";
 import { formatRupiah, LEAD_STATUS_LABEL } from "@/lib/utils";
+import { getSession } from "@/lib/session";
 import { MapPin, Phone, Mail, Calendar } from "lucide-react";
 
 export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const leadId = Number(id);
+  if (!Number.isInteger(leadId) || leadId <= 0) notFound();
 
-  const lead = await db.query.leads.findFirst({
-    where: eq(leads.id, leadId),
-    with: { package: true, assignedSales: true },
-  });
+  const session = await getSession();
+  const [lead, activeUsers] = await Promise.all([
+    db.query.leads.findFirst({
+      where: eq(leads.id, leadId),
+      with: { package: true, assignedSales: true },
+    }),
+    session?.role === "admin" || session?.role === "super_admin"
+      ? db.query.users.findMany({
+          where: eq(users.isActive, true),
+          columns: { id: true, name: true, role: true },
+        })
+      : Promise.resolve([]),
+  ]);
 
   if (!lead) notFound();
+
+  const canWriteAll = session?.role === "admin" || session?.role === "super_admin";
+  const canWriteLead = canWriteAll || (session?.role === "sales" && lead.assignedSalesId === session.userId);
+  const salesUsers = activeUsers.filter(
+    (user) => user.role === "sales" || user.role === "admin" || user.role === "super_admin",
+  );
 
   const activities = await db.query.leadActivities.findMany({
     where: eq(leadActivities.leadId, leadId),
@@ -30,13 +48,18 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          {/* PERBAIKAN: Hapus font-display, gunakan standar tipografi Shadcn */}
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">{lead.name}</h1>
           <p className="text-sm text-muted-foreground">{lead.leadCode}</p>
         </div>
         <div className="flex items-center gap-2">
-          <WhatsappTemplateDialog leadId={lead.id} leadName={lead.name} />
-          <LeadStatusSelect leadId={lead.id} status={lead.status} />
+          {canWriteLead && <WhatsappTemplateDialog leadId={lead.id} leadName={lead.name} />}
+          {canWriteLead ? (
+            <LeadStatusSelect leadId={lead.id} status={lead.status} />
+          ) : (
+            <span className="rounded-md border border-border px-2.5 py-1.5 text-xs text-muted-foreground">
+              {LEAD_STATUS_LABEL[lead.status]}
+            </span>
+          )}
         </div>
       </div>
 
@@ -51,7 +74,6 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                 <Phone className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 <div>
                   <div className="text-xs text-muted-foreground">WhatsApp</div>
-                  {/* Pastikan teks menggunakan text-foreground agar kontras di Dark Mode */}
                   <span className="text-foreground">{lead.whatsapp}</span>
                 </div>
               </div>
@@ -71,17 +93,6 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                   <span className="text-foreground">
                     {lead.address}, {lead.district}, {lead.city} {lead.postalCode}
                   </span>
-                  {lead.latitude && lead.longitude && (
-                    <a
-                      href={`https://www.google.com/maps?q=${lead.latitude},${lead.longitude}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      // PERBAIKAN: Ganti text-accent dengan text-primary agar berwarna merah (Brand)
-                      className="ml-2 text-xs font-medium text-primary hover:underline underline-offset-4"
-                    >
-                      Lihat pin lokasi
-                    </a>
-                  )}
                 </div>
               </div>
               {lead.nextFollowUpDate && (
@@ -103,7 +114,11 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
               <CardTitle>Tambah Catatan Follow-up</CardTitle>
             </CardHeader>
             <CardContent>
-              <FollowUpForm leadId={lead.id} />
+              {canWriteLead ? (
+                <FollowUpForm leadId={lead.id} />
+              ) : (
+                <p className="text-sm text-muted-foreground">Mode baca saja untuk role Anda.</p>
+              )}
             </CardContent>
           </Card>
 
@@ -120,7 +135,6 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                   <div className="text-xs text-muted-foreground">
                     {new Date(activity.createdAt).toLocaleString("id-ID")} · {activity.user?.name ?? "Sistem"}
                   </div>
-                  {/* Memastikan teks isi aktivitas kontras di mode gelap */}
                   <div className="mt-1 text-foreground">
                     {activity.type === "perubahan_status" && activity.newStatus ? (
                       <p>
@@ -181,7 +195,15 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
               </div>
               <div>
                 <span className="text-muted-foreground">Sales: </span>
-                <span className="text-foreground">{lead.assignedSales?.name ?? "Belum ditugaskan"}</span>
+                {canWriteAll ? (
+                  <AssignSalesSelect
+                    leadId={lead.id}
+                    assignedSalesId={lead.assignedSalesId}
+                    salesUsers={salesUsers}
+                  />
+                ) : (
+                  <span className="text-foreground">{lead.assignedSales?.name ?? "Belum ditugaskan"}</span>
+                )}
               </div>
             </CardContent>
           </Card>

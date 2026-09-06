@@ -31,7 +31,6 @@ const baseNavItems = [
   { href: "/admin/leads", label: "Manajemen Lead", icon: Users2 },
   { href: "/admin/analytics", label: "Funnel Konversi", icon: BarChart3 },
   { href: "/admin/packages", label: "Paket & Harga", icon: Package2 },
-  
 ];
 
 export function AppSidebar({ name, role }: { name: string; role: string }) {

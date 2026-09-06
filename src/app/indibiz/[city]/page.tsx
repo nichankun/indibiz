@@ -12,8 +12,9 @@ import {
 } from "lucide-react";
 import { getServiceArea, SERVICE_AREAS } from "@/lib/service-areas";
 import { absoluteUrl, siteConfig } from "@/lib/site";
-import { getCityFaqs } from "@/lib/faqs";
 import { CityFaq } from "@/components/landing/faq";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { FiberPulse } from "@/components/landing/fiber-pulse";
 
@@ -33,12 +34,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!area) return {};
 
-  const title = `Pasang Indibiz ${area.name} | Internet Fiber Bisnis & WiFi Kantor`;
-  const description = `Daftar & pasang paket internet Indibiz Telkom di ${area.name} (${area.areas}). Internet fiber optic dedicated & broadband stabil untuk kantor, toko, dan UMKM.`;
+  const title = `Pasang Indibiz ${area.name}: Paket & Cek Jangkauan`;
+  const description = `Cek paket dan jangkauan Indibiz di ${area.name}. Dapatkan bantuan pengecekan area serta pendaftaran internet bisnis untuk kantor, toko, dan UMKM.`;
   const url = absoluteUrl(`/indibiz/${area.slug}`);
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url },
     openGraph: {
@@ -76,9 +77,6 @@ export default async function ServiceAreaPage({ params }: PageProps) {
   const description = `Pendaftaran dan pengecekan ketersediaan jaringan Indibiz untuk bisnis di wilayah ${area.areas}.`;
   const url = absoluteUrl(`/indibiz/${area.slug}`);
 
-  // Mengambil FAQ kota untuk Schema JSON-LD
-  const cityFaqs = getCityFaqs(area.name, area.areas);
-
   // Filter kota terdekat di region yang sama untuk internal linking
   const nearbyAreas = SERVICE_AREAS.filter(
     (a) => a.slug !== area.slug && a.region === area.region
@@ -93,12 +91,20 @@ export default async function ServiceAreaPage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "InternetServiceProvider",
-        "@id": `${url}#provider`,
-        name: `Indibiz Telkom ${area.name}`,
+        "@type": "Organization",
+        "@id": `${siteConfig.url}/#organization`,
+        name: siteConfig.operatorName,
+        url: siteConfig.url,
+        logo: absoluteUrl("/logo.png"),
+        telephone: siteConfig.salesPhone,
+      },
+      {
+        "@type": "Service",
+        "@id": `${url}#service`,
+        name: `Pengecekan jangkauan dan pendaftaran Indibiz ${area.name}`,
+        serviceType: "Bantuan pendaftaran internet fiber untuk bisnis",
         description,
         url,
-        telephone: siteConfig.salesPhone,
         areaServed: {
           "@type": "AdministrativeArea",
           name: area.name,
@@ -108,10 +114,7 @@ export default async function ServiceAreaPage({ params }: PageProps) {
           },
         },
         provider: {
-          "@type": "Organization",
-          name: siteConfig.operatorName,
-          url: siteConfig.url,
-          logo: absoluteUrl("/logo.png"),
+          "@id": `${siteConfig.url}/#organization`,
         },
       },
       {
@@ -132,27 +135,12 @@ export default async function ServiceAreaPage({ params }: PageProps) {
           },
         ],
       },
-      {
-        "@type": "FAQPage",
-        "@id": `${url}#faq`,
-        mainEntity: cityFaqs.map((faq) => ({
-          "@type": "Question",
-          name: faq.question,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: faq.answer,
-          },
-        })),
-      },
     ],
   };
 
   return (
     <main className="text-foreground">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
-      />
+      <JsonLd data={serviceJsonLd} />
 
       {/* ================= HERO SECTION ================= */}
       <section className="relative isolate overflow-hidden bg-slate-950 px-6 py-20 text-white sm:py-28">
@@ -161,7 +149,7 @@ export default async function ServiceAreaPage({ params }: PageProps) {
         <div className="mx-auto max-w-4xl text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-sky/30 bg-brand-sky/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-brand-sky">
             <Sparkles className="h-3.5 w-3.5" />
-            Layanan Resmi Telkom • Area {area.name}
+            Pengecekan Jangkauan • Area {area.name}
           </span>
 
           <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
@@ -203,7 +191,6 @@ export default async function ServiceAreaPage({ params }: PageProps) {
           <FiberPulse className="h-full w-full" variant="light" />
         </div>
       </section>
-
       {/* ================= TRUST HIGHLIGHTS BAR ================= */}
       <section className="border-b border-border bg-card py-6">
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 px-6 sm:grid-cols-3">
@@ -212,8 +199,8 @@ export default async function ServiceAreaPage({ params }: PageProps) {
               <Zap className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-foreground">Koneksi Simetris 1:1</h4>
-              <p className="text-xs text-muted-foreground">Upload & Download stabil seimbang</p>
+              <h4 className="text-sm font-semibold text-foreground">Pilihan Rasio 1:1 & 1:2</h4>
+              <p className="text-xs text-muted-foreground">Sesuaikan paket dengan kebutuhan usaha</p>
             </div>
           </div>
 
@@ -233,7 +220,7 @@ export default async function ServiceAreaPage({ params }: PageProps) {
             </div>
             <div>
               <h4 className="text-sm font-semibold text-foreground">Teknisi Area {area.name}</h4>
-              <p className="text-xs text-muted-foreground">Dukungan SLA & penanganan cepat</p>
+              <p className="text-xs text-muted-foreground">Bantuan pengecekan hingga pendaftaran</p>
             </div>
           </div>
         </div>
@@ -247,7 +234,7 @@ export default async function ServiceAreaPage({ params }: PageProps) {
               Alur Pemasangan Indibiz di {area.name}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-              Proses mudah dan transparan, didampingi langsung oleh tim sales & teknisi resmi Telkom.
+              Tim pendaftaran membantu pengecekan data, lalu instalasi mengikuti proses teknis Telkom.
             </p>
           </div>
 
@@ -335,6 +322,7 @@ export default async function ServiceAreaPage({ params }: PageProps) {
           </div>
         )}
       </section>
+      <SiteFooter />
     </main>
   );
 }

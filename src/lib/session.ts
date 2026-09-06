@@ -1,12 +1,17 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { users } from "@/db/database/schema";
 
 const SESSION_COOKIE = "indibiz_session";
+const SESSION_ISSUER = "indibiz-admin";
+const SESSION_AUDIENCE = "indibiz-dashboard";
 const secretKey = process.env.AUTH_SECRET;
 
-if (!secretKey) {
-  throw new Error("AUTH_SECRET belum diatur di file .env");
+if (!secretKey || secretKey.length < 32) {
+  throw new Error("AUTH_SECRET wajib diatur dan panjangnya minimal 32 karakter");
 }
 
 const encodedKey = new TextEncoder().encode(secretKey);
@@ -23,6 +28,9 @@ export async function createSession(payload: SessionPayload) {
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
+    .setIssuer(SESSION_ISSUER)
+    .setAudience(SESSION_AUDIENCE)
+    .setSubject(String(payload.userId))
     .setExpirationTime(expiresAt)
     .sign(encodedKey);
 
@@ -42,8 +50,27 @@ export async function getSession(): Promise<SessionPayload | null> {
   if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(token, encodedKey, { algorithms: ["HS256"] });
-    return payload as unknown as SessionPayload;
+    const { payload } = await jwtVerify(token, encodedKey, {
+      algorithms: ["HS256"],
+      issuer: SESSION_ISSUER,
+      audience: SESSION_AUDIENCE,
+    });
+    const userId = Number(payload.sub ?? payload.userId);
+    if (!Number.isInteger(userId) || userId <= 0) return null;
+
+    const user = await db.query.users.findFirst({
+      columns: { id: true, email: true, name: true, role: true, isActive: true },
+      where: eq(users.id, userId),
+    });
+
+    if (!user?.isActive) return null;
+
+    return {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
   } catch {
     return null;
   }
@@ -69,6 +96,9 @@ export async function createPendingTwoFactorToken(payload: PendingTwoFactorPaylo
   const token = await new SignJWT({ ...payload, pending2fa: true })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
+    .setIssuer(SESSION_ISSUER)
+    .setAudience(SESSION_AUDIENCE)
+    .setSubject(String(payload.userId))
     .setExpirationTime(expiresAt)
     .sign(encodedKey);
 
@@ -88,9 +118,28 @@ export async function getPendingTwoFactorToken(): Promise<PendingTwoFactorPayloa
   if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(token, encodedKey, { algorithms: ["HS256"] });
+    const { payload } = await jwtVerify(token, encodedKey, {
+      algorithms: ["HS256"],
+      issuer: SESSION_ISSUER,
+      audience: SESSION_AUDIENCE,
+    });
     if (!payload.pending2fa) return null;
-    return payload as unknown as PendingTwoFactorPayload;
+    const userId = Number(payload.sub ?? payload.userId);
+    if (
+      !Number.isInteger(userId) ||
+      typeof payload.email !== "string" ||
+      typeof payload.name !== "string" ||
+      !["super_admin", "admin", "sales", "viewer"].includes(String(payload.role))
+    ) {
+      return null;
+    }
+
+    return {
+      userId,
+      email: payload.email,
+      name: payload.name,
+      role: payload.role as PendingTwoFactorPayload["role"],
+    };
   } catch {
     return null;
   }

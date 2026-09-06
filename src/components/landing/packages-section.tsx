@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatRupiah } from "@/lib/utils";
 import { useState } from "react";
 import type { Package } from "@/db/database/schema";
+import { siteConfig } from "@/lib/site";
 
 type Props = {
   basicPackages: Package[];
@@ -13,7 +14,7 @@ type Props = {
 };
 
 const REGULER_LABEL = "Internet Only";
-const WHATSAPP_NUMBER = "6285181680899";
+const WHATSAPP_NUMBER = siteConfig.salesPhone.replace(/\D/g, "");
 
 const ADDON_TABS = [
   REGULER_LABEL,
@@ -45,27 +46,29 @@ function buildWhatsAppLink(pkg: Package) {
 }
 
 export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
-  const [activeAddon, setActiveAddon] = useState<string>(ADDON_TABS[0]);
+  const addonKeywords = ADDON_TABS.filter((addon) => addon !== REGULER_LABEL);
+  const packagesForAddon = (items: Package[], addon: string) =>
+    addon === REGULER_LABEL
+      ? items.filter((pkg) => !addonKeywords.some((keyword) => pkg.name.includes(keyword)))
+      : items.filter((pkg) => pkg.name.includes(addon));
+
+  const availableAddons = ADDON_TABS.filter(
+    (addon) =>
+      packagesForAddon(basicPackages, addon).length > 0 ||
+      packagesForAddon(bisnisPackages, addon).length > 0
+  );
+  const [activeAddon, setActiveAddon] = useState<string>(
+    () => availableAddons[0] ?? REGULER_LABEL
+  );
 
   const isReguler = activeAddon === REGULER_LABEL;
-  const addonKeywords = ADDON_TABS.filter((addon) => addon !== REGULER_LABEL);
-
-  const filteredBasic = isReguler
-    ? basicPackages.filter((pkg) => !addonKeywords.some((addon) => pkg.name.includes(addon)))
-    : basicPackages.filter((pkg) => pkg.name.includes(activeAddon));
-
-  const filteredBisnis = isReguler
-    ? bisnisPackages.filter((pkg) => !addonKeywords.some((addon) => pkg.name.includes(addon)))
-    : bisnisPackages.filter((pkg) => pkg.name.includes(activeAddon));
+  const filteredBasic = packagesForAddon(basicPackages, activeAddon);
+  const filteredBisnis = packagesForAddon(bisnisPackages, activeAddon);
 
   const addonBenefits = filteredBasic[0]?.benefits ?? [];
 
   const basicHighlights = BASIC_HIGHLIGHTS;
   const bisnisHighlights = BISNIS_HIGHLIGHTS;
-
-  const handleSelect = (pkg: Package) => {
-    window.open(buildWhatsAppLink(pkg), "_blank");
-  };
 
   return (
     <section id="paket" className="mx-auto max-w-5xl px-6 py-20 sm:py-28 text-foreground">
@@ -86,7 +89,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
       <div className="mb-12 -mx-6 px-6 sm:mx-0 sm:px-0">
         <Tabs value={activeAddon} onValueChange={setActiveAddon}>
           <TabsList className="h-auto w-full justify-start gap-2 overflow-x-auto rounded-full bg-muted/60 p-1.5 sm:w-fit sm:justify-center sm:mx-auto [&::-webkit-scrollbar]:hidden">
-            {ADDON_TABS.map((addon) => (
+            {availableAddons.map((addon) => (
               <TabsTrigger
                 key={addon}
                 value={addon}
@@ -126,8 +129,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
             {filteredBasic.map((pkg) => (
               <Card
                 key={pkg.id}
-                onClick={() => handleSelect(pkg)}
-                className="group relative flex flex-col gap-2.5 rounded-xl sm:rounded-2xl p-2.5 sm:p-4 cursor-pointer border border-white/10 bg-[linear-gradient(135deg,var(--brand-navy)_0%,var(--brand-blue-dark)_45%,var(--brand-blue)_75%,var(--brand-sky)_130%)] shadow-lg shadow-brand-navy/30 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-blue/40 hover:brightness-110 overflow-hidden"
+                className="group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-white/10 bg-[linear-gradient(135deg,var(--brand-navy)_0%,var(--brand-blue-dark)_45%,var(--brand-blue)_75%,var(--brand-sky)_130%)] p-2.5 shadow-lg shadow-brand-navy/30 transition-all duration-200 hover:-translate-y-1 hover:brightness-110 hover:shadow-xl hover:shadow-brand-blue/40 sm:rounded-2xl sm:p-4"
               >
                 <div className="pointer-events-none absolute -top-8 -left-8 h-24 w-24 rounded-full bg-white/20 blur-2xl" />
                 <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/10" />
@@ -148,7 +150,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                   <div className="h-9 sm:h-10 w-px bg-white/25 shrink-0 self-center" />
 
                   <div className="flex flex-col items-start min-w-0">
-                    {pkg.normalPrice && pkg.promoPrice && pkg.promoPrice < pkg.normalPrice && (
+                    {pkg.normalPrice && pkg.promoPrice && Number(pkg.promoPrice) < Number(pkg.normalPrice) && (
                       <span className="text-[9px] sm:text-[11px] font-semibold text-blue-200/70 line-through leading-none">
                         {formatRupiah(pkg.normalPrice)}
                       </span>
@@ -164,16 +166,14 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSelect(pkg);
-                  }}
-                  className="relative w-full rounded-lg bg-white/15 py-1.5 text-xs sm:text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+                <a
+                  href={buildWhatsAppLink(pkg)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative block w-full rounded-lg bg-white/15 py-1.5 text-center text-xs font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25 sm:text-sm"
                 >
                   Pilih Paket
-                </button>
+                </a>
               </Card>
             ))}
           </div>
@@ -204,8 +204,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
             {filteredBisnis.map((pkg) => (
               <Card
                 key={pkg.id}
-                onClick={() => handleSelect(pkg)}
-                className="group relative flex flex-col gap-2.5 rounded-xl sm:rounded-2xl p-2.5 sm:p-4 cursor-pointer border border-white/10 bg-[linear-gradient(135deg,var(--brand-navy)_0%,var(--brand-blue-dark)_45%,var(--brand-blue)_75%,var(--brand-sky)_130%)] shadow-lg shadow-brand-navy/30 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-blue/40 hover:brightness-110 overflow-hidden"
+                className="group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-white/10 bg-[linear-gradient(135deg,var(--brand-navy)_0%,var(--brand-blue-dark)_45%,var(--brand-blue)_75%,var(--brand-sky)_130%)] p-2.5 shadow-lg shadow-brand-navy/30 transition-all duration-200 hover:-translate-y-1 hover:brightness-110 hover:shadow-xl hover:shadow-brand-blue/40 sm:rounded-2xl sm:p-4"
               >
                 <div className="pointer-events-none absolute -top-8 -left-8 h-24 w-24 rounded-full bg-white/20 blur-2xl" />
                 <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/10" />
@@ -226,7 +225,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                   <div className="h-9 sm:h-10 w-px bg-white/25 shrink-0 self-center" />
 
                   <div className="flex flex-1 flex-col items-start min-w-0">
-                    {pkg.normalPrice && pkg.promoPrice && pkg.promoPrice < pkg.normalPrice && (
+                    {pkg.normalPrice && pkg.promoPrice && Number(pkg.promoPrice) < Number(pkg.normalPrice) && (
                       <span className="text-[8px] sm:text-[11px] font-semibold text-blue-200/70 line-through leading-none truncate w-full">
                         {formatRupiah(pkg.normalPrice)}
                       </span>
@@ -242,16 +241,14 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSelect(pkg);
-                  }}
-                  className="relative w-full rounded-lg bg-white/15 py-1.5 text-xs sm:text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+                <a
+                  href={buildWhatsAppLink(pkg)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative block w-full rounded-lg bg-white/15 py-1.5 text-center text-xs font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25 sm:text-sm"
                 >
                   Pilih Paket
-                </button>
+                </a>
               </Card>
             ))}
           </div>

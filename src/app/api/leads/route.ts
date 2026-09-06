@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { leads, leadActivities } from "@/db/database/schema";
+import { leads, leadActivities, packages } from "@/db/database/schema";
 import { generateLeadCode } from "@/lib/utils";
+import { getClientIp } from "@/lib/client-ip";
+import { consumeRateLimit } from "@/lib/rate-limit";
 
 const leadSchema = z.object({
   name: z.string().min(2).max(120),
@@ -16,64 +18,39 @@ const leadSchema = z.object({
   city: z.string().max(100).optional(),
   district: z.string().max(100).optional(),
   postalCode: z.string().max(10).optional(),
-  address: z.string().optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
-  packageId: z.number().int().optional(),
+  address: z.string().max(1000).optional(),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
+  packageId: z.number().int().positive().optional(),
   consentPrivacy: z.boolean(),
   consentContact: z.boolean(),
   source: z.string().max(60).optional(),
   utmSource: z.string().max(100).optional(),
   utmMedium: z.string().max(100).optional(),
   utmCampaign: z.string().max(100).optional(),
-  landingPageSource: z.string().optional(),
+  landingPageSource: z.string().max(2048).optional(),
   referral: z.string().max(120).optional(),
+  website: z.string().max(0).optional(),
 });
 
-// Rate limiting sederhana in-memory per IP. Untuk produksi multi-instance,
-// ganti dengan Upstash Ratelimit atau layanan serupa.
-const submissions = new Map<string, number[]>();
 const WINDOW_MS = 60_000;
 const MAX_PER_WINDOW = 5;
 
-function isRateLimited(ip: string) {
-  const now = Date.now();
-  const timestamps = (submissions.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
-  timestamps.push(now);
-
-  if (timestamps.length === 0) {
-    submissions.delete(ip);
-  } else {
-    submissions.set(ip, timestamps);
-  }
-
-  return timestamps.length > MAX_PER_WINDOW;
-}
-
-// Bersihkan entry IP yang sudah tidak punya timestamp aktif, dipanggil
-// secara periodik supaya Map tidak tumbuh tanpa batas selama proses hidup.
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, timestamps] of submissions.entries()) {
-    const active = timestamps.filter((t) => now - t < WINDOW_MS);
-    if (active.length === 0) submissions.delete(ip);
-    else submissions.set(ip, active);
-  }
-}, WINDOW_MS).unref?.();
-
-function getClientIp(request: NextRequest) {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (!forwarded) return "unknown";
-  return forwarded.split(",")[0].trim();
-}
-
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
+  const rateLimit = consumeRateLimit({
+    key: `lead:${ip}`,
+    limit: MAX_PER_WINDOW,
+    windowMs: WINDOW_MS,
+  });
 
-  if (isRateLimited(ip)) {
+  if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: "Terlalu banyak percobaan. Silakan coba lagi beberapa saat lagi." },
-      { status: 429 }
+      {
+        status: 429,
+        headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+      }
     );
   }
 
@@ -86,8 +63,24 @@ export async function POST(request: NextRequest) {
 
   const data = parsed.data;
 
+  // Honeypot: bot biasanya mengisi field tersembunyi ini.
+  if (data.website) {
+    return NextResponse.json({ ok: true }, { status: 201 });
+  }
+
   if (!data.consentPrivacy) {
     return NextResponse.json({ error: "Persetujuan kebijakan privasi wajib dicentang." }, { status: 400 });
+  }
+
+  if (data.packageId) {
+    const selectedPackage = await db.query.packages.findFirst({
+      columns: { id: true },
+      where: and(eq(packages.id, data.packageId), eq(packages.isActive, true)),
+    });
+
+    if (!selectedPackage) {
+      return NextResponse.json({ error: "Paket yang dipilih tidak tersedia." }, { status: 400 });
+    }
   }
 
   try {
@@ -113,7 +106,7 @@ export async function POST(request: NextRequest) {
           utmCampaign: data.utmCampaign,
           landingPageSource: data.landingPageSource,
           referral: data.referral,
-          leadCode: "TEMP", // diisi ulang di bawah setelah id tersedia
+          leadCode: `TMP-${crypto.randomUUID().replaceAll("-", "").slice(0, 16)}`,
         })
         .returning();
 

@@ -102,7 +102,7 @@ export function Hero() {
                     src={slide.image}
                     alt={slide.imageAlt}
                     fill
-                    priority={i === 0}
+                    preload={i === 0}
                     sizes="100vw"
                     className="object-cover object-center sm:object-right"
                   />

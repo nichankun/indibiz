@@ -1,17 +1,15 @@
-"use client";
-
 import { MessageCircle } from "lucide-react";
-
-const SALES_WHATSAPP = process.env.NEXT_PUBLIC_SALES_WHATSAPP ?? "6285181680899";
+import { siteConfig } from "@/lib/site";
 
 export function WhatsappFloat() {
+  const salesNumber = siteConfig.salesPhone.replace(/\D/g, "");
   const message = encodeURIComponent(
     "Halo, saya ingin bertanya tentang paket Indibiz."
   );
 
   return (
     <a
-      href={`https://wa.me/${SALES_WHATSAPP}?text=${message}`}
+      href={`https://wa.me/${salesNumber}?text=${message}`}
       target="_blank"
       rel="noopener noreferrer"
       className="group fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center"

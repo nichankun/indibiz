@@ -1,36 +1,13 @@
 import type { Metadata } from "next";
-import { Sora, Inter, Roboto } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { cn } from "@/lib/utils";
-import { SERVICE_AREAS } from "@/lib/service-areas";
 import { siteConfig } from "@/lib/site";
-
-// ✅ Tambahkan weight dan display: "swap" untuk Roboto
-const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const sora = Sora({
-  subsets: ["latin"],
-  variable: "--font-display",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-body",
-  display: "swap",
-});
 
 const SITE_URL = siteConfig.url;
 const SITE_NAME = siteConfig.name;
-const SITE_TITLE = "Pendaftaran Indibiz Seluruh Indonesia | Internet Fiber untuk Bisnis";
+const SITE_TITLE = "Indibiz untuk Bisnis: Cek Paket & Jangkauan";
 const SITE_DESCRIPTION =
-  "Cek ketersediaan dan daftar paket Indibiz untuk bisnis di seluruh Indonesia — Jakarta, Bandung, Surabaya, Medan, Makassar, Bali, dan puluhan kota lainnya. Internet fiber untuk kantor, toko, dan UMKM.";
+  "Cek paket, harga, dan jangkauan Indibiz untuk kantor, toko, dan UMKM. Dapatkan bantuan pengecekan area serta pendaftaran internet bisnis di Indonesia.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -39,19 +16,6 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
-  keywords: [
-    "indibiz",
-    "indibiz indonesia",
-    "pasang indibiz",
-    "pasang indibiz jakarta",
-    "pasang indibiz surabaya",
-    "pasang indibiz bandung",
-    "internet bisnis",
-    "internet bisnis indonesia",
-    "internet fiber bisnis",
-    "internet kantor",
-    "wifi bisnis umkm",
-  ],
   authors: [{ name: siteConfig.operatorName }],
   creator: siteConfig.operatorName,
   robots: {
@@ -92,64 +56,21 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png", // ✅ Sudah diperbaiki (tanpa double .png)
+    apple: "/apple-touch-icon.png",
   },
   verification: {
     google: "oTR3dW74tb8A1SaRJr2LmYco2qDV_ofz4bjRbYEyjto",
   },
 };
 
-// ✅ Schema Graph terpadu (Organization + WebSite)
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${SITE_URL}#organization`,
-      name: siteConfig.operatorName,
-      description: SITE_DESCRIPTION,
-      url: SITE_URL,
-      logo: `${SITE_URL}/logo.png`,
-      telephone: siteConfig.salesPhone,
-      contactPoint: {
-        "@type": "ContactPoint",
-        telephone: siteConfig.salesPhone,
-        contactType: "sales",
-        availableLanguage: ["id", "en"],
-      },
-      areaServed: [
-        { "@type": "Country", name: "Indonesia" },
-        ...SERVICE_AREAS.map((area) => ({
-          "@type": "AdministrativeArea",
-          name: area.name,
-        })),
-      ],
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${SITE_URL}#website`,
-      url: SITE_URL,
-      name: SITE_NAME,
-      publisher: {
-        "@id": `${SITE_URL}#organization`,
-      },
-    },
-  ],
-};
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="id"
-      data-scroll-behavior="smooth" // ✅ Mencegah warning scroll-behavior
-      className={cn(sora.variable, inter.variable, roboto.variable, "font-sans")}
+      data-scroll-behavior="smooth"
+      className="font-sans"
     >
       <body>
-        {/* ✅ Script JSON-LD ditempatkan aman di awal body */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
         {children}
         <Toaster position="top-center" richColors />
       </body>

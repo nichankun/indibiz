@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import Link from "next/link"; // PERBAIKAN: Gunakan Next.js Link untuk navigasi yang lebih cepat
+import Link from "next/link";
 import { desc } from "drizzle-orm";
 import { db } from "@/db";
 import { auditLogs } from "@/db/database/schema";
@@ -7,9 +7,8 @@ import { getSession } from "@/lib/session";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button"; // PERBAIKAN: Impor buttonVariants untuk pagination
+import { buttonVariants } from "@/components/ui/button";
 
-// PERBAIKAN: Menghapus variant "accent" yang tidak standar. 
 // Menggunakan "destructive" untuk deactivate agar lebih logis secara visual.
 const ACTION_BADGE_VARIANT: Record<string, "default" | "destructive" | "secondary" | "outline"> = {
   login: "secondary",
@@ -45,7 +44,6 @@ export default async function AuditLogPage({
   return (
     <div className="space-y-6">
       <div>
-        {/* PERBAIKAN: Tipografi standar Shadcn, menghapus font kustom */}
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Audit Log</h1>
         <p className="text-sm text-muted-foreground">
           Riwayat aktivitas internal: login, perubahan status lead, perubahan harga paket, dan manajemen akun.
@@ -96,7 +94,6 @@ export default async function AuditLogPage({
         </Table>
       </Card>
 
-      {/* PERBAIKAN: Pagination diubah menggunakan buttonVariants agar terlihat seperti tombol rapi */}
       <div className="flex justify-end gap-2">
         {page > 1 && (
           <Link 

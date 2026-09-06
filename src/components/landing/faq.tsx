@@ -1,6 +1,5 @@
 "use client";
 
-import { CircleHelp } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -10,26 +9,8 @@ import {
 import { FAQ_ITEMS, getCityFaqs } from "@/lib/faqs";
 
 export function Faq() {
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: FAQ_ITEMS.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  };
-
   return (
     <section id="faq" className="mx-auto max-w-3xl px-6 py-16 sm:py-24 text-foreground">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
-
       <div className="mb-10 text-center">
        
         <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">

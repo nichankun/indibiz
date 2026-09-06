@@ -1,5 +1,4 @@
-"use client";
-
+import { siteConfig } from "@/lib/site";
 import { FiberPulse } from "./fiber-pulse";
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -16,6 +15,8 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function CoverageChecker() {
+  const salesNumber = siteConfig.salesPhone.replace(/\D/g, "");
+
   return (
     <section id="cek-jangkauan" className="mx-auto max-w-4xl px-6 py-20">
       <div className="relative overflow-hidden rounded-3xl bg-brand-navy-deep px-6 py-10 sm:px-12 sm:py-14">
@@ -39,7 +40,7 @@ export function CoverageChecker() {
           </div>
 
           <a
-            href="https://wa.me/6285181680899"
+            href={`https://wa.me/${salesNumber}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition-colors hover:bg-emerald-600 sm:text-base"

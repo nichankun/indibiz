@@ -9,7 +9,7 @@ export const siteConfig = {
   name: "Indibiz Indonesia",
   operatorName:
     process.env.NEXT_PUBLIC_BUSINESS_NAME ?? "Mitra Pendaftaran Indibiz Indonesia",
-  salesPhone: "+6285181680899",
+  salesPhone: process.env.NEXT_PUBLIC_SALES_PHONE ?? "+6285181680899",
 };
 
 export function absoluteUrl(path = "/") {

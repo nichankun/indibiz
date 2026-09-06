@@ -10,6 +10,7 @@ import {
   timestamp,
   jsonb,
   doublePrecision,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -51,23 +52,27 @@ export const activityTypeEnum = pgEnum("activity_type", [
 
 // ---------- Tables ----------
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 120 }).notNull(),
-  email: varchar("email", { length: 160 }).notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
-  role: userRoleEnum("role").notNull().default("sales"),
-  isActive: boolean("is_active").notNull().default(true),
-  twoFactorSecret: text("two_factor_secret"),
-  twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+export const users = pgTable(
+  "users",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 120 }).notNull(),
+    email: varchar("email", { length: 160 }).notNull().unique(),
+    passwordHash: text("password_hash").notNull(),
+    role: userRoleEnum("role").notNull().default("sales"),
+    isActive: boolean("is_active").notNull().default(true),
+    twoFactorSecret: text("two_factor_secret"),
+    twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("users_role_active_idx").on(table.role, table.isActive)]
+);
 
 export const packages = pgTable("packages", {
   id: serial("id").primaryKey(),
   category: packageCategoryEnum("category").notNull(),
-  name: varchar("name", { length: 120 }).notNull(),
+  name: varchar("name", { length: 120 }).notNull().unique(),
   speedMbps: integer("speed_mbps").notNull(),
   normalPrice: numeric("normal_price", { precision: 12, scale: 2 }).notNull(),
   promoPrice: numeric("promo_price", { precision: 12, scale: 2 }),
@@ -81,7 +86,13 @@ export const packages = pgTable("packages", {
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+  index("packages_active_category_sort_idx").on(
+    table.isActive,
+    table.category,
+    table.sortOrder
+  ),
+]);
 
 export const leads = pgTable("leads", {
   id: serial("id").primaryKey(),
@@ -121,7 +132,12 @@ export const leads = pgTable("leads", {
 
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+  index("leads_status_created_idx").on(table.status, table.createdAt),
+  index("leads_assigned_created_idx").on(table.assignedSalesId, table.createdAt),
+  index("leads_follow_up_idx").on(table.nextFollowUpDate),
+  index("leads_created_idx").on(table.createdAt),
+]);
 
 export const leadActivities = pgTable("lead_activities", {
   id: serial("id").primaryKey(),
@@ -132,7 +148,9 @@ export const leadActivities = pgTable("lead_activities", {
   previousStatus: leadStatusEnum("previous_status"),
   newStatus: leadStatusEnum("new_status"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+  index("lead_activities_lead_created_idx").on(table.leadId, table.createdAt),
+]);
 
 export const auditLogs = pgTable("audit_logs", {
   id: serial("id").primaryKey(),
@@ -142,7 +160,10 @@ export const auditLogs = pgTable("audit_logs", {
   entityId: integer("entity_id"),
   description: text("description").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+  index("audit_logs_created_idx").on(table.createdAt),
+  index("audit_logs_user_created_idx").on(table.userId, table.createdAt),
+]);
 
 // ---------- Relations ----------
 

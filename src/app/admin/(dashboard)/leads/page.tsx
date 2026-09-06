@@ -6,8 +6,10 @@ import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { LeadStatusSelect } from "@/components/admin/lead-status-select";
 import { LEAD_STATUS_LABEL, LEAD_STATUS_ORDER } from "@/lib/utils";
+import { getSession } from "@/lib/session";
 
 type SearchParams = {
   q?: string;
@@ -17,7 +19,7 @@ type SearchParams = {
 async function getLeads(searchParams: SearchParams) {
   const conditions = [];
 
-  if (searchParams.status) {
+  if (searchParams.status && LEAD_STATUS_ORDER.includes(searchParams.status as (typeof LEAD_STATUS_ORDER)[number])) {
     conditions.push(eq(leads.status, searchParams.status as typeof leads.$inferSelect.status));
   }
 
@@ -39,30 +41,31 @@ export default async function LeadsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const leadList = await getLeads(params);
+  const [leadList, session] = await Promise.all([getLeads(params), getSession()]);
+  const canWriteAll = session?.role === "admin" || session?.role === "super_admin";
+  const canExport = canWriteAll;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          {/* PERBAIKAN: Menghapus hardcode font kustom dan menggunakan standar Shadcn typography */}
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Manajemen Lead</h1>
           <p className="text-sm text-muted-foreground">{leadList.length} lead ditampilkan</p>
         </div>
         
-        {/* PERBAIKAN: Menggunakan prop asChild yang merupakan standar Radix/Shadcn untuk link di dalam button */}
-        <Button variant="outline" asChild>
-          <a href={`/api/leads/export${params.status ? `?status=${params.status}` : ""}`}>
-            Export CSV
-          </a>
-        </Button>
+        {canExport && (
+          <Button variant="outline" asChild>
+            <a href={`/api/leads/export${params.status ? `?status=${params.status}` : ""}`}>
+              Export CSV
+            </a>
+          </Button>
+        )}
       </div>
 
       <Card className="p-4">
         <form className="flex flex-wrap items-center gap-3" method="get">
           <Input name="q" placeholder="Cari nama atau WhatsApp..." defaultValue={params.q} className="max-w-xs" />
           
-          {/* PERBAIKAN: Menghapus bg-white dan menggantinya dengan semantik Shadcn (border-input, bg-background, dll) */}
           <select
             name="status"
             defaultValue={params.status ?? ""}
@@ -82,7 +85,6 @@ export default async function LeadsPage({
         </form>
       </Card>
 
-      {/* Komponen Table bawaan Shadcn otomatis sudah mendukung penuh Dark/Light mode */}
       <Table>
         <TableHeader>
           <TableRow>
@@ -117,7 +119,11 @@ export default async function LeadsPage({
               <TableCell className="text-sm">{lead.package?.name ?? "-"}</TableCell>
               <TableCell className="text-sm">{lead.assignedSales?.name ?? "Belum ditugaskan"}</TableCell>
               <TableCell>
-                <LeadStatusSelect leadId={lead.id} status={lead.status} />
+                {canWriteAll || (session?.role === "sales" && lead.assignedSalesId === session.userId) ? (
+                  <LeadStatusSelect leadId={lead.id} status={lead.status} />
+                ) : (
+                  <Badge variant="outline">{LEAD_STATUS_LABEL[lead.status]}</Badge>
+                )}
               </TableCell>
               <TableCell className="text-xs capitalize text-muted-foreground">
                 {(lead.source ?? "-").replace(/_/g, " ")}

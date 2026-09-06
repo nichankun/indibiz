@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import {
@@ -17,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { LocationPicker } from "./location-picker";
 
 type Props = {
   open: boolean;
@@ -31,7 +31,6 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
   const [submitting, setSubmitting] = useState(false);
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentContact, setConsentContact] = useState(false);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -56,8 +55,6 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
           district: form.get("district"),
           postalCode: form.get("postalCode"),
           address: form.get("address"),
-          latitude: location?.lat,
-          longitude: location?.lng,
           packageId,
           consentPrivacy,
           consentContact,
@@ -66,7 +63,8 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
           utmMedium: searchParams.get("utm_medium") ?? undefined,
           utmCampaign: searchParams.get("utm_campaign") ?? undefined,
           landingPageSource: typeof window !== "undefined" ? window.location.href : undefined,
-          referral: document.referrer || undefined,
+          referral: document.referrer ? document.referrer.slice(0, 120) : undefined,
+          website: form.get("website"),
         }),
       });
 
@@ -77,7 +75,6 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
       e.currentTarget.reset();
       setConsentPrivacy(false);
       setConsentContact(false);
-      setLocation(null);
     } catch {
       toast.error("Terjadi kesalahan. Silakan coba lagi atau hubungi CS via WhatsApp.");
     } finally {
@@ -103,6 +100,10 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-6">
+          <div aria-hidden="true" className="absolute -left-[9999px]" tabIndex={-1}>
+            <Label htmlFor="website">Website</Label>
+            <Input id="website" name="website" tabIndex={-1} autoComplete="off" />
+          </div>
           {/* Data diri */}
           <div className="grid gap-4">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -155,7 +156,6 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
               />
             </div>
 
-            <LocationPicker value={location} onChange={setLocation} />
           </div>
 
           {/* Persetujuan */}
@@ -168,8 +168,11 @@ export function RegistrationDialog({ open, onOpenChange, packageId, packageName 
                 disabled={submitting}
               />
               <Label htmlFor="consent-privacy" className="text-sm font-normal leading-snug">
-                Saya menyetujui kebijakan privasi dan penggunaan data untuk
-                proses pemasangan.
+                Saya menyetujui{" "}
+                <Link className="font-medium text-primary underline" href="/privacy" target="_blank">
+                  kebijakan privasi
+                </Link>{" "}
+                dan penggunaan data untuk proses pemasangan.
               </Label>
             </div>
             <div className="flex items-start gap-2">

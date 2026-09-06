@@ -6,11 +6,16 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { PackageEditDialog } from "@/components/admin/package-edit-dialog";
 import { formatRupiah } from "@/lib/utils";
+import { getSession } from "@/lib/session";
 
 export default async function PackagesPage() {
-  const allPackages = await db.query.packages.findMany({
+  const [allPackages, session] = await Promise.all([
+    db.query.packages.findMany({
     orderBy: [asc(packages.category), asc(packages.sortOrder)],
-  });
+    }),
+    getSession(),
+  ]);
+  const canEdit = session?.role === "admin" || session?.role === "super_admin";
 
   const basic = allPackages.filter((p) => p.category === "basic");
   const bisnis = allPackages.filter((p) => p.category === "bisnis");
@@ -23,7 +28,6 @@ export default async function PackagesPage() {
   return (
     <div className="space-y-6">
       <div>
-        {/* PERBAIKAN: Menghapus font kustom, menggunakan tipografi standar Shadcn */}
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Paket &amp; Harga</h1>
         <p className="text-sm text-muted-foreground">
           Kelola harga normal, harga promo, dan visibilitas paket di landing page.
@@ -55,7 +59,6 @@ export default async function PackagesPage() {
                     <TableCell>{formatRupiah(pkg.normalPrice)}</TableCell>
                     <TableCell>{pkg.promoPrice ? formatRupiah(pkg.promoPrice) : "-"}</TableCell>
                     <TableCell>
-                      {/* PERBAIKAN: Varian "accent" diganti ke "default" agar mendapatkan warna Primary (merah) */}
                       {pkg.badge ? <Badge variant="default">{pkg.badge}</Badge> : "-"}
                     </TableCell>
                     <TableCell>
@@ -64,7 +67,7 @@ export default async function PackagesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <PackageEditDialog pkg={pkg} />
+                      {canEdit ? <PackageEditDialog pkg={pkg} /> : <span className="text-xs text-muted-foreground">Read-only</span>}
                     </TableCell>
                   </TableRow>
                 ))}

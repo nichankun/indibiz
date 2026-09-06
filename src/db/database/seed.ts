@@ -6,6 +6,27 @@ import bcrypt from "bcryptjs";
 import { db } from "../index";
 import { packages, users } from "./schema";
 
+async function upsertPackage(values: typeof packages.$inferInsert) {
+  await db
+    .insert(packages)
+    .values(values)
+    .onConflictDoUpdate({
+      target: packages.name,
+      set: {
+        category: values.category,
+        speedMbps: values.speedMbps,
+        normalPrice: values.normalPrice,
+        promoPrice: values.promoPrice,
+        description: values.description,
+        benefits: values.benefits,
+        badge: values.badge,
+        isActive: values.isActive,
+        sortOrder: values.sortOrder,
+        updatedAt: new Date(),
+      },
+    });
+}
+
 // Data lengkap berdasarkan brosur
 const BUNDLE_DATA = [
   {
@@ -59,8 +80,14 @@ const BUNDLE_DATA = [
 ];
 
 async function seed() {
-  console.log("Menghapus data paket lama...");
-  await db.delete(packages);
+  const defaultEmail = process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase();
+  const defaultPassword = process.env.SEED_ADMIN_PASSWORD;
+
+  if (!defaultEmail || !defaultPassword || defaultPassword.length < 12) {
+    throw new Error(
+      "SEED_ADMIN_EMAIL dan SEED_ADMIN_PASSWORD (minimal 12 karakter) wajib diatur"
+    );
+  }
 
   let sortOrder = 0;
 
@@ -68,7 +95,7 @@ async function seed() {
   for (const bundle of BUNDLE_DATA) {
     // Generate paket Basic
     for (const pkg of bundle.basic) {
-      await db.insert(packages).values({
+      await upsertPackage({
         category: "basic",
         name: `Indibiz Basic ${pkg.speed} Mbps + ${bundle.addon}`,
         speedMbps: pkg.speed,
@@ -84,7 +111,7 @@ async function seed() {
 
     // Generate paket Bisnis
     for (const pkg of bundle.bisnis) {
-      await db.insert(packages).values({
+      await upsertPackage({
         category: "bisnis",
         name: `Indibiz Bisnis ${pkg.speed} Mbps + ${bundle.addon}`,
         speedMbps: pkg.speed,
@@ -100,9 +127,7 @@ async function seed() {
   }
 
   console.log("Menambahkan akun super admin default...");
-  const defaultEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@indibiz.local";
-  const defaultPassword = process.env.SEED_ADMIN_PASSWORD ?? "GantiSegera123!";
-  const passwordHash = await bcrypt.hash(defaultPassword, 10);
+  const passwordHash = await bcrypt.hash(defaultPassword, 12);
 
   await db
     .insert(users)
@@ -114,7 +139,7 @@ async function seed() {
     })
     .onConflictDoNothing({ target: users.email });
 
-  console.log(`Akun admin: ${defaultEmail} / ${defaultPassword}`);
+  console.log(`Akun admin tersedia: ${defaultEmail}`);
   console.log("Seed selesai. Silakan refresh halaman.");
   process.exit(0);
 }

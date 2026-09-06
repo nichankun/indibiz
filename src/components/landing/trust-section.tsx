@@ -1,83 +1,43 @@
-"use client";
-
-import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Settings2,
-  Wifi,
-  TrendingUp,
-  Headphones,
+  ArrowRight,
   Building2,
+  Headphones,
   MapPin,
+  Settings2,
+  TrendingUp,
+  Wifi,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FiberPulse } from "./fiber-pulse";
-import { SERVICE_AREAS } from "@/lib/service-areas";
-
-// Pengelompokan Wilayah agar rapi & mudah dicari
-const REGION_TABS = [
-  {
-    id: "all",
-    label: "Semua Kota",
-  },
-  {
-    id: "jabodetabek",
-    label: "Jabodetabek & Banten",
-    slugs: ["jakarta", "bogor", "depok", "tangerang", "bekasi", "serang"],
-  },
-  {
-    id: "jawa",
-    label: "Jawa & DIY",
-    slugs: ["bandung", "semarang", "solo", "yogyakarta", "surabaya", "malang"],
-  },
-  {
-    id: "sumatra",
-    label: "Sumatra",
-    slugs: ["medan", "palembang", "pekanbaru", "padang", "batam", "lampung"],
-  },
-  {
-    id: "kalimantan",
-    label: "Kalimantan",
-    slugs: ["balikpapan", "banjarmasin", "pontianak", "samarinda"],
-  },
-  {
-    id: "sulawesi",
-    label: "Sulawesi",
-    slugs: ["makassar", "manado", "kendari", "palu"],
-  },
-  {
-    id: "timur",
-    label: "Bali, NTB & Papua",
-    slugs: ["denpasar", "mataram", "ambon", "jayapura"],
-  },
-];
+import { NATIONAL_ISLANDS, SERVICE_AREAS } from "@/lib/service-areas";
 
 const WHY_INDIBIZ = [
   {
     icon: Settings2,
     title: "Solusi Digital Terintegrasi",
     description:
-      "Bukan cuma internet — Indibiz menghadirkan solusi digital pendukung operasional, keuangan, SDM, hingga pemasaran dalam satu ekosistem yang saling terhubung.",
+      "Bukan cuma internet — Indibiz menghadirkan solusi digital pendukung operasional, keuangan, SDM, hingga pemasaran dalam satu ekosistem.",
   },
   {
     icon: Wifi,
     title: "Internet Bisnis Tanpa FUP",
     description:
-      "Nikmati koneksi tanpa batasan Fair Usage Policy dengan rasio bandwidth prioritas agar kualitas jaringan bisnis Anda tetap stabil setiap saat.",
+      "Nikmati koneksi tanpa batasan Fair Usage Policy dengan pilihan layanan yang dapat disesuaikan untuk kebutuhan usaha.",
   },
   {
     icon: TrendingUp,
-    title: "Dorong Produktivitas Usaha",
+    title: "Pilihan Rasio Sesuai Kebutuhan",
     description:
-      "Koneksi cepat dan simetris menunjang aktivitas transaksi kasir online, cloud collaboration, CCTV streaming, hingga operasional harian.",
+      "Tersedia pilihan rasio kecepatan mulai 1:2 hingga 1:1 untuk menyesuaikan kebutuhan unduh dan unggah operasional bisnis.",
   },
   {
     icon: Headphones,
-    title: "Dukungan Layanan Dedicated",
+    title: "Dukungan Pelanggan 24/7",
     description:
-      "Didukung jaminan SLA dan teknisi lokal Telkom yang siap menangani kendala teknis dengan respon cepat untuk meminimalkan downtime usaha.",
+      "Layanan bantuan pelanggan tersedia untuk mendukung pengecekan dan penanganan kebutuhan konektivitas bisnis.",
   },
   {
     icon: Building2,
@@ -88,86 +48,118 @@ const WHY_INDIBIZ = [
 ];
 
 export function TrustSection() {
-  const [activeTab, setActiveTab] = React.useState("all");
-
-  const filteredAreas = React.useMemo(() => {
-    if (activeTab === "all") return SERVICE_AREAS;
-    const tab = REGION_TABS.find((t) => t.id === activeTab);
-    if (!tab || !tab.slugs) return SERVICE_AREAS;
-    return SERVICE_AREAS.filter((area) => tab.slugs.includes(area.slug));
-  }, [activeTab]);
-
   return (
     <section className="relative overflow-hidden border-y border-border bg-slate-50/50 py-16 text-foreground sm:py-24">
-      {/* Header Section */}
       <div className="mx-auto max-w-3xl px-6 text-center">
-  
-
-        {/* Gambar Peta dengan Efek Glow */}
-        <div className="relative mx-auto mt-6 max-w-lg">
-          <div className="absolute inset-0 -z-10 bg-brand-sky/20 blur-3xl rounded-full" />
+        <div className="relative mx-auto mt-2 max-w-lg">
+          <div className="absolute inset-0 -z-10 rounded-full bg-brand-sky/20 blur-3xl" />
           <Image
             src="/peta.png"
-            alt="Peta Jangkauan Fiber Optic Indibiz Telkom Indonesia"
+            alt="Peta cakupan jaringan fiber Indibiz di Indonesia"
             width={600}
             height={280}
             className="h-auto w-full object-contain drop-shadow-md"
           />
         </div>
 
-        <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-navy sm:text-4xl">
-          Jaringan Fiber Optic untuk Bisnis di Seluruh Indonesia
+        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand-blue">
+          Cakupan nasional, fokus Jabodetabek
+        </p>
+        <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-brand-navy sm:text-4xl">
+          Indibiz untuk bisnis di seluruh Indonesia
         </h2>
-
         <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Tersedia di kota-kota bisnis strategis dari Sabang sampai Merauke. Pilih kota Anda untuk cek paket & promo pasang baru.
+          Ekosistem Indibiz tersedia di berbagai wilayah Indonesia. Untuk
+          pendaftaran dan pengecekan lokasi yang lebih terarah, tim kami fokus
+          membantu bisnis di kawasan Jabodetabek.
         </p>
       </div>
 
-      {/* Area Layanan dengan Tab Filter Regional */}
-      <div className="mx-auto mt-10 max-w-4xl px-6">
-        {/* Tombol Tab Filter Wilayah */}
-        <div className="flex flex-wrap justify-center gap-2 border-b border-border/80 pb-4">
-          {REGION_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all duration-200 sm:text-sm ${
-                activeTab === tab.id
-                  ? "bg-brand-blue text-white shadow-md shadow-brand-blue/25"
-                  : "bg-white text-muted-foreground hover:bg-slate-200/70 hover:text-foreground border border-border"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+      <div className="mx-auto mt-10 max-w-5xl px-6">
+        <div className="rounded-2xl border border-border bg-white p-6 shadow-sm sm:p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-blue">
+                Penanda cakupan nasional
+              </p>
+              <h3 className="mt-2 font-display text-2xl font-bold tracking-tight text-brand-navy sm:text-3xl">
+                Cakupan wilayah kepulauan Indonesia
+              </h3>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                Enam kawasan ini menunjukkan jangkauan ekosistem Indibiz.
+                Ketersediaan paket tetap perlu dikonfirmasi berdasarkan alamat
+                usaha dan jaringan di lokasi.
+              </p>
+            </div>
+            <Badge className="w-fit bg-brand-blue font-semibold text-white">
+              {NATIONAL_ISLANDS.length} kawasan
+            </Badge>
+          </div>
 
-        {/* Daftar Kota (Grid Card Elegan) */}
-        <nav
-          aria-label="Daftar kota layanan Indibiz"
-          className="mt-6"
-        >
-          <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4">
-            {filteredAreas.map((area) => (
-              <li key={area.slug}>
-                <Link
-                  href={`/indibiz/${area.slug}`}
-                  className="group flex items-center gap-2 rounded-xl border border-border bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-blue hover:bg-brand-ice/40 hover:text-brand-blue hover:shadow-sm"
-                >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-brand-blue/10 group-hover:text-brand-blue">
-                    <MapPin className="h-3.5 w-3.5" />
-                  </span>
-                  <span className="truncate">{area.name}</span>
-                </Link>
+          <ul
+            aria-label="Kawasan cakupan Indibiz di Indonesia"
+            className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3"
+          >
+            {NATIONAL_ISLANDS.map((island) => (
+              <li
+                key={island.name}
+                className="rounded-xl border border-border/70 bg-slate-50 px-3.5 py-3 text-sm text-slate-700"
+              >
+                <span className="flex items-center gap-2 font-semibold text-brand-navy">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-blue" />
+                  {island.name}
+                </span>
+                <span className="mt-1 block pl-5 text-xs text-muted-foreground">
+                  {island.description}
+                </span>
               </li>
             ))}
           </ul>
-        </nav>
+        </div>
       </div>
 
-      {/* Apa itu & Histori Indibiz */}
+      <div className="mx-auto mt-8 max-w-5xl px-6">
+        <div className="rounded-2xl bg-brand-navy p-6 text-white shadow-xl sm:p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-sky">
+                Area layanan prioritas
+              </p>
+              <h3 className="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                Fokus pendaftaran Jabodetabek
+              </h3>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-blue-100/80">
+                Cek jangkauan, pilih paket, dan konsultasikan kebutuhan internet
+                bisnis Anda untuk Jakarta, Bogor, Depok, Tangerang, dan Bekasi.
+              </p>
+            </div>
+            <a
+              href="#cek-jangkauan"
+              className="inline-flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-brand-navy transition-colors hover:bg-brand-ice"
+            >
+              Cek lokasi <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+
+          <nav aria-label="Area layanan prioritas Jabodetabek" className="mt-6">
+            <ul className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              {SERVICE_AREAS.map((area) => (
+                <li key={area.slug}>
+                  <Link
+                    href={`/indibiz/${area.slug}`}
+                    className="group flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-3 text-sm font-medium text-white transition-colors hover:border-brand-sky/60 hover:bg-white/15"
+                  >
+                    <MapPin className="h-4 w-4 shrink-0 text-brand-sky" />
+                    <span>{area.name}</span>
+                    <ArrowRight className="ml-auto h-3.5 w-3.5 opacity-60 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </div>
+
       <div className="relative z-10 mx-auto mt-16 max-w-5xl px-6 sm:mt-24">
         <div className="grid gap-6 sm:grid-cols-2">
           <Card className="border-border/80 bg-white/90 shadow-sm backdrop-blur">
@@ -178,7 +170,10 @@ export function TrustSection() {
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Indibiz adalah ekosistem solusi digital dan internet bisnis berbasis fiber optic dari Telkom Indonesia. Dirancang khusus tanpa batasan FUP, koneksi stabil simetris, dan prioritas layanan untuk mendukung pertumbuhan UMKM hingga korporasi.
+                Indibiz adalah ekosistem solusi digital dan internet bisnis
+                berbasis fiber optic dari Telkom Indonesia. Layanannya
+                menawarkan koneksi tanpa batasan FUP dan pilihan rasio
+                kecepatan mulai 1:2 hingga 1:1 untuk mendukung kebutuhan usaha.
               </p>
             </CardContent>
           </Card>
@@ -196,26 +191,27 @@ export function TrustSection() {
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Diluncurkan pada HUT ke-58 Telkom Indonesia sebagai langkah strategis mempercepat digitalisasi bisnis di Tanah Air dengan menghadirkan infrastruktur jaringan fiber handal dan terintegrasi secara nasional.
+                Diluncurkan pada HUT ke-58 Telkom Indonesia sebagai langkah
+                strategis mempercepat digitalisasi bisnis di Tanah Air dengan
+                menghadirkan infrastruktur jaringan fiber yang terintegrasi.
               </p>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Animasi Fiber Pulse Divider */}
       <div className="mx-auto mt-14 max-w-5xl px-6 opacity-70 sm:mt-18">
         <FiberPulse className="h-3 w-full" variant="dark" />
       </div>
 
-      {/* Kenapa Harus Indibiz */}
       <div className="relative z-10 mx-auto mt-12 max-w-5xl px-6 sm:mt-16">
         <div className="mx-auto max-w-2xl text-center">
           <h3 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
             Kenapa Memilih Indibiz?
           </h3>
           <p className="mt-2.5 text-sm text-muted-foreground sm:text-base">
-            Kombinasi konektivitas fiber kecepatan tinggi dan platform digital bisnis dalam satu solusi.
+            Kombinasi konektivitas fiber kecepatan tinggi dan platform digital
+            bisnis dalam satu solusi.
           </p>
         </div>
 

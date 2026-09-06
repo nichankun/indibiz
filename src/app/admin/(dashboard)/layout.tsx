@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session";
 import { AppSidebar } from "@/components/admin/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { TooltipProvider } from "@/components/ui/tooltip"; // 1. Impor TooltipProvider
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -13,7 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <TooltipProvider> {/* 2. Bungkus paling luar dengan TooltipProvider */}
+    <TooltipProvider>
       <SidebarProvider>
         <AppSidebar name={session.name} role={session.role} />
         <SidebarInset>

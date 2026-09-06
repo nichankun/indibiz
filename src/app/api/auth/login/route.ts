@@ -4,14 +4,38 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users, auditLogs } from "@/db/database/schema";
-import { createSession, createPendingTwoFactorToken } from "@/lib/session";
+import {
+  clearPendingTwoFactorToken,
+  createPendingTwoFactorToken,
+  createSession,
+} from "@/lib/session";
+import { getClientIp } from "@/lib/client-ip";
+import { consumeRateLimit } from "@/lib/rate-limit";
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.string().trim().toLowerCase().email(),
   password: z.string().min(6),
 });
 
+const dummyPasswordHash = bcrypt.hash("invalid-login-placeholder", 10);
+
 export async function POST(request: NextRequest) {
+  const rateLimit = consumeRateLimit({
+    key: `login:${getClientIp(request)}`,
+    limit: 10,
+    windowMs: 15 * 60 * 1000,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Terlalu banyak percobaan login. Silakan coba lagi nanti." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+      }
+    );
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = loginSchema.safeParse(body);
 
@@ -23,13 +47,12 @@ export async function POST(request: NextRequest) {
 
   const user = await db.query.users.findFirst({ where: eq(users.email, email) });
 
-  // Pesan error digeneralisasi agar tidak membocorkan email mana yang terdaftar
-  if (!user || !user.isActive) {
-    return NextResponse.json({ error: "Email atau kata sandi salah." }, { status: 401 });
-  }
-
-  const validPassword = await bcrypt.compare(password, user.passwordHash);
-  if (!validPassword) {
+  // Bandingkan juga untuk akun yang tidak ditemukan agar timing respons lebih seragam.
+  const validPassword = await bcrypt.compare(
+    password,
+    user?.passwordHash ?? (await dummyPasswordHash)
+  );
+  if (!user || !user.isActive || !validPassword) {
     return NextResponse.json({ error: "Email atau kata sandi salah." }, { status: 401 });
   }
 
@@ -49,6 +72,7 @@ export async function POST(request: NextRequest) {
     name: user.name,
     role: user.role,
   });
+  await clearPendingTwoFactorToken();
 
   await db.insert(auditLogs).values({
     userId: user.id,
