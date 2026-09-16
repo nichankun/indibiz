@@ -35,7 +35,7 @@ export default async function AuditLogPage({
   const pageSize = 50;
 
   const logs = await db.query.auditLogs.findMany({
-    with: { user: true },
+    with: { user: { columns: { name: true } } },
     orderBy: desc(auditLogs.createdAt),
     limit: pageSize,
     offset: (page - 1) * pageSize,

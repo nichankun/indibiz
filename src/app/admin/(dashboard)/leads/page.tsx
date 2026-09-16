@@ -7,6 +7,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LeadStatusSelect } from "@/components/admin/lead-status-select";
 import { LEAD_STATUS_LABEL, LEAD_STATUS_ORDER } from "@/lib/utils";
 import { getSession } from "@/lib/session";
@@ -29,7 +30,10 @@ async function getLeads(searchParams: SearchParams) {
 
   return db.query.leads.findMany({
     where: conditions.length > 0 ? and(...conditions) : undefined,
-    with: { package: true, assignedSales: true },
+    with: {
+      package: { columns: { name: true } },
+      assignedSales: { columns: { name: true } },
+    },
     orderBy: desc(leads.createdAt),
     limit: 100,
   });
@@ -44,6 +48,9 @@ export default async function LeadsPage({
   const [leadList, session] = await Promise.all([getLeads(params), getSession()]);
   const canWriteAll = session?.role === "admin" || session?.role === "super_admin";
   const canExport = canWriteAll;
+  const selectedStatus = params.status && LEAD_STATUS_ORDER.includes(params.status as (typeof LEAD_STATUS_ORDER)[number])
+    ? params.status
+    : "all";
 
   return (
     <div className="space-y-6">
@@ -55,7 +62,7 @@ export default async function LeadsPage({
         
         {canExport && (
           <Button variant="outline" asChild>
-            <a href={`/api/leads/export${params.status ? `?status=${params.status}` : ""}`}>
+            <a href={`/api/leads/export${selectedStatus !== "all" ? `?status=${selectedStatus}` : ""}`}>
               Export CSV
             </a>
           </Button>
@@ -66,18 +73,22 @@ export default async function LeadsPage({
         <form className="flex flex-wrap items-center gap-3" method="get">
           <Input name="q" placeholder="Cari nama atau WhatsApp..." defaultValue={params.q} className="max-w-xs" />
           
-          <select
-            name="status"
-            defaultValue={params.status ?? ""}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <option value="">Semua Status</option>
+          <Select name="status" defaultValue={selectedStatus}>
+            <SelectTrigger
+              aria-label="Filter status"
+              className="h-10 min-w-44 rounded-md border-input bg-background px-3 py-2 text-foreground ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Status</SelectItem>
             {LEAD_STATUS_ORDER.map((s) => (
-              <option key={s} value={s}>
+              <SelectItem key={s} value={s}>
                 {LEAD_STATUS_LABEL[s]}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+            </SelectContent>
+          </Select>
           
           <Button type="submit" variant="secondary">
             Filter

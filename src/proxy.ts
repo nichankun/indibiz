@@ -12,9 +12,9 @@ if (!secretKey || secretKey.length < 32) {
 
 const encodedKey = new TextEncoder().encode(secretKey);
 
-// Proxy berjalan di Edge runtime — hanya memverifikasi token,
-// tidak menyentuh database. Otorisasi granular per-role tetap dicek
-// ulang di setiap Server Action/route handler.
+// Proxy hanya memverifikasi token dan tidak menyentuh database.
+// Otorisasi granular per-role tetap dicek ulang di setiap
+// Server Action atau route handler.
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 

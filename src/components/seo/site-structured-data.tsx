@@ -3,7 +3,7 @@ import { SERVICE_AREAS } from "@/lib/service-areas";
 import { siteConfig } from "@/lib/site";
 
 const siteDescription =
-  "Informasi paket, harga, dan pengecekan jangkauan Indibiz untuk kebutuhan internet bisnis di Indonesia.";
+  "Informasi paket Indibiz dan konsultasi ketersediaan jaringan untuk internet bisnis di Indonesia, dengan fokus pendaftaran Jabodetabek.";
 
 export function SiteStructuredData() {
   const data = {
@@ -22,7 +22,7 @@ export function SiteStructuredData() {
           telephone: siteConfig.salesPhone,
           contactType: "sales",
           availableLanguage: ["id"],
-          areaServed: "ID",
+          areaServed: SERVICE_AREAS.map((area) => area.name),
         },
         areaServed: [
           { "@type": "Country", name: "Indonesia" },

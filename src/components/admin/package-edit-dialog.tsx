@@ -11,6 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updatePackagePricing } from "@/app/admin/(dashboard)/packages/actions";
@@ -66,10 +67,10 @@ export function PackageEditDialog({ pkg }: { pkg: Package }) {
             <Label htmlFor="badge">Badge (opsional)</Label>
             <Input id="badge" name="badge" defaultValue={pkg.badge ?? ""} placeholder="Paling Populer" />
           </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" name="isActive" defaultChecked={pkg.isActive} />
-            Tampilkan di landing page
-          </label>
+          <div className="flex items-center gap-2 text-sm">
+            <Checkbox id="isActive" name="isActive" defaultChecked={pkg.isActive} />
+            <Label htmlFor="isActive">Tampilkan di landing page</Label>
+          </div>
           <DialogFooter>
             <Button type="submit" disabled={isPending}>
               {isPending ? "Menyimpan..." : "Simpan"}

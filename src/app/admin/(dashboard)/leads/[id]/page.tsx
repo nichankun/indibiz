@@ -5,11 +5,12 @@ import { leads, leadActivities, users } from "@/db/database/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LeadStatusSelect } from "@/components/admin/lead-status-select";
 import { FollowUpForm } from "@/components/admin/follow-up-form";
-import { WhatsappTemplateDialog } from "@/components/admin/whatsapp-template-dialog";
 import { AssignSalesSelect } from "@/components/admin/assign-sales-select";
 import { formatRupiah, LEAD_STATUS_LABEL } from "@/lib/utils";
 import { getSession } from "@/lib/session";
-import { MapPin, Phone, Mail, Calendar } from "lucide-react";
+import { MapPin, Phone, Mail, Calendar, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { createWhatsAppUrl } from "@/lib/whatsapp-link";
 
 export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -20,7 +21,10 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   const [lead, activeUsers] = await Promise.all([
     db.query.leads.findFirst({
       where: eq(leads.id, leadId),
-      with: { package: true, assignedSales: true },
+      with: {
+        package: { columns: { name: true, normalPrice: true, promoPrice: true } },
+        assignedSales: { columns: { name: true } },
+      },
     }),
     session?.role === "admin" || session?.role === "super_admin"
       ? db.query.users.findMany({
@@ -37,10 +41,17 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   const salesUsers = activeUsers.filter(
     (user) => user.role === "sales" || user.role === "admin" || user.role === "super_admin",
   );
+  const customerWhatsAppUrl = createWhatsAppUrl(
+    lead.whatsapp,
+    `Halo ${lead.name}, saya admin Indibiz. Saya ingin menindaklanjuti permintaan Anda (${lead.leadCode}).`,
+  );
+  const addressLabel = [lead.address, lead.district, lead.city, lead.postalCode]
+    .filter(Boolean)
+    .join(", ");
 
   const activities = await db.query.leadActivities.findMany({
     where: eq(leadActivities.leadId, leadId),
-    with: { user: true },
+    with: { user: { columns: { name: true } } },
     orderBy: desc(leadActivities.createdAt),
   });
 
@@ -52,7 +63,18 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           <p className="text-sm text-muted-foreground">{lead.leadCode}</p>
         </div>
         <div className="flex items-center gap-2">
-          {canWriteLead && <WhatsappTemplateDialog leadId={lead.id} leadName={lead.name} />}
+          {canWriteLead && (
+            <Button
+              size="sm"
+              asChild
+              className="bg-[#25D366] text-white shadow-sm shadow-[#128C7E]/20 hover:bg-[#128C7E]"
+            >
+              <a href={customerWhatsAppUrl} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="h-4 w-4" />
+                Chat pelanggan
+              </a>
+            </Button>
+          )}
           {canWriteLead ? (
             <LeadStatusSelect leadId={lead.id} status={lead.status} />
           ) : (
@@ -90,9 +112,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                 <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
                 <div>
                   <div className="text-xs text-muted-foreground">Alamat</div>
-                  <span className="text-foreground">
-                    {lead.address}, {lead.district}, {lead.city} {lead.postalCode}
-                  </span>
+                  <span className="text-foreground">{addressLabel || "Lokasi belum dikirim"}</span>
                 </div>
               </div>
               {lead.nextFollowUpDate && (

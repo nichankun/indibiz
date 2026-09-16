@@ -10,28 +10,27 @@ import { FAQ_ITEMS, getCityFaqs } from "@/lib/faqs";
 
 export function Faq() {
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-6 py-16 sm:py-24 text-foreground">
-      <div className="mb-10 text-center">
-       
-        <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-          FAQ WiFi Indibiz
+    <section id="faq" className="mx-auto max-w-3xl px-5 py-12 text-foreground sm:px-6 sm:py-24 lg:max-w-4xl lg:py-20">
+      <div className="mb-7 text-center sm:mb-10 lg:mb-10">
+        <h2 className="font-display text-[1.7rem] leading-[1.22] font-semibold tracking-[-0.025em] text-brand-navy sm:text-4xl">
+          Pertanyaan umum tentang Indibiz
         </h2>
-        <p className="mt-3 text-muted-foreground">
+        <p className="mt-3 text-[0.9375rem] leading-6 text-slate-600 sm:text-base sm:leading-7 lg:text-lg lg:leading-8">
           Belum ketemu jawabannya? Chat langsung tim sales kami via WhatsApp.
         </p>
       </div>
 
-      <Accordion type="single" collapsible className="space-y-2">
+      <Accordion type="single" collapsible className="space-y-2 lg:space-y-3">
         {FAQ_ITEMS.map((item, i) => (
           <AccordionItem
             key={i}
             value={`item-${i}`}
-            className="rounded-xl border border-border/60 bg-muted/30 px-4 data-[state=open]:border-brand-blue/30 data-[state=open]:bg-brand-ice/50"
+            className="rounded-xl border border-border/60 bg-muted/30 px-4 data-[state=open]:border-brand-blue/30 data-[state=open]:bg-brand-ice/50 lg:rounded-2xl lg:px-6"
           >
-            <AccordionTrigger className="text-left text-sm font-medium hover:no-underline sm:text-base">
+            <AccordionTrigger className="min-h-12 items-center gap-3 py-3 text-left text-[0.9375rem] leading-5 font-medium hover:no-underline sm:min-h-0 sm:items-start sm:py-2.5 sm:text-base lg:min-h-14 lg:py-4 lg:text-lg">
               {item.question}
             </AccordionTrigger>
-            <AccordionContent className="text-sm text-muted-foreground sm:text-base">
+            <AccordionContent className="text-sm text-muted-foreground sm:text-base lg:pb-5 lg:text-base lg:leading-7">
               {item.answer}
             </AccordionContent>
           </AccordionItem>

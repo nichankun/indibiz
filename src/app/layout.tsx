@@ -5,9 +5,9 @@ import { siteConfig } from "@/lib/site";
 
 const SITE_URL = siteConfig.url;
 const SITE_NAME = siteConfig.name;
-const SITE_TITLE = "Indibiz untuk Bisnis: Cek Paket & Jangkauan";
+const SITE_TITLE = "Paket Indibiz untuk Bisnis di Jabodetabek";
 const SITE_DESCRIPTION =
-  "Cek paket, harga, dan jangkauan Indibiz untuk kantor, toko, dan UMKM. Dapatkan bantuan pengecekan area serta pendaftaran internet bisnis di Indonesia.";
+  "Lihat pilihan paket internet bisnis Indibiz dan konsultasikan ketersediaan untuk kantor, toko, dan UMKM. Tim pendaftaran kami berfokus membantu wilayah Jakarta, Bogor, Depok, Tangerang, dan Bekasi.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

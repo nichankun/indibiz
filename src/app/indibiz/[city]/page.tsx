@@ -177,10 +177,10 @@ export default async function ServiceAreaPage({ params }: PageProps) {
               size="lg"
               variant="outline"
               asChild
-              className="rounded-full border-white/25 bg-white/10 px-7 py-6 text-base font-semibold text-white backdrop-blur transition-all hover:bg-white/20 hover:text-white"
+              className="rounded-full border-[#25D366]/60 bg-[#25D366] px-7 py-6 text-base font-semibold text-white shadow-lg shadow-[#128C7E]/25 transition-all hover:bg-[#128C7E] hover:text-white"
             >
               <a href={waUrl} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="mr-2 h-5 w-5 text-green-400" />
+                <MessageCircle className="mr-2 h-5 w-5" />
                 Chat Sales {area.name}
               </a>
             </Button>

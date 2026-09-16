@@ -1,286 +1,238 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatRupiah } from "@/lib/utils";
-import { useState } from "react";
+import { createSalesWhatsAppUrl } from "@/lib/whatsapp-link";
 import type { Package } from "@/db/database/schema";
-import { siteConfig } from "@/lib/site";
 
 type Props = {
   basicPackages: Package[];
   bisnisPackages: Package[];
 };
 
-const REGULER_LABEL = "Internet Only";
-const WHATSAPP_NUMBER = siteConfig.salesPhone.replace(/\D/g, "");
+type PackageGroupProps = {
+  title: string;
+  ratio: string;
+  packages: Package[];
+};
 
-const ADDON_TABS = [
-  REGULER_LABEL,
+const REGULAR_LABEL = "Internet Only";
+const ADDON_LABELS = [
+  REGULAR_LABEL,
   "Netmonk HI",
   "OCA Interaction Lite",
   "Pijar Sekolah",
   "OCA Breach Checker",
 ];
 
-const BASIC_HIGHLIGHTS = [
-  "Internet tanpa batasan FUP",
+const BASE_BENEFITS = [
+  "Internet tanpa batas FUP",
   "Diskon 70% biaya pasang baru",
-  "Rasio Kecepatan 1:2",
 ];
 
-const BISNIS_HIGHLIGHTS = [
-  "Internet tanpa batasan FUP",
-  "Diskon 70% biaya pasang baru",
-  "Rasio Kecepatan 1:1",
-];
+function packagesForAddon(packages: Package[], addon: string) {
+  const bundledLabels = ADDON_LABELS.filter((label) => label !== REGULAR_LABEL);
 
-function buildWhatsAppLink(pkg: Package) {
-  const price = pkg.promoPrice ?? pkg.normalPrice;
-  const message = `Halo, saya tertarik dengan paket *${pkg.name}* seharga ${formatRupiah(
-    price
-  )}/bulan. Mohon info lebih lanjut untuk pendaftaran.`;
+  return addon === REGULAR_LABEL
+    ? packages.filter((pkg) => !bundledLabels.some((label) => pkg.name.includes(label)))
+    : packages.filter((pkg) => pkg.name.includes(addon));
+}
 
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+function PackageCard({ pkg }: { pkg: Package }) {
+  const hasDiscount =
+    pkg.promoPrice !== null && Number(pkg.promoPrice) < Number(pkg.normalPrice);
+  const formattedPrice = formatRupiah(pkg.promoPrice ?? pkg.normalPrice);
+
+  return (
+    <Card className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-blue-700 bg-gradient-to-br from-brand-blue to-blue-700 p-0 text-white shadow-md transition-shadow hover:shadow-lg sm:rounded-2xl lg:rounded-3xl">
+      <div className="flex min-w-0 flex-1 flex-col p-2.5 sm:p-4 lg:p-5">
+        <div className="flex min-h-3 items-center justify-between gap-1 sm:min-h-5">
+          <span className="text-[9px] font-semibold uppercase tracking-wide text-blue-100 sm:text-[10px]">
+            Up to
+          </span>
+          {pkg.badge && (
+            <span className="max-w-[70%] truncate rounded-full bg-white/15 px-1.5 py-0.5 text-[9px] font-medium leading-none text-white sm:px-2 sm:text-[10px]">
+              {pkg.badge}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-1 grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] items-center gap-1.5 sm:mt-2 sm:gap-3">
+          <div className="min-w-0">
+            <p className="font-display text-2xl font-bold leading-none tracking-tight sm:text-4xl lg:text-5xl">
+              {pkg.speedMbps}
+            </p>
+            <p className="mt-0.5 text-[9px] font-medium text-blue-100 sm:text-xs">
+              Mbps
+            </p>
+          </div>
+
+          <div className="min-w-0 border-l border-white/25 pl-1.5 sm:pl-3">
+            {hasDiscount && (
+              <p className="truncate text-[9px] leading-tight text-blue-100 line-through sm:text-[10px]">
+                {formatRupiah(pkg.normalPrice)}
+              </p>
+            )}
+            <p className="truncate text-xs font-bold leading-tight tracking-tight sm:text-base lg:text-lg">
+              {formattedPrice}
+            </p>
+            <p className="mt-0.5 text-[9px] font-medium uppercase tracking-wide text-blue-100 sm:text-[10px]">
+              / bulan
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-2.5 pb-2.5 sm:px-4 sm:pb-4 lg:px-5 lg:pb-5">
+        <Button
+          asChild
+          className="h-10 w-full rounded-lg border border-[#25D366]/70 bg-[#25D366] px-2 text-[11px] font-semibold text-white shadow-sm shadow-[#128C7E]/20 hover:bg-[#128C7E] sm:h-9 sm:rounded-xl sm:text-xs lg:h-11 lg:text-sm"
+        >
+          <a
+            href={createSalesWhatsAppUrl(
+              `Halo admin Indibiz, saya tertarik dengan paket ${pkg.name}. Mohon info ketersediaan di wilayah Jabodetabek.`,
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Pilih paket
+          </a>
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
+function PackageGroup({ title, ratio, packages }: PackageGroupProps) {
+  if (packages.length === 0) return null;
+
+  const benefits = [...BASE_BENEFITS, `Rasio Kecepatan ${ratio}`];
+
+  return (
+    <section aria-label={title} className="mt-8 first:mt-7 sm:mt-14 lg:mt-16">
+      <div className="mx-auto mb-4 max-w-4xl text-center sm:mb-7 lg:mb-9">
+        <h3 className="inline-flex rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-semibold text-brand-blue sm:px-5 sm:text-base lg:px-6 lg:py-2.5 lg:text-lg">
+          {title}
+        </h3>
+
+        <ul className="mx-auto mt-3 grid max-w-3xl gap-2 text-left sm:mt-5 sm:grid-cols-3 sm:gap-3 lg:max-w-4xl">
+          {benefits.map((benefit) => (
+            <li
+              key={benefit}
+              className="flex min-w-0 items-center gap-2 text-xs leading-5 text-slate-700 sm:text-sm lg:text-base"
+            >
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-brand-blue">
+                <Check aria-hidden="true" className="h-3 w-3" />
+              </span>
+              <span>{benefit}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-3 lg:gap-5">
+        {packages.map((pkg) => (
+          <PackageCard key={pkg.id} pkg={pkg} />
+        ))}
+      </div>
+    </section>
+  );
 }
 
 export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
-  const addonKeywords = ADDON_TABS.filter((addon) => addon !== REGULER_LABEL);
-  const packagesForAddon = (items: Package[], addon: string) =>
-    addon === REGULER_LABEL
-      ? items.filter((pkg) => !addonKeywords.some((keyword) => pkg.name.includes(keyword)))
-      : items.filter((pkg) => pkg.name.includes(addon));
-
-  const availableAddons = ADDON_TABS.filter(
+  const addonOptions = ADDON_LABELS.filter(
     (addon) =>
-      packagesForAddon(basicPackages, addon).length > 0 ||
-      packagesForAddon(bisnisPackages, addon).length > 0
+      packagesForAddon(basicPackages, addon).length +
+        packagesForAddon(bisnisPackages, addon).length >
+      0,
   );
-  const [activeAddon, setActiveAddon] = useState<string>(
-    () => availableAddons[0] ?? REGULER_LABEL
-  );
-
-  const isReguler = activeAddon === REGULER_LABEL;
-  const filteredBasic = packagesForAddon(basicPackages, activeAddon);
-  const filteredBisnis = packagesForAddon(bisnisPackages, activeAddon);
-
-  const addonBenefits = filteredBasic[0]?.benefits ?? [];
-
-  const basicHighlights = BASIC_HIGHLIGHTS;
-  const bisnisHighlights = BISNIS_HIGHLIGHTS;
+  const [activeAddon, setActiveAddon] = useState(addonOptions[0] ?? REGULAR_LABEL);
+  const visibleBasicPackages = packagesForAddon(basicPackages, activeAddon);
+  const visibleBisnisPackages = packagesForAddon(bisnisPackages, activeAddon);
+  const hasVisiblePackages =
+    visibleBasicPackages.length > 0 || visibleBisnisPackages.length > 0;
 
   return (
-    <section id="paket" className="mx-auto max-w-5xl px-6 py-20 sm:py-28 text-foreground">
-
-      {/* Header Utama */}
-      <div className="mx-auto max-w-2xl text-center mb-10">
-       
-        <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-          Pilih paket sesuai kebutuhan bisnis Anda
-        </h2>
-        <p className="mt-3 text-muted-foreground">
-          Tanpa kontrak berbelit. Klik paket yang Anda inginkan, tim sales kami
-          langsung merespons via WhatsApp.
-        </p>
-      </div>
-
-      {/* Tab Filter Add-on / Bundling */}
-      <div className="mb-12 -mx-6 px-6 sm:mx-0 sm:px-0">
-        <Tabs value={activeAddon} onValueChange={setActiveAddon}>
-          <TabsList className="h-auto w-full justify-start gap-2 overflow-x-auto rounded-full bg-muted/60 p-1.5 sm:w-fit sm:justify-center sm:mx-auto [&::-webkit-scrollbar]:hidden">
-            {availableAddons.map((addon) => (
-              <TabsTrigger
-                key={addon}
-                value={addon}
-                className="shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium data-[state=active]:bg-brand-blue data-[state=active]:text-white data-[state=active]:shadow-md"
-              >
-                {addon}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      </div>
-
-      <div className="space-y-10">
-
-        {/* --- BAGIAN PAKET BASIC --- */}
-        <div>
-          <div className="flex justify-center mb-5">
-            <div className="bg-brand-blue/10 text-brand-blue border border-brand-blue/20 px-6 py-2 rounded-full font-bold text-sm sm:text-base text-center">
-              Indibiz Paket Basic{!isReguler && ` + ${activeAddon}`}
-            </div>
-          </div>
-
-          <div className="mx-auto mb-8 flex w-fit flex-col gap-3 sm:grid sm:w-full sm:max-w-2xl sm:grid-cols-3 sm:gap-3">
-            {basicHighlights.map((highlight) => (
-              <div key={highlight} className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5 sm:text-center">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-blue text-white shadow-sm shadow-brand-blue/30 sm:h-8 sm:w-8">
-                  <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </span>
-                <span className="text-sm font-semibold text-foreground sm:text-[13px]">
-                  {highlight}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
-            {filteredBasic.map((pkg) => (
-              <Card
-                key={pkg.id}
-                className="group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-white/10 bg-[linear-gradient(135deg,var(--brand-navy)_0%,var(--brand-blue-dark)_45%,var(--brand-blue)_75%,var(--brand-sky)_130%)] p-2.5 shadow-lg shadow-brand-navy/30 transition-all duration-200 hover:-translate-y-1 hover:brightness-110 hover:shadow-xl hover:shadow-brand-blue/40 sm:rounded-2xl sm:p-4"
-              >
-                <div className="pointer-events-none absolute -top-8 -left-8 h-24 w-24 rounded-full bg-white/20 blur-2xl" />
-                <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/10" />
-
-                <div className="relative flex items-baseline gap-1.5 sm:gap-2">
-                  <div className="flex flex-col items-start shrink-0">
-                    <span className="text-[9px] sm:text-[10px] font-semibold text-blue-100 uppercase tracking-wider leading-none">
-                      Up to
-                    </span>
-                    <span className="text-xl sm:text-3xl font-extrabold tracking-tight text-white leading-none mt-0.5">
-                      {pkg.speedMbps}
-                    </span>
-                    <span className="text-[9px] sm:text-[10px] font-semibold text-blue-100 leading-none mt-0.5">
-                      Mbps
-                    </span>
-                  </div>
-
-                  <div className="h-9 sm:h-10 w-px bg-white/25 shrink-0 self-center" />
-
-                  <div className="flex flex-col items-start min-w-0">
-                    {pkg.normalPrice && pkg.promoPrice && Number(pkg.promoPrice) < Number(pkg.normalPrice) && (
-                      <span className="text-[9px] sm:text-[11px] font-semibold text-blue-200/70 line-through leading-none">
-                        {formatRupiah(pkg.normalPrice)}
-                      </span>
-                    )}
-                    <div className="flex items-baseline gap-0.5 flex-wrap mt-0.5">
-                      <span className="text-base sm:text-xl font-extrabold text-white leading-none whitespace-nowrap">
-                        {formatRupiah(pkg.promoPrice ?? pkg.normalPrice)}
-                      </span>
-                    </div>
-                    <span className="text-[9px] sm:text-[10px] font-semibold text-blue-100 uppercase tracking-widest mt-0.5">
-                      /Bulan
-                    </span>
-                  </div>
-                </div>
-
-                <a
-                  href={buildWhatsAppLink(pkg)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative block w-full rounded-lg bg-white/15 py-1.5 text-center text-xs font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25 sm:text-sm"
-                >
-                  Pilih Paket
-                </a>
-              </Card>
-            ))}
-          </div>
+    <section id="paket" className="bg-slate-50 px-3 py-12 sm:px-6 sm:py-20">
+      <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="font-display text-[1.7rem] leading-[1.22] font-semibold tracking-[-0.025em] text-brand-navy sm:text-4xl">
+            Pilih paket yang sesuai untuk usaha Anda
+          </h2>
+          <p className="mt-3 text-[0.9375rem] leading-6 text-slate-600 sm:text-base sm:leading-7">
+            Bandingkan pilihan paket dan layanan tambahan. Admin sales siap membantu
+            mengecek ketersediaan.
+          </p>
         </div>
 
-        {/* --- BAGIAN PAKET BISNIS --- */}
-        <div>
-          <div className="flex justify-center mb-5">
-            <div className="bg-brand-blue/10 text-brand-blue border border-brand-blue/20 px-6 py-2 rounded-full font-bold text-sm sm:text-base text-center">
-              Indibiz Paket Bisnis{!isReguler && ` + ${activeAddon}`}
-            </div>
+        {addonOptions.length > 0 && (
+          <div className="mt-7 flex w-full justify-center sm:mt-8">
+            <Tabs
+              className="w-full sm:w-auto lg:inline-flex lg:w-fit"
+              value={activeAddon}
+              onValueChange={setActiveAddon}
+            >
+              <TabsList className="group-data-horizontal/tabs:!h-auto grid w-full max-w-3xl grid-cols-2 items-stretch justify-center gap-1.5 rounded-2xl bg-white p-1.5 shadow-sm sm:group-data-horizontal/tabs:!h-8 sm:flex sm:w-auto sm:max-w-none lg:group-data-horizontal/tabs:!h-11 lg:w-fit lg:max-w-full lg:gap-1.5 lg:rounded-full lg:border lg:border-slate-200 lg:p-1.5">
+                {addonOptions.map((addon, index) => (
+                  <TabsTrigger
+                    key={addon}
+                    value={addon}
+                    className={`${addonOptions.length % 2 === 1 && index === addonOptions.length - 1 ? "col-span-2" : "col-span-1"} min-h-10 whitespace-normal rounded-xl px-2 py-2 text-center text-xs leading-tight data-[state=active]:bg-brand-blue data-[state=active]:text-white sm:col-span-1 sm:min-h-8 sm:whitespace-nowrap sm:px-4 sm:py-2 sm:text-sm lg:flex-none lg:min-h-8 lg:rounded-full lg:px-5 lg:py-1 lg:text-[0.9375rem] lg:font-medium`}
+                  >
+                    {addon}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
           </div>
+        )}
 
-          <div className="mx-auto mb-8 flex w-fit flex-col gap-3 sm:grid sm:w-full sm:max-w-2xl sm:grid-cols-3 sm:gap-3">
-            {bisnisHighlights.map((highlight) => (
-              <div key={highlight} className="flex items-center gap-3 sm:flex-col sm:items-center sm:gap-2.5 sm:text-center">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-blue text-white shadow-sm shadow-brand-blue/30 sm:h-8 sm:w-8">
-                  <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </span>
-                <span className="text-sm font-semibold text-foreground sm:text-[13px]">
-                  {highlight}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
-            {filteredBisnis.map((pkg) => (
-              <Card
-                key={pkg.id}
-                className="group relative flex flex-col gap-2.5 overflow-hidden rounded-xl border border-white/10 bg-[linear-gradient(135deg,var(--brand-navy)_0%,var(--brand-blue-dark)_45%,var(--brand-blue)_75%,var(--brand-sky)_130%)] p-2.5 shadow-lg shadow-brand-navy/30 transition-all duration-200 hover:-translate-y-1 hover:brightness-110 hover:shadow-xl hover:shadow-brand-blue/40 sm:rounded-2xl sm:p-4"
+        {hasVisiblePackages ? (
+          <>
+            <PackageGroup
+              title="Indibiz Paket Basic"
+              ratio="1:2"
+              packages={visibleBasicPackages}
+            />
+            <PackageGroup
+              title="Indibiz Paket Bisnis"
+              ratio="1:1"
+              packages={visibleBisnisPackages}
+            />
+          </>
+        ) : (
+          <div className="mt-8 rounded-2xl border border-dashed border-border bg-white p-8 text-center">
+            <p className="font-medium text-brand-navy">Paket sedang diperbarui.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Hubungi admin untuk menanyakan pilihan yang tersedia.
+            </p>
+            <div className="mt-4">
+              <Button
+                asChild
+                className="rounded-full bg-[#25D366] text-white shadow-sm shadow-[#128C7E]/20 hover:bg-[#128C7E]"
               >
-                <div className="pointer-events-none absolute -top-8 -left-8 h-24 w-24 rounded-full bg-white/20 blur-2xl" />
-                <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/10" />
-
-                <div className="relative flex items-baseline gap-1.5 sm:gap-2">
-                  <div className="flex flex-col items-start shrink-0">
-                    <span className="text-[9px] sm:text-[10px] font-semibold text-blue-100 uppercase tracking-wider leading-none">
-                      Up to
-                    </span>
-                    <span className="text-xl sm:text-3xl font-extrabold tracking-tight text-white leading-none mt-0.5">
-                      {pkg.speedMbps}
-                    </span>
-                    <span className="text-[9px] sm:text-[10px] font-semibold text-blue-100 leading-none mt-0.5">
-                      Mbps
-                    </span>
-                  </div>
-
-                  <div className="h-9 sm:h-10 w-px bg-white/25 shrink-0 self-center" />
-
-                  <div className="flex flex-1 flex-col items-start min-w-0">
-                    {pkg.normalPrice && pkg.promoPrice && Number(pkg.promoPrice) < Number(pkg.normalPrice) && (
-                      <span className="text-[8px] sm:text-[11px] font-semibold text-blue-200/70 line-through leading-none truncate w-full">
-                        {formatRupiah(pkg.normalPrice)}
-                      </span>
-                    )}
-                    <div className="flex items-baseline gap-0.5 mt-0.5 w-full">
-                      <span className="text-sm sm:text-lg font-extrabold text-white leading-tight break-all">
-                        {formatRupiah(pkg.promoPrice ?? pkg.normalPrice)}
-                      </span>
-                    </div>
-                    <span className="text-[9px] sm:text-[10px] font-semibold text-blue-100 uppercase tracking-widest mt-0.5">
-                      /Bulan
-                    </span>
-                  </div>
-                </div>
-
                 <a
-                  href={buildWhatsAppLink(pkg)}
+                  href={createSalesWhatsAppUrl(
+                    "Halo admin Indibiz, saya ingin menanyakan paket internet bisnis yang tersedia.",
+                  )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative block w-full rounded-lg bg-white/15 py-1.5 text-center text-xs font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25 sm:text-sm"
                 >
-                  Pilih Paket
+                  Tanya admin
                 </a>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* --- BANNER FITUR ADD-ON --- */}
-        {!isReguler && (
-          <div className="mt-6 flex flex-col gap-5 rounded-2xl bg-brand-navy px-5 py-6 text-white shadow-xl md:flex-row md:items-center md:justify-between md:gap-6 md:px-8">
-            <div className="text-xl md:text-2xl font-black tracking-tight text-center md:text-left whitespace-nowrap">
-              {activeAddon}
-            </div>
-            <div className="flex flex-col items-start gap-3 md:flex-row md:flex-wrap md:items-center md:justify-end md:gap-x-6 md:gap-y-3">
-              {addonBenefits.map((benefit, i) => (
-                <div key={i} className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-brand-sky shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium text-slate-200 leading-snug">{benefit}</span>
-                </div>
-              ))}
+              </Button>
             </div>
           </div>
         )}
 
-      </div>
-
-      {/* Syarat dan Ketentuan */}
-      <div className="mt-8 rounded-xl border border-border bg-muted/20 p-6 text-sm text-muted-foreground">
-        <h4 className="font-semibold text-foreground mb-3">Syarat dan Ketentuan Berlangganan:</h4>
-        <ol className="list-decimal pl-4 space-y-1.5">
-          <li>Biaya Pasang Baru (PSB) Rp150.000 dan dibayarkan di awal saat instalasi pemasangan di lokasi Anda.</li>
-          <li>Harga belum termasuk PPN 11%.</li>
-          <li>Promo ini berlaku selama periode aktif.</li>
-        </ol>
+        <p className="mt-8 text-center text-xs leading-relaxed text-muted-foreground">
+          Harga dan promo dapat berubah. Konfirmasi biaya akhir serta ketersediaan
+          kepada admin sebelum mendaftar.
+        </p>
       </div>
     </section>
   );

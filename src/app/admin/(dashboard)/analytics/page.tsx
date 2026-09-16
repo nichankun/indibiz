@@ -1,10 +1,13 @@
 import { db } from "@/db";
 import { leads } from "@/db/database/schema";
+import { count, inArray, sql } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { FunnelChart, type ChannelFunnelRow } from "@/components/admin/funnel-chart";
 
-const DIHUBUNGI_STATUSES = new Set([
+type LeadStatus = typeof leads.$inferSelect.status;
+
+const DIHUBUNGI_STATUSES = new Set<LeadStatus>([
   "sudah_dihubungi",
   "menunggu_survey",
   "survey_dijadwalkan",
@@ -16,7 +19,7 @@ const DIHUBUNGI_STATUSES = new Set([
   "selesai",
 ]);
 
-const SURVEY_STATUSES = new Set([
+const SURVEY_STATUSES = new Set<LeadStatus>([
   "menunggu_survey",
   "survey_dijadwalkan",
   "area_tercover",
@@ -26,29 +29,24 @@ const SURVEY_STATUSES = new Set([
   "selesai",
 ]);
 
-const PEMASANGAN_STATUSES = new Set(["pemasangan_dijadwalkan", "berhasil_dipasang", "selesai"]);
+const PEMASANGAN_STATUSES = new Set<LeadStatus>(["pemasangan_dijadwalkan", "berhasil_dipasang", "selesai"]);
 
 async function getFunnelByChannel(): Promise<ChannelFunnelRow[]> {
-  const allLeads = await db.select({ source: leads.source, utmSource: leads.utmSource, status: leads.status }).from(leads);
+  const channel = sql<string>`coalesce(nullif(${leads.utmSource}, ''), nullif(${leads.source}, ''), 'Lainnya')`;
+  const rows = await db
+    .select({
+      channel,
+      totalLead: count(),
+      dihubungi: sql<number>`count(*) filter (where ${inArray(leads.status, Array.from(DIHUBUNGI_STATUSES))})`,
+      survey: sql<number>`count(*) filter (where ${inArray(leads.status, Array.from(SURVEY_STATUSES))})`,
+      pemasangan: sql<number>`count(*) filter (where ${inArray(leads.status, Array.from(PEMASANGAN_STATUSES))})`,
+    })
+    .from(leads)
+    .groupBy(channel);
 
-  const byChannel = new Map<string, ChannelFunnelRow>();
-
-  for (const lead of allLeads) {
-    const channel = lead.utmSource || lead.source || "Lainnya";
-    const key = channel.replace(/_/g, " ");
-
-    if (!byChannel.has(key)) {
-      byChannel.set(key, { channel: key, totalLead: 0, dihubungi: 0, survey: 0, pemasangan: 0 });
-    }
-
-    const row = byChannel.get(key)!;
-    row.totalLead += 1;
-    if (DIHUBUNGI_STATUSES.has(lead.status)) row.dihubungi += 1;
-    if (SURVEY_STATUSES.has(lead.status)) row.survey += 1;
-    if (PEMASANGAN_STATUSES.has(lead.status)) row.pemasangan += 1;
-  }
-
-  return Array.from(byChannel.values()).sort((a, b) => b.totalLead - a.totalLead);
+  return rows
+    .map((row) => ({ ...row, channel: row.channel.replace(/_/g, " ") }))
+    .sort((a, b) => b.totalLead - a.totalLead);
 }
 
 export default async function AnalyticsPage() {

@@ -5,7 +5,6 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { leads, leadActivities, auditLogs, users } from "@/db/database/schema";
 import { getSession, hasPermission, type SessionPayload } from "@/lib/session";
-import { sendWhatsAppTemplate } from "@/lib/whatsapp";
 import { LEAD_STATUS_ORDER } from "@/lib/utils";
 
 type Lead = typeof leads.$inferSelect;
@@ -142,31 +141,4 @@ export async function addFollowUpNote(leadId: number, content: string, nextFollo
   });
 
   revalidatePath(`/admin/leads/${leadId}`);
-}
-
-export async function sendLeadWhatsAppTemplate(leadId: number, templateName: string, bodyParams: string[]) {
-  const session = await getSession();
-  if (!session) throw new Error("Tidak terautentikasi");
-
-  const trimmedTemplate = templateName.trim();
-  if (!trimmedTemplate) throw new Error("Nama template wajib diisi");
-
-  const lead = await getLeadOrThrow(leadId);
-  assertLeadWriteAccess(session, lead);
-
-  const result = await sendWhatsAppTemplate(lead.whatsapp, trimmedTemplate, "id", bodyParams);
-
-  await db.insert(leadActivities).values({
-    leadId,
-    userId: session.userId,
-    type: "whatsapp",
-    content: result.ok
-      ? `Template "${trimmedTemplate}" terkirim (message id: ${result.messageId})`
-      : `Gagal kirim template "${trimmedTemplate}": ${result.error}`,
-  });
-
-  if (!result.ok) throw new Error(result.error);
-
-  revalidatePath(`/admin/leads/${leadId}`);
-  return result;
 }

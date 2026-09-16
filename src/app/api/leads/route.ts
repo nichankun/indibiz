@@ -16,11 +16,6 @@ const leadSchema = z.object({
     .regex(/^\+?[0-9]{8,20}$/, "Nomor WhatsApp tidak valid"),
   email: z.string().email().optional().or(z.literal("")),
   city: z.string().max(100).optional(),
-  district: z.string().max(100).optional(),
-  postalCode: z.string().max(10).optional(),
-  address: z.string().max(1000).optional(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
   packageId: z.number().int().positive().optional(),
   consentPrivacy: z.boolean(),
   consentContact: z.boolean(),
@@ -30,7 +25,7 @@ const leadSchema = z.object({
   utmCampaign: z.string().max(100).optional(),
   landingPageSource: z.string().max(2048).optional(),
   referral: z.string().max(120).optional(),
-  website: z.string().max(0).optional(),
+  website: z.string().max(200).optional(),
 });
 
 const WINDOW_MS = 60_000;
@@ -68,8 +63,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true }, { status: 201 });
   }
 
-  if (!data.consentPrivacy) {
-    return NextResponse.json({ error: "Persetujuan kebijakan privasi wajib dicentang." }, { status: 400 });
+  if (!data.consentPrivacy || !data.consentContact) {
+    return NextResponse.json({ error: "Persetujuan penggunaan data wajib diberikan." }, { status: 400 });
   }
 
   if (data.packageId) {
@@ -92,11 +87,6 @@ export async function POST(request: NextRequest) {
           whatsapp: data.whatsapp,
           email: data.email || undefined,
           city: data.city,
-          district: data.district,
-          postalCode: data.postalCode,
-          address: data.address,
-          latitude: data.latitude,
-          longitude: data.longitude,
           packageId: data.packageId,
           consentPrivacy: data.consentPrivacy,
           consentContact: data.consentContact,

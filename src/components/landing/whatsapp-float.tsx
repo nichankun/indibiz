@@ -1,25 +1,20 @@
 import { MessageCircle } from "lucide-react";
-import { siteConfig } from "@/lib/site";
+import { createSalesWhatsAppUrl } from "@/lib/whatsapp-link";
 
 export function WhatsappFloat() {
-  const salesNumber = siteConfig.salesPhone.replace(/\D/g, "");
-  const message = encodeURIComponent(
-    "Halo, saya ingin bertanya tentang paket Indibiz."
-  );
-
   return (
-    <a
-      href={`https://wa.me/${salesNumber}?text=${message}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center"
-      aria-label="Chat via WhatsApp"
-    >
-      {/* Ring pulse — menarik perhatian tanpa jadi mengganggu */}
-      <span className="absolute inset-0 rounded-full bg-emerald-500/50 motion-safe:animate-ping" />
-      <span className="relative flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 transition-transform group-hover:scale-105">
-        <MessageCircle className="h-6 w-6" fill="white" />
-      </span>
-    </a>
+    <div className="fixed bottom-7 right-7 z-40 hidden md:block">
+      <a
+        href={createSalesWhatsAppUrl("Halo admin Indibiz, saya ingin konsultasi paket internet bisnis.")}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Hubungi admin melalui WhatsApp"
+        title="Chat admin melalui WhatsApp"
+        className="group flex h-14 items-center gap-2.5 rounded-full bg-[#25D366] px-4 text-white shadow-lg shadow-[#128C7E]/25 transition-colors hover:bg-[#128C7E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
+      >
+        <MessageCircle className="h-5 w-5" aria-hidden="true" />
+        <span className="text-sm font-semibold">Chat admin</span>
+      </a>
+    </div>
   );
 }

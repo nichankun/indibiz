@@ -27,9 +27,9 @@ Salin `.env.example` menjadi `.env`, lalu isi nilai yang sesuai. Nilai penting:
 - `SEED_ADMIN_EMAIL` dan `SEED_ADMIN_PASSWORD`: hanya dibutuhkan saat seed;
   password harus minimal 12 karakter.
 
-WhatsApp Business API bersifat opsional dan hanya diperlukan untuk mengirim
-template dari dashboard admin. Kontak sales di landing page selalu menggunakan
-tautan WhatsApp langsung.
+Kontak sales di landing page menggunakan tautan WhatsApp langsung dan tidak
+membutuhkan WhatsApp Business API token. Pastikan `NEXT_PUBLIC_SALES_PHONE`
+berisi nomor WhatsApp admin dalam format internasional.
 
 ## Perintah
 
@@ -54,12 +54,13 @@ awal itu secara buta. Review perubahan sebelum memakai `pnpm db:push`.
 
 ## Route utama
 
-- `/`: landing page, paket aktif, form pendaftaran, dan pengecekan jangkauan.
+- `/`: landing page, paket aktif, dan konsultasi langsung melalui WhatsApp.
 - Homepage menampilkan enam kawasan kepulauan sebagai penanda cakupan
-  nasional; halaman pendaftaran tetap difokuskan ke Jabodetabek.
+  nasional; konsultasi pendaftaran berfokus ke Jabodetabek. Ketersediaan alamat
+  ditanyakan kepada admin melalui WhatsApp, bukan pengecekan otomatis di situs.
 - `/indibiz/[city]`: landing page area layanan prioritas Jabodetabek (Jakarta,
   Bogor, Depok, Tangerang, dan Bekasi).
-- `/privacy`: kebijakan privasi form pendaftaran.
+- `/privacy`: kebijakan privasi untuk kontak melalui WhatsApp.
 - `/admin/login`: login dashboard, termasuk langkah verifikasi TOTP bila aktif.
 - `/admin`: ringkasan dashboard.
 - `/admin/leads`: daftar, detail, status, follow-up, dan ekspor lead.

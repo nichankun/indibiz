@@ -27,7 +27,7 @@ export const SERVICE_AREAS: ServiceArea[] = [
     slug: "depok",
     name: "Depok",
     region: "Jawa Barat",
-    areas: "seluruh wilayah Kota Depok dan area sekitarnya",
+    areas: "Kota Depok dan area sekitarnya",
   },
   {
     slug: "tangerang",

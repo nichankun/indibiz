@@ -1,231 +1,234 @@
 "use client";
 
-import * as React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import Autoplay from "embla-carousel-autoplay";
-import type { CarouselApi } from "@/components/ui/carousel";
+import { ArrowRight, MessageCircle, Pause, Play } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type FocusEvent,
+} from "react";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
-import { Wifi, ShieldCheck, Headset, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { FiberPulse } from "./fiber-pulse";
+import { createSalesWhatsAppUrl } from "@/lib/whatsapp-link";
 
-const TRUST_CHIPS = [
-  { icon: Wifi, label: "Tanpa Batasan FUP" },
-  { icon: ShieldCheck, label: "Jaringan Fiber Nasional Telkom" },
-  { icon: Headset, label: "Dukungan Teknis Responsif" },
-];
+const slides = [
+  { src: "/hero-slide-cafe.png", alt: "Pemilik kedai mengelola usaha dengan koneksi internet bisnis" },
+  { src: "/hero-slide-retail.png", alt: "Pemilik toko memantau pesanan dan operasional usahanya" },
+  { src: "/hero-slide-office.png", alt: "Tim bisnis bekerja bersama menggunakan solusi digital" },
+] as const;
 
-type Slide = {
-  image: string;
-  imageAlt: string;
-  ctaLabel: string;
-  ctaHref: string;
-  secondaryLabel?: string;
-  secondaryHref?: string;
-};
+const salesUrl = createSalesWhatsAppUrl(
+  "Halo Admin Indibiz, saya ingin konsultasi paket internet bisnis untuk area Jabodetabek.",
+);
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 
-const SLIDES: Slide[] = [
-  {
-    image: "/hero2.png",
-    imageAlt: "Tim bisnis menggunakan solusi internet Indibiz",
-    ctaLabel: "Lihat Paket & Harga",
-    ctaHref: "#paket",
-    secondaryLabel: "Cek Jangkauan Area",
-    secondaryHref: "#cek-jangkauan",
-  },
-  {
-    image: "/diskon.png",
-    imageAlt: "Promo diskon biaya pasang baru Indibiz",
-    ctaLabel: "Klaim Promo Sekarang",
-    ctaHref: "#paket",
-  },
-  {
-    image: "/pantau.png",
-    imageAlt: "Monitoring jaringan bisnis dengan Netmonk HI",
-    ctaLabel: "Lihat Paket Bundling",
-    ctaHref: "#paket",
-  },
-];
+function subscribeToReducedMotion(onChange: () => void) {
+  const mediaQuery = window.matchMedia(reducedMotionQuery);
+  mediaQuery.addEventListener("change", onChange);
+  return () => mediaQuery.removeEventListener("change", onChange);
+}
+
+function getReducedMotionSnapshot() {
+  return window.matchMedia(reducedMotionQuery).matches;
+}
+
+function getReducedMotionServerSnapshot() {
+  return true;
+}
 
 export function Hero() {
-  const [api, setApi] = React.useState<CarouselApi>();
-  const [current, setCurrent] = React.useState(0);
-  const [autoplay] = React.useState(() =>
-    Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: true })
+  const [api, setApi] = useState<CarouselApi>();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [rotationOverride, setRotationOverride] = useState<boolean | null>(null);
+  const prefersReducedMotion = useSyncExternalStore(
+    subscribeToReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot,
   );
+  const isRotating = rotationOverride ?? !prefersReducedMotion;
+  const autoplay = useMemo(
+    () =>
+      Autoplay({
+        delay: 5500,
+        playOnInit: false,
+        stopOnFocusIn: false,
+        stopOnInteraction: false,
+        stopOnMouseEnter: false,
+      }),
+    [],
+  );
+  const plugins = useMemo(() => [autoplay], [autoplay]);
 
-  React.useEffect(() => {
+  const setCarouselApi = useCallback((carouselApi: CarouselApi) => {
+    setApi(carouselApi);
+  }, []);
+
+  useEffect(() => {
     if (!api) return;
-    const updateCurrentSlide = () => setCurrent(api.selectedScrollSnap());
+
+    const updateCurrentSlide = () => setCurrentSlide(api.selectedScrollSnap());
     api.on("select", updateCurrentSlide);
+    api.on("reInit", updateCurrentSlide);
 
     return () => {
       api.off("select", updateCurrentSlide);
+      api.off("reInit", updateCurrentSlide);
     };
   }, [api]);
 
-  const activeSlide = SLIDES[current];
+  useEffect(() => {
+    if (isRotating) autoplay.play();
+    else autoplay.stop();
+  }, [autoplay, isRotating]);
+
+  const resumeRotation = useCallback(() => {
+    if (isRotating) autoplay.play();
+  }, [autoplay, isRotating]);
+
+  const pauseForKeyboard = useCallback(() => {
+    autoplay.stop();
+  }, [autoplay]);
+
+  const resumeAfterKeyboard = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      if (
+        event.relatedTarget instanceof Node &&
+        event.currentTarget.contains(event.relatedTarget)
+      ) {
+        return;
+      }
+      resumeRotation();
+    },
+    [resumeRotation],
+  );
 
   return (
-    <section className="relative isolate overflow-hidden bg-slate-950 text-white">
-      {/* Teks H1 Statis untuk SEO */}
-      <div className="relative z-10 mx-auto max-w-6xl px-6 pb-4 pt-8 sm:pb-6 sm:pt-10">
-        <h1 className="max-w-2xl font-display text-2xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-          Internet Fiber Bisnis Indibiz untuk Seluruh Indonesia
-        </h1>
-        <p className="mt-3 max-w-xl text-sm text-blue-100/90 sm:text-base">
-          Cek ketersediaan dan daftar paket internet fiber tanpa batas FUP untuk
-          kantor, toko, dan UMKM Anda — dari Jabodetabek hingga kota-kota besar
-          lain di Indonesia.
-        </p>
-      </div>
+    <section className="w-full bg-slate-50 px-3 py-3 sm:px-5 md:py-5" aria-label="Indibiz untuk usaha">
+      <div className="mx-auto max-w-[1800px] overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm sm:rounded-[2rem]">
+        <Carousel
+          aria-label="Inspirasi usaha Indibiz"
+          className="relative"
+          opts={{ loop: true, align: "start" }}
+          plugins={plugins}
+          setApi={setCarouselApi}
+          onMouseEnter={() => autoplay.stop()}
+          onMouseLeave={resumeRotation}
+          onFocusCapture={pauseForKeyboard}
+          onBlurCapture={resumeAfterKeyboard}
+        >
+          <CarouselContent className="ml-0">
+            {slides.map((slide, index) => (
+              <CarouselItem
+                key={slide.src}
+                className="relative isolate min-h-[660px] overflow-hidden pl-0 md:aspect-[2/1] md:min-h-[560px] lg:aspect-[2.15/1] lg:min-h-0"
+              >
+                <Image
+                  src={slide.src}
+                  alt={slide.alt}
+                  fill
+                  preload={index === 0}
+                  sizes="100vw"
+                  className="-z-20 object-cover object-[58%_center] md:object-center"
+                />
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 -z-10 bg-gradient-to-b from-white via-white/80 via-40% to-transparent to-75% md:bg-gradient-to-r md:from-white md:via-white/95 md:via-40% md:to-white/0 md:to-60%"
+                />
 
-      <Carousel
-        setApi={setApi}
-        opts={{ loop: true }}
-        plugins={[autoplay]}
-        className="group/hero"
-      >
-        <CarouselContent className="ml-0">
-          {SLIDES.map((slide, i) => (
-            <CarouselItem key={i} className="pl-0">
-              <div className="relative w-full bg-slate-950">
-                {/* 1 Container Gambar Responsif (Tinggi h-56 di mobile, min-h-140 di desktop) */}
-                <div className="relative h-56 w-full overflow-hidden sm:min-h-140">
-                  <Image
-                    src={slide.image}
-                    alt={slide.imageAlt}
-                    fill
-                    preload={i === 0}
-                    sizes="100vw"
-                    className="object-cover object-center sm:object-right"
-                  />
-                  {/* Gradien pemanis & animasi kabel fiber */}
-                  <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-slate-950 to-transparent sm:hidden" />
-                  <div className="pointer-events-none absolute inset-x-0 top-0 hidden h-40 bg-linear-to-b from-black/55 to-transparent sm:block" />
-                  <FiberPulse
-                    className="absolute inset-x-0 bottom-0 h-1 w-full sm:hidden"
-                    variant="light"
-                  />
-                </div>
+                <div className="relative z-10 mx-auto flex h-full min-h-[660px] max-w-6xl flex-col px-5 pb-16 pt-7 sm:px-8 md:min-h-[560px] md:justify-center md:px-12 md:py-12 lg:min-h-0 lg:px-6 lg:py-14">
+                  <div className="flex w-fit items-center gap-2.5">
+                    <Image src="/logo.png" width={34} height={34} alt="" />
+                    <span className="text-2xl font-semibold tracking-[-0.04em] text-brand-navy sm:text-[1.75rem]">
+                      indi<span className="text-red-600">biz</span>
+                    </span>
+                  </div>
 
-                {/* Panel Tombol CTA Mobile (< sm) */}
-                <div className="flex flex-col items-start gap-4 bg-slate-950 px-5 pb-8 pt-5 sm:hidden">
-                  <div className="flex w-full flex-col gap-2.5 pt-1">
-                    <Button
-                      size="lg"
-                      asChild
-                      className="w-full bg-brand-blue text-white shadow-lg shadow-brand-blue/40 hover:bg-brand-blue-dark"
-                    >
-                      <a href={slide.ctaHref}>
-                        {slide.ctaLabel}
-                        <ArrowRight className="h-4 w-4" />
-                      </a>
-                    </Button>
-
-                    {slide.secondaryLabel && slide.secondaryHref && (
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        asChild
-                        className="w-full border-white/20 bg-white/5 text-white hover:bg-white/15 hover:text-white"
+                  <div className="mt-9 max-w-[700px] md:mt-10">
+                    {currentSlide === index ? (
+                      <h1 className="font-sans text-[2.35rem] leading-[1.1] font-semibold tracking-[-0.035em] text-brand-navy sm:text-5xl lg:text-[3.75rem]">
+                        <span className="block">Internet fiber</span>
+                        <span className="block">
+                          untuk <span className="text-red-600">bisnis</span> Anda.
+                        </span>
+                      </h1>
+                    ) : (
+                      <div
+                        aria-hidden="true"
+                        className="font-sans text-[2.35rem] leading-[1.1] font-semibold tracking-[-0.035em] text-brand-navy sm:text-5xl lg:text-[3.75rem]"
                       >
-                        <a href={slide.secondaryHref}>
-                          <Wifi className="h-4 w-4" />
-                          {slide.secondaryLabel}
-                        </a>
-                      </Button>
+                        <span className="block">Internet fiber</span>
+                        <span className="block">
+                          untuk <span className="text-red-600">bisnis</span> Anda.
+                        </span>
+                      </div>
                     )}
-                  </div>
+                    <p className="mt-4 max-w-[520px] text-sm leading-6 text-slate-600 sm:text-base sm:leading-7 lg:text-lg lg:leading-8">
+                      Koneksi stabil untuk mendukung usaha di area Jabodetabek.
+                    </p>
 
-                  <div className="flex items-center gap-2 pt-1">
-                    {SLIDES.map((_, di) => (
-                      <button
-                        key={di}
-                        type="button"
-                        aria-label={`Ke banner ${di + 1}`}
-                        onClick={() => api?.scrollTo(di)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          di === current ? "w-6 bg-brand-sky" : "w-1.5 bg-white/30"
-                        }`}
-                      />
-                    ))}
+                    <div className="mt-6 flex flex-wrap items-center gap-3">
+                      <Button
+                        asChild
+                        className="h-11 rounded-full bg-[#25D366] px-4 text-sm text-white shadow-sm shadow-[#25D366]/25 hover:bg-[#128C7E] sm:h-12 sm:px-5 sm:text-base lg:h-14 lg:px-6"
+                      >
+                        <Link href={salesUrl} target="_blank" rel="noreferrer">
+                          <MessageCircle className="size-4" aria-hidden="true" />
+                  Konsultasi via WhatsApp
+                        </Link>
+                      </Button>
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="h-11 rounded-full border-slate-300 bg-white/95 px-4 text-sm font-semibold text-brand-navy shadow-sm hover:bg-white hover:text-brand-navy sm:h-12 sm:px-5 sm:text-base lg:h-14 lg:px-6"
+                      >
+                        <Link href="#paket">
+                          Lihat paket <ArrowRight className="size-4" aria-hidden="true" />
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
 
-        <CarouselPrevious className="left-4 hidden border-white/20 bg-white/10 text-white opacity-0 backdrop-blur-sm hover:bg-white/20 hover:text-white group-hover/hero:opacity-100 sm:flex" />
-        <CarouselNext className="right-4 hidden border-white/20 bg-white/10 text-white opacity-0 backdrop-blur-sm hover:bg-white/20 hover:text-white group-hover/hero:opacity-100 sm:flex" />
-
-        {/* Indikator Slider Desktop */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-8 z-10 hidden items-center justify-center gap-2 sm:flex">
-          {SLIDES.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              aria-label={`Ke banner ${i + 1}`}
-              onClick={() => api?.scrollTo(i)}
-              className={`pointer-events-auto h-1.5 rounded-full transition-all duration-300 ${
-                i === current ? "w-6 bg-brand-sky" : "w-1.5 bg-white/40 hover:bg-white/60"
-              }`}
-            />
-          ))}
-        </div>
-      </Carousel>
-
-      {/* Baris Bawah: Tombol CTA Desktop + Trust Chips */}
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-4 px-6 pb-6 pt-2 sm:pb-8">
-        <div className="hidden items-center gap-3 sm:flex">
-          <Button
-            size="sm"
-            asChild
-            className="bg-brand-blue text-white shadow-lg shadow-brand-blue/40 hover:bg-brand-blue-dark"
-          >
-            <a href={activeSlide.ctaHref}>
-              {activeSlide.ctaLabel}
-              <ArrowRight className="h-4 w-4" />
-            </a>
-          </Button>
-
-          {activeSlide.secondaryLabel && activeSlide.secondaryHref && (
+          <div role="group" aria-label="Pilih slide" className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/80 bg-white/85 px-2.5 py-1.5 shadow-sm backdrop-blur-sm">
+            {slides.map((slide, index) => (
+              <button
+                key={slide.src}
+                type="button"
+                aria-label={`Tampilkan slide ${index + 1} dari ${slides.length}`}
+                aria-current={currentSlide === index ? "true" : undefined}
+                onClick={() => api?.scrollTo(index)}
+                className={`h-2 rounded-full transition-[width,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 ${
+                  currentSlide === index ? "w-5 bg-brand-blue" : "w-2 bg-slate-300 hover:bg-slate-400"
+                }`}
+              />
+            ))}
+            <span aria-hidden="true" className="mx-0.5 h-4 w-px bg-slate-200" />
             <Button
-              size="sm"
-              variant="outline"
-              asChild
-              className="border-white/20 bg-white/5 text-white hover:bg-white/15 hover:text-white"
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label={isRotating ? "Jeda putar otomatis" : "Mulai putar otomatis"}
+              aria-pressed={isRotating}
+              onClick={() => setRotationOverride(!isRotating)}
+              className="size-7 rounded-full text-brand-navy hover:bg-slate-100"
             >
-              <a href={activeSlide.secondaryHref}>
-                <Wifi className="h-4 w-4" />
-                {activeSlide.secondaryLabel}
-              </a>
+              {isRotating ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
             </Button>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          {TRUST_CHIPS.map(({ icon: Icon, label }) => (
-            <div
-              key={label}
-              className="flex items-center gap-2 text-sm font-medium text-blue-100/80"
-            >
-              <Icon className="h-4 w-4 text-brand-sky" />
-              {label}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="absolute inset-x-0 bottom-0 z-10 hidden h-6 opacity-80 sm:block">
-        <FiberPulse className="h-full w-full" variant="light" />
+          </div>
+        </Carousel>
       </div>
     </section>
   );

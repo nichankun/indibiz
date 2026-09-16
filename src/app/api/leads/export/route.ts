@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
+import { and, asc, eq, gt } from "drizzle-orm";
 import { db } from "@/db";
 import { leads } from "@/db/database/schema";
 import { getSession } from "@/lib/session";
@@ -35,11 +35,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Status tidak valid" }, { status: 400 });
   }
 
-  const rows = await db.query.leads.findMany({
-    where: status ? eq(leads.status, status as typeof leads.$inferSelect.status) : undefined,
-    with: { package: true, assignedSales: true },
-  });
-
   const header = [
     "Lead Code",
     "Nama",
@@ -56,32 +51,91 @@ export async function GET(request: NextRequest) {
     "Dibuat",
   ];
 
-  const csvRows = rows.map((lead) =>
-    [
-      lead.leadCode,
-      lead.name,
-      lead.whatsapp,
-      lead.email ?? "",
-      lead.city ?? "",
-      lead.district ?? "",
-      lead.package?.name ?? "",
-      lead.status,
-      lead.assignedSales?.name ?? "",
-      lead.source ?? "",
-      lead.utmSource ?? "",
-      lead.utmCampaign ?? "",
-      lead.createdAt.toISOString(),
-    ]
-      .map(toCsvValue)
-      .join(",")
-  );
+  const headerLine = `${header.map(toCsvValue).join(",")}\n`;
+  const statusFilter = status
+    ? eq(leads.status, status as typeof leads.$inferSelect.status)
+    : undefined;
+  const pageSize = 1_000;
 
-  const csv = [header.map(toCsvValue).join(","), ...csvRows].join("\n");
+  // Stream per batch agar export besar tidak menampung seluruh lead di memory.
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const encoder = new TextEncoder();
+      let lastId = 0;
 
-  return new NextResponse(csv, {
+      try {
+        controller.enqueue(encoder.encode(headerLine));
+
+        while (true) {
+          const cursorFilter = lastId > 0 ? gt(leads.id, lastId) : undefined;
+          const where = statusFilter && cursorFilter
+            ? and(statusFilter, cursorFilter)
+            : statusFilter ?? cursorFilter;
+          const rows = await db.query.leads.findMany({
+            columns: {
+              id: true,
+              leadCode: true,
+              name: true,
+              whatsapp: true,
+              email: true,
+              city: true,
+              district: true,
+              status: true,
+              source: true,
+              utmSource: true,
+              utmCampaign: true,
+              createdAt: true,
+            },
+            where,
+            orderBy: asc(leads.id),
+            limit: pageSize,
+            with: {
+              package: { columns: { name: true } },
+              assignedSales: { columns: { name: true } },
+            },
+          });
+
+          if (rows.length === 0) break;
+
+          const csvRows = rows.map((lead) =>
+            [
+              lead.leadCode,
+              lead.name,
+              lead.whatsapp,
+              lead.email ?? "",
+              lead.city ?? "",
+              lead.district ?? "",
+              lead.package?.name ?? "",
+              lead.status,
+              lead.assignedSales?.name ?? "",
+              lead.source ?? "",
+              lead.utmSource ?? "",
+              lead.utmCampaign ?? "",
+              lead.createdAt.toISOString(),
+            ]
+              .map(toCsvValue)
+              .join(",")
+          );
+
+          controller.enqueue(encoder.encode(`${csvRows.join("\n")}\n`));
+          lastId = rows[rows.length - 1].id;
+
+          if (rows.length < pageSize) break;
+        }
+
+        controller.close();
+      } catch (error) {
+        console.error("Gagal mengekspor lead:", error);
+        controller.error(error);
+      }
+    },
+  });
+
+  return new NextResponse(stream, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="leads-export-${Date.now()}.csv"`,
+      "Cache-Control": "no-store",
     },
   });
 }

@@ -4,6 +4,7 @@ type Bucket = {
 };
 
 const buckets = new Map<string, Bucket>();
+const MAX_BUCKETS = 10_000;
 
 type RateLimitOptions = {
   key: string;
@@ -24,9 +25,16 @@ export function consumeRateLimit({ key, limit, windowMs }: RateLimitOptions) {
 
   buckets.set(key, bucket);
 
-  if (buckets.size > 10_000) {
+  if (buckets.size > MAX_BUCKETS) {
     for (const [bucketKey, value] of buckets) {
       if (value.resetAt <= now) buckets.delete(bucketKey);
+    }
+
+    // Jangan biarkan header IP unik dari bot membuat Map tumbuh tanpa batas.
+    while (buckets.size > MAX_BUCKETS) {
+      const oldestKey = buckets.keys().next().value as string | undefined;
+      if (!oldestKey) break;
+      buckets.delete(oldestKey);
     }
   }
 
