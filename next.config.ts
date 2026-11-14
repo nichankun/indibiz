@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // Vercel membangun dan mengemas output Next.js sendiri. Pada Next 16.3,
+  // `standalone` + adapter Vercel dapat memicu ENOENT next-server.js.nft.json.
+  // Docker tetap memakai standalone melalui build lokal/non-Vercel.
+  output: process.env.VERCEL ? undefined : "standalone",
   reactCompiler: true,
   poweredByHeader: false,
   images: {

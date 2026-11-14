@@ -55,11 +55,11 @@ awal itu secara buta. Review perubahan sebelum memakai `pnpm db:push`.
 ## Route utama
 
 - `/`: landing page, paket aktif, dan konsultasi langsung melalui WhatsApp.
-- Homepage menampilkan enam kawasan kepulauan sebagai penanda cakupan
-  nasional; konsultasi pendaftaran berfokus ke Jabodetabek. Ketersediaan alamat
+- Homepage menampilkan kawasan nasional dan badge DIY Yogyakarta; konsultasi
+  pendaftaran berfokus ke wilayah tersebut. Ketersediaan alamat
   ditanyakan kepada admin melalui WhatsApp, bukan pengecekan otomatis di situs.
-- `/indibiz/[city]`: landing page area layanan prioritas Jabodetabek (Jakarta,
-  Bogor, Depok, Tangerang, dan Bekasi).
+- `/indibiz/[city]`: landing page area layanan prioritas DIY Yogyakarta (Kota
+  Yogyakarta, Sleman, Bantul, Kulon Progo, dan Gunungkidul).
 - `/privacy`: kebijakan privasi untuk kontak melalui WhatsApp.
 - `/admin/login`: login dashboard, termasuk langkah verifikasi TOTP bila aktif.
 - `/admin`: ringkasan dashboard.

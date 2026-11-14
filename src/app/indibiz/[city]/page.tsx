@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import {
   ShieldCheck,
   Headphones,
@@ -10,7 +10,11 @@ import {
   Sparkles,
   MessageCircle,
 } from "lucide-react";
-import { getServiceArea, SERVICE_AREAS } from "@/lib/service-areas";
+import {
+  getServiceArea,
+  LEGACY_SERVICE_AREA_SLUGS,
+  SERVICE_AREAS,
+} from "@/lib/service-areas";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import { CityFaq } from "@/components/landing/faq";
 import { SiteFooter } from "@/components/landing/site-footer";
@@ -25,7 +29,10 @@ type PageProps = {
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return SERVICE_AREAS.map(({ slug }) => ({ city: slug }));
+  return [
+    ...SERVICE_AREAS.map(({ slug }) => ({ city: slug })),
+    ...LEGACY_SERVICE_AREA_SLUGS.map((city) => ({ city })),
+  ];
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -71,7 +78,12 @@ export default async function ServiceAreaPage({ params }: PageProps) {
   const { city } = await params;
   const area = getServiceArea(city);
 
-  if (!area) notFound();
+  if (!area) {
+    if (LEGACY_SERVICE_AREA_SLUGS.some((slug) => slug === city)) {
+      permanentRedirect("/");
+    }
+    notFound();
+  }
 
   const title = `Pasang Indibiz ${area.name} untuk Bisnis & Kantor`;
   const description = `Pendaftaran dan pengecekan ketersediaan jaringan Indibiz untuk bisnis di wilayah ${area.areas}.`;

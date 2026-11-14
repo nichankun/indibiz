@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { NATIONAL_ISLANDS, SERVICE_AREAS } from "@/lib/service-areas";
+import { COVERAGE_REGIONS, SERVICE_AREAS } from "@/lib/service-areas";
 
 export function TrustSection() {
   return (
@@ -11,13 +11,13 @@ export function TrustSection() {
             Internet bisnis Indibiz untuk usaha di Indonesia
           </h2>
           <p className="mt-3 max-w-2xl text-[0.9375rem] leading-6 text-slate-600 sm:text-base sm:leading-7 lg:max-w-xl lg:text-lg lg:leading-8">
-            Indibiz tersedia di berbagai wilayah Indonesia. Untuk konsultasi dan pendaftaran melalui halaman ini, tim kami fokus membantu usaha di Jabodetabek. Ketersediaan paket tetap bergantung pada jaringan di alamat usaha.
+            Indibiz tersedia di berbagai wilayah Indonesia. Tim pada halaman ini membantu konsultasi dan pendaftaran untuk area DIY Yogyakarta. Ketersediaan paket tetap bergantung pada jaringan di alamat usaha.
           </p>
-          <ul aria-label="Kawasan Indonesia" className="mt-5 flex flex-wrap gap-2">
-            {NATIONAL_ISLANDS.map((island) => (
-              <li key={island.name}>
+          <ul aria-label="Kawasan layanan Indibiz" className="mt-5 flex flex-wrap gap-2">
+            {COVERAGE_REGIONS.map((region) => (
+              <li key={region.name}>
                 <Badge variant="outline" className="rounded-full bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 lg:px-4 lg:py-1.5 lg:text-sm">
-                  {island.name}
+                  {region.name}
                 </Badge>
               </li>
             ))}
@@ -30,7 +30,7 @@ export function TrustSection() {
               <MapPin aria-hidden="true" className="size-4 lg:size-5" />
             </span>
             <h3 className="font-display text-lg leading-snug font-semibold tracking-tight text-brand-navy sm:text-2xl">
-              Jakarta dan sekitarnya
+              Wilayah layanan DIY Yogyakarta
             </h3>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">

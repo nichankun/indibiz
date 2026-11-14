@@ -94,7 +94,7 @@ function PackageCard({ pkg }: { pkg: Package }) {
         >
           <a
             href={createSalesWhatsAppUrl(
-              `Halo admin Indibiz, saya tertarik dengan paket ${pkg.name}. Mohon info ketersediaan di wilayah Jabodetabek.`,
+              `Halo admin Indibiz, saya tertarik dengan paket ${pkg.name}. Mohon info ketersediaan di wilayah DIY Yogyakarta.`,
             )}
             target="_blank"
             rel="noopener noreferrer"
@@ -110,7 +110,11 @@ function PackageCard({ pkg }: { pkg: Package }) {
 function PackageGroup({ title, ratio, packages }: PackageGroupProps) {
   if (packages.length === 0) return null;
 
-  const benefits = [...BASE_BENEFITS, `Rasio Kecepatan ${ratio}`];
+  const benefits = [
+    ...BASE_BENEFITS,
+    `Rasio Kecepatan ${ratio}`,
+    "PPN 11% untuk pelanggan PKP",
+  ];
 
   return (
     <section aria-label={title} className="mt-8 first:mt-7 sm:mt-14 lg:mt-16">
@@ -119,7 +123,7 @@ function PackageGroup({ title, ratio, packages }: PackageGroupProps) {
           {title}
         </h3>
 
-        <ul className="mx-auto mt-3 grid max-w-3xl gap-2 text-left sm:mt-5 sm:grid-cols-3 sm:gap-3 lg:max-w-4xl">
+        <ul className="mx-auto mt-3 grid max-w-3xl gap-2 text-left sm:mt-5 sm:grid-cols-2 sm:gap-3 lg:max-w-5xl lg:grid-cols-4">
           {benefits.map((benefit) => (
             <li
               key={benefit}
@@ -217,7 +221,7 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
               >
                 <a
                   href={createSalesWhatsAppUrl(
-                    "Halo admin Indibiz, saya ingin menanyakan paket internet bisnis yang tersedia.",
+                    "Halo admin Indibiz, saya ingin menanyakan paket internet bisnis yang tersedia di DIY Yogyakarta.",
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -230,8 +234,9 @@ export function PackagesSection({ basicPackages, bisnisPackages }: Props) {
         )}
 
         <p className="mt-8 text-center text-xs leading-relaxed text-muted-foreground">
-          Harga dan promo dapat berubah. Konfirmasi biaya akhir serta ketersediaan
-          kepada admin sebelum mendaftar.
+          Harga belum termasuk PPN 11% untuk pelanggan berstatus PKP. Harga dan
+          promo dapat berubah; konfirmasi biaya akhir serta ketersediaan kepada
+          admin sebelum mendaftar.
         </p>
       </div>
     </section>

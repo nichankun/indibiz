@@ -3,7 +3,7 @@ import { SERVICE_AREAS } from "@/lib/service-areas";
 import { siteConfig } from "@/lib/site";
 
 const siteDescription =
-  "Informasi paket Indibiz dan konsultasi ketersediaan jaringan untuk internet bisnis di Indonesia, dengan fokus pendaftaran Jabodetabek.";
+  "Informasi paket Indibiz dan konsultasi ketersediaan jaringan untuk internet bisnis di DIY Yogyakarta.";
 
 export function SiteStructuredData() {
   const data = {

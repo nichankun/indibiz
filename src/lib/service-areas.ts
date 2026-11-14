@@ -5,52 +5,61 @@ export type ServiceArea = {
   areas: string;
 };
 
-/**
- * Halaman layanan yang benar-benar dilayani tim pendaftaran saat ini.
- * Membatasi data ini menjaga sitemap dan internal link tetap fokus pada
- * Jabodetabek, bukan membuat halaman kota berulang untuk seluruh Indonesia.
- */
+/** Area yang dilayani tim pendaftaran dan dipakai untuk halaman lokasi. */
 export const SERVICE_AREAS: ServiceArea[] = [
   {
-    slug: "jakarta",
-    name: "Jakarta",
-    region: "DKI Jakarta",
-    areas: "Jakarta Pusat, Jakarta Barat, Jakarta Selatan, Jakarta Timur, dan Jakarta Utara",
+    slug: "yogyakarta",
+    name: "Kota Yogyakarta",
+    region: "DIY Yogyakarta",
+    areas: "Kota Yogyakarta",
   },
   {
-    slug: "bogor",
-    name: "Bogor",
-    region: "Jawa Barat",
-    areas: "Kota Bogor, Kabupaten Bogor, dan area sekitarnya",
+    slug: "sleman",
+    name: "Sleman",
+    region: "DIY Yogyakarta",
+    areas: "Kabupaten Sleman",
   },
   {
-    slug: "depok",
-    name: "Depok",
-    region: "Jawa Barat",
-    areas: "Kota Depok dan area sekitarnya",
+    slug: "bantul",
+    name: "Bantul",
+    region: "DIY Yogyakarta",
+    areas: "Kabupaten Bantul",
   },
   {
-    slug: "tangerang",
-    name: "Tangerang",
-    region: "Banten",
-    areas: "Kota Tangerang, Tangerang Selatan, Kabupaten Tangerang, dan area sekitarnya",
+    slug: "kulon-progo",
+    name: "Kulon Progo",
+    region: "DIY Yogyakarta",
+    areas: "Kabupaten Kulon Progo",
   },
   {
-    slug: "bekasi",
-    name: "Bekasi",
-    region: "Jawa Barat",
-    areas: "Kota Bekasi, Kabupaten Bekasi, dan area sekitarnya",
+    slug: "gunungkidul",
+    name: "Gunungkidul",
+    region: "DIY Yogyakarta",
+    areas: "Kabupaten Gunungkidul",
   },
 ];
 
-/** Kawasan kepulauan untuk penanda cakupan nasional, bukan halaman SEO. */
-export const NATIONAL_ISLANDS = [
+/** Penanda kawasan Indibiz, bukan halaman SEO. */
+export const COVERAGE_REGIONS = [
   { name: "Sumatera", description: "Sumatera dan kepulauan sekitarnya" },
   { name: "Jawa", description: "Jawa, Banten, dan DKI Jakarta" },
+  {
+    name: "DIY Yogyakarta",
+    description: "Kota Yogyakarta, Sleman, Bantul, Kulon Progo, dan Gunungkidul",
+  },
   { name: "Kalimantan", description: "Kalimantan Barat hingga Kalimantan Utara" },
   { name: "Sulawesi", description: "Sulawesi Utara hingga Sulawesi Barat" },
   { name: "Bali & Nusa Tenggara", description: "Bali, NTB, dan NTT" },
   { name: "Maluku & Papua", description: "Maluku dan seluruh wilayah Papua" },
+] as const;
+
+/** Slug lama diarahkan ke beranda agar tidak menampilkan cakupan Jabodetabek yang sudah tidak berlaku. */
+export const LEGACY_SERVICE_AREA_SLUGS = [
+  "jakarta",
+  "bogor",
+  "depok",
+  "tangerang",
+  "bekasi",
 ] as const;
 
 export function getServiceArea(slug: string) {

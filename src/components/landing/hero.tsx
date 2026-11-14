@@ -28,7 +28,7 @@ const slides = [
 ] as const;
 
 const salesUrl = createSalesWhatsAppUrl(
-  "Halo Admin Indibiz, saya ingin konsultasi paket internet bisnis untuk area Jabodetabek.",
+  "Halo Admin Indibiz, saya ingin konsultasi paket internet bisnis untuk area DIY Yogyakarta.",
 );
 const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 
@@ -173,7 +173,7 @@ export function Hero() {
                       </div>
                     )}
                     <p className="mt-4 max-w-[520px] text-sm leading-6 text-slate-600 sm:text-base sm:leading-7 lg:text-lg lg:leading-8">
-                      Koneksi stabil untuk mendukung usaha di area Jabodetabek.
+                      Koneksi stabil untuk mendukung usaha di area DIY Yogyakarta.
                     </p>
 
                     <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -191,9 +191,9 @@ export function Hero() {
                         variant="outline"
                         className="h-11 rounded-full border-slate-300 bg-white/95 px-4 text-sm font-semibold text-brand-navy shadow-sm hover:bg-white hover:text-brand-navy sm:h-12 sm:px-5 sm:text-base lg:h-14 lg:px-6"
                       >
-                        <Link href="#paket">
+                        <a href="#paket">
                           Lihat paket <ArrowRight className="size-4" aria-hidden="true" />
-                        </Link>
+                        </a>
                       </Button>
                     </div>
                   </div>
